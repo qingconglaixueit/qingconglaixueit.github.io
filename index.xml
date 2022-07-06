@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>My New Hugo Site</title>
+    <title>欢迎来到小魔童哪吒的博客空间</title>
     <link>https://qingconglaixueit.github.io/</link>
-    <description>Recent content on My New Hugo Site</description>
+    <description>Recent content on 欢迎来到小魔童哪吒的博客空间</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 06 Jul 2022 22:34:10 +0800</lastBuildDate><atom:link href="https://qingconglaixueit.github.io/index.xml" rel="self" type="application/rss+xml" />
