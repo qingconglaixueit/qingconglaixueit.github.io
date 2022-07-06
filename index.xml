@@ -25,5 +25,25 @@
       <description>hello wolrd </description>
     </item>
     
+    <item>
+      <title>sample</title>
+      <link>https://qingconglaixueit.github.io/post/test/</link>
+      <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://qingconglaixueit.github.io/post/test/</guid>
+      <description>Hugo is the world&amp;rsquo;s fastest static website engine. It&amp;rsquo;s written in Go (aka Golang) and developed by bep, spf13 and friends.
+Below you will find some of the most common and helpful pages from our documentation.
+https://gohugo.io/documentation/</description>
+    </item>
+    
+    <item>
+      <title>test post</title>
+      <link>https://qingconglaixueit.github.io/post/test/</link>
+      <pubDate>Fri, 01 Jan 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://qingconglaixueit.github.io/post/test/</guid>
+      <description>echo &amp;#34;hello world !!&amp;#34; </description>
+    </item>
+    
   </channel>
 </rss>

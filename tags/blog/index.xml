@@ -1,30 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on Agency</title>
-    <link>https://qingconglaixueit.github.io/post/</link>
-    <description>Recent content in Posts on Agency</description>
+    <title>blog on Agency</title>
+    <link>https://qingconglaixueit.github.io/tags/blog/</link>
+    <description>Recent content in blog on Agency</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 06 Jul 2022 21:42:41 +0800</lastBuildDate><atom:link href="https://qingconglaixueit.github.io/post/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Blog2</title>
-      <link>https://qingconglaixueit.github.io/post/blog2/</link>
-      <pubDate>Wed, 06 Jul 2022 21:42:41 +0800</pubDate>
-      
-      <guid>https://qingconglaixueit.github.io/post/blog2/</guid>
-      <description>woshi xiaozhu peiqi hahah </description>
-    </item>
-    
-    <item>
-      <title>Blog</title>
-      <link>https://qingconglaixueit.github.io/post/blog/</link>
-      <pubDate>Wed, 06 Jul 2022 21:22:21 +0800</pubDate>
-      
-      <guid>https://qingconglaixueit.github.io/post/blog/</guid>
-      <description>hello wolrd </description>
-    </item>
-    
+    <lastBuildDate>Sun, 01 Jan 2017 00:00:00 +0000</lastBuildDate><atom:link href="https://qingconglaixueit.github.io/tags/blog/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>sample</title>
       <link>https://qingconglaixueit.github.io/post/test/</link>
