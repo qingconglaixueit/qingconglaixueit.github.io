@@ -1,21 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>My New Hugo Site</title>
-    <link>https://qingconglaixueit.github.io/</link>
-    <description>Recent content on My New Hugo Site</description>
+    <title>event on My New Hugo Site</title>
+    <link>https://qingconglaixueit.github.io/tags/event/</link>
+    <description>Recent content in event on My New Hugo Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 06 Jul 2022 23:40:14 +0800</lastBuildDate><atom:link href="https://qingconglaixueit.github.io/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Xiaozhu2</title>
-      <link>https://qingconglaixueit.github.io/post/xiaozhu2/</link>
-      <pubDate>Wed, 06 Jul 2022 23:40:14 +0800</pubDate>
-      
-      <guid>https://qingconglaixueit.github.io/post/xiaozhu2/</guid>
-      <description>pyc 是一只猪 </description>
-    </item>
-    
+    <lastBuildDate>Wed, 06 Jul 2022 23:33:11 +0800</lastBuildDate><atom:link href="https://qingconglaixueit.github.io/tags/event/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>dotScale 2014 as a sketch</title>
       <link>https://qingconglaixueit.github.io/post/dotscale-2014-as-a-sketch/</link>
@@ -42,26 +33,6 @@
 每接到一个项目之初，同时也得到了一个交付的承诺时间， what？？？ 交付时间完全由销售定？？
 所以这半年来基本都是在啃次啃次的设计和落地每一个项目
 这也影响了自己在文章方面的输出，基本全是刷题 ， 不过刷题也让我回顾了一些以前写过但并没有完全理解的题和知识点</description>
-    </item>
-    
-    <item>
-      <title>sample</title>
-      <link>https://qingconglaixueit.github.io/post/test/</link>
-      <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://qingconglaixueit.github.io/post/test/</guid>
-      <description>Hugo is the world&amp;rsquo;s fastest static website engine. It&amp;rsquo;s written in Go (aka Golang) and developed by bep, spf13 and friends.
-Below you will find some of the most common and helpful pages from our documentation.
-https://gohugo.io/documentation/</description>
-    </item>
-    
-    <item>
-      <title>test post</title>
-      <link>https://qingconglaixueit.github.io/post/test/</link>
-      <pubDate>Fri, 01 Jan 2016 00:00:00 +0000</pubDate>
-      
-      <guid>https://qingconglaixueit.github.io/post/test/</guid>
-      <description>echo &amp;#34;hello world !!&amp;#34; </description>
     </item>
     
   </channel>
