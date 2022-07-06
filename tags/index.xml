@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tags on 欢迎来到小魔童哪吒的博客空间</title>
+    <title>Tags on Hugo Theme Air</title>
     <link>https://qingconglaixueit.github.io/tags/</link>
-    <description>Recent content in Tags on 欢迎来到小魔童哪吒的博客空间</description>
+    <description>Recent content in Tags on Hugo Theme Air</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
+    <language>en-US</language>
+    <copyright>All rights reserved - 2016</copyright>
     <lastBuildDate>Sun, 01 Jan 2017 00:00:00 +0000</lastBuildDate><atom:link href="https://qingconglaixueit.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>blog</title>
@@ -22,6 +23,33 @@
       <pubDate>Fri, 01 Jan 2016 00:00:00 +0000</pubDate>
       
       <guid>https://qingconglaixueit.github.io/tags/test/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>dotScale</title>
+      <link>https://qingconglaixueit.github.io/tags/dotscale/</link>
+      <pubDate>Fri, 11 Jul 2014 10:54:24 +0200</pubDate>
+      
+      <guid>https://qingconglaixueit.github.io/tags/dotscale/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>event</title>
+      <link>https://qingconglaixueit.github.io/tags/event/</link>
+      <pubDate>Fri, 11 Jul 2014 10:54:24 +0200</pubDate>
+      
+      <guid>https://qingconglaixueit.github.io/tags/event/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sketchnote</title>
+      <link>https://qingconglaixueit.github.io/tags/sketchnote/</link>
+      <pubDate>Fri, 11 Jul 2014 10:54:24 +0200</pubDate>
+      
+      <guid>https://qingconglaixueit.github.io/tags/sketchnote/</guid>
       <description></description>
     </item>
     

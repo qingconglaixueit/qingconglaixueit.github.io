@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Categories on 欢迎来到小魔童哪吒的博客空间</title>
+    <title>Categories on Hugo Theme Air</title>
     <link>https://qingconglaixueit.github.io/categories/</link>
-    <description>Recent content in Categories on 欢迎来到小魔童哪吒的博客空间</description>
+    <description>Recent content in Categories on Hugo Theme Air</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://qingconglaixueit.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-US</language>
+    <copyright>All rights reserved - 2016</copyright><atom:link href="https://qingconglaixueit.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>
