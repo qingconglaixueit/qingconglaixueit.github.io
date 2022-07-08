@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Redis中sds数据结构和底层设计原理 | 阿兵云原生</title>
+<meta name="keywords" content="">
+<meta name="description" content="【Redis 系列】redis 学习十五，redis sds数据结构和底层设计原理 redis 是 C 语言写的，那么我们思考一下 redis 是如何表示一个字符串的？redis 的数据结构和 C 语言的数据结构是一样的吗？
+我们可以看到 redis 源码中的 sds 库函数，和 sds 的具体实现，分别有如下 2 个文件：
+sds.h sds.c 具体路径是：deps/hiredis/sds.h , deps/hiredis/sds.c
+sds.h 中涉及如下数据结构：
+SDS redis 中 SDS simple Dynamic string
+简单动态字符串
+C 语言中表示字符串的方式是字符数组，例如：
+char data[]=&#34;xiaomotong&#34; 如果 C 语言需要扩容的话需要重新分配一个再大一点的内存，存放新的字符串，若每次都要重新分配字符串，对于效率和性能必然会大大降低，并且若某一个字符串是 “xiaomo\0tong”
+这个时候，实际上 C 中 遇到 ‘\0’ 就结束了，因此实际 “xiaomo\0tong” 只会读取到xiaomo ,字符串长度就是 6
+因此 redis 中的 sds 数据结构是这样设计的，是通过一个成员来标志字符串的长度：
+SDS： free:0 len:6 char buf[]=&#34;xiaomo&#34; 若这个时候，我们需要在字符串后面追加字符串， sds 就会进行扩容，例如在后面加上 “tong” ， 那么 sds 的数据结构中的值会变成如下： free:10 len:10 char buf[]=&#34;xiaomotong&#34; 最后的 &quot;xiaomotong&quot; 也是带有\0的，这也保持了 C 语言的标准，redis 中对于 sds 数据结构扩容是成倍增加的，但是到了一定的级别，例如 1M 的时候，就不会翻倍的扩容，而是做加法 例如 1M 变成 2M ， 2M 变成 3M 等等">
+<meta name="author" content="">
+<link rel="canonical" href="https://qingconglaixueit.github.io/post/redis%E4%B8%ADsds%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E5%BA%95%E5%B1%82%E8%AE%BE%E8%AE%A1%E5%8E%9F%E7%90%86/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.d7fb4cbf980fe688a21621b06a795933c4e6bb2d4070ec940667af1715d84af2.css" integrity="sha256-1/tMv5gP5oiiFiGwanlZM8Tmuy1AcOyUBmevFxXYSvI=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://qingconglaixueit.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://qingconglaixueit.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://qingconglaixueit.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://qingconglaixueit.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://qingconglaixueit.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Redis中sds数据结构和底层设计原理" />
+<meta property="og:description" content="【Redis 系列】redis 学习十五，redis sds数据结构和底层设计原理 redis 是 C 语言写的，那么我们思考一下 redis 是如何表示一个字符串的？redis 的数据结构和 C 语言的数据结构是一样的吗？
+我们可以看到 redis 源码中的 sds 库函数，和 sds 的具体实现，分别有如下 2 个文件：
+sds.h sds.c 具体路径是：deps/hiredis/sds.h , deps/hiredis/sds.c
+sds.h 中涉及如下数据结构：
+SDS redis 中 SDS simple Dynamic string
+简单动态字符串
+C 语言中表示字符串的方式是字符数组，例如：
+char data[]=&#34;xiaomotong&#34; 如果 C 语言需要扩容的话需要重新分配一个再大一点的内存，存放新的字符串，若每次都要重新分配字符串，对于效率和性能必然会大大降低，并且若某一个字符串是 “xiaomo\0tong”
+这个时候，实际上 C 中 遇到 ‘\0’ 就结束了，因此实际 “xiaomo\0tong” 只会读取到xiaomo ,字符串长度就是 6
+因此 redis 中的 sds 数据结构是这样设计的，是通过一个成员来标志字符串的长度：
+SDS： free:0 len:6 char buf[]=&#34;xiaomo&#34; 若这个时候，我们需要在字符串后面追加字符串， sds 就会进行扩容，例如在后面加上 “tong” ， 那么 sds 的数据结构中的值会变成如下： free:10 len:10 char buf[]=&#34;xiaomotong&#34; 最后的 &quot;xiaomotong&quot; 也是带有\0的，这也保持了 C 语言的标准，redis 中对于 sds 数据结构扩容是成倍增加的，但是到了一定的级别，例如 1M 的时候，就不会翻倍的扩容，而是做加法 例如 1M 变成 2M ， 2M 变成 3M 等等" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://qingconglaixueit.github.io/post/redis%E4%B8%ADsds%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E5%BA%95%E5%B1%82%E8%AE%BE%E8%AE%A1%E5%8E%9F%E7%90%86/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-07-08T21:55:47&#43;08:00" />
+<meta property="article:modified_time" content="2022-07-08T21:55:47&#43;08:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Redis中sds数据结构和底层设计原理"/>
+<meta name="twitter:description" content="【Redis 系列】redis 学习十五，redis sds数据结构和底层设计原理 redis 是 C 语言写的，那么我们思考一下 redis 是如何表示一个字符串的？redis 的数据结构和 C 语言的数据结构是一样的吗？
+我们可以看到 redis 源码中的 sds 库函数，和 sds 的具体实现，分别有如下 2 个文件：
+sds.h sds.c 具体路径是：deps/hiredis/sds.h , deps/hiredis/sds.c
+sds.h 中涉及如下数据结构：
+SDS redis 中 SDS simple Dynamic string
+简单动态字符串
+C 语言中表示字符串的方式是字符数组，例如：
+char data[]=&#34;xiaomotong&#34; 如果 C 语言需要扩容的话需要重新分配一个再大一点的内存，存放新的字符串，若每次都要重新分配字符串，对于效率和性能必然会大大降低，并且若某一个字符串是 “xiaomo\0tong”
+这个时候，实际上 C 中 遇到 ‘\0’ 就结束了，因此实际 “xiaomo\0tong” 只会读取到xiaomo ,字符串长度就是 6
+因此 redis 中的 sds 数据结构是这样设计的，是通过一个成员来标志字符串的长度：
+SDS： free:0 len:6 char buf[]=&#34;xiaomo&#34; 若这个时候，我们需要在字符串后面追加字符串， sds 就会进行扩容，例如在后面加上 “tong” ， 那么 sds 的数据结构中的值会变成如下： free:10 len:10 char buf[]=&#34;xiaomotong&#34; 最后的 &quot;xiaomotong&quot; 也是带有\0的，这也保持了 C 语言的标准，redis 中对于 sds 数据结构扩容是成倍增加的，但是到了一定的级别，例如 1M 的时候，就不会翻倍的扩容，而是做加法 例如 1M 变成 2M ， 2M 变成 3M 等等"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://qingconglaixueit.github.io/post/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Redis中sds数据结构和底层设计原理",
+      "item": "https://qingconglaixueit.github.io/post/redis%E4%B8%ADsds%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E5%BA%95%E5%B1%82%E8%AE%BE%E8%AE%A1%E5%8E%9F%E7%90%86/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Redis中sds数据结构和底层设计原理",
+  "name": "Redis中sds数据结构和底层设计原理",
+  "description": "【Redis 系列】redis 学习十五，redis sds数据结构和底层设计原理 redis 是 C 语言写的，那么我们思考一下 redis 是如何表示一个字符串的？redis 的数据结构和 C 语言的数据结构是一样的吗？\n我们可以看到 redis 源码中的 sds 库函数，和 sds 的具体实现，分别有如下 2 个文件：\nsds.h sds.c 具体路径是：deps/hiredis/sds.h , deps/hiredis/sds.c\nsds.h 中涉及如下数据结构：\nSDS redis 中 SDS simple Dynamic string\n简单动态字符串\nC 语言中表示字符串的方式是字符数组，例如：\nchar data[]=\u0026#34;xiaomotong\u0026#34; 如果 C 语言需要扩容的话需要重新分配一个再大一点的内存，存放新的字符串，若每次都要重新分配字符串，对于效率和性能必然会大大降低，并且若某一个字符串是 “xiaomo\\0tong”\n这个时候，实际上 C 中 遇到 ‘\\0’ 就结束了，因此实际 “xiaomo\\0tong” 只会读取到xiaomo ,字符串长度就是 6\n因此 redis 中的 sds 数据结构是这样设计的，是通过一个成员来标志字符串的长度：\nSDS： free:0 len:6 char buf[]=\u0026#34;xiaomo\u0026#34; 若这个时候，我们需要在字符串后面追加字符串， sds 就会进行扩容，例如在后面加上 “tong” ， 那么 sds 的数据结构中的值会变成如下： free:10 len:10 char buf[]=\u0026#34;xiaomotong\u0026#34; 最后的 \u0026quot;xiaomotong\u0026quot; 也是带有\\0的，这也保持了 C 语言的标准，redis 中对于 sds 数据结构扩容是成倍增加的，但是到了一定的级别，例如 1M 的时候，就不会翻倍的扩容，而是做加法 例如 1M 变成 2M ， 2M 变成 3M 等等",
+  "keywords": [
+    
+  ],
+  "articleBody": "【Redis 系列】redis 学习十五，redis sds数据结构和底层设计原理 redis 是 C 语言写的，那么我们思考一下 redis 是如何表示一个字符串的？redis 的数据结构和 C 语言的数据结构是一样的吗？\n我们可以看到 redis 源码中的 sds 库函数，和 sds 的具体实现，分别有如下 2 个文件：\nsds.h sds.c 具体路径是：deps/hiredis/sds.h , deps/hiredis/sds.c\nsds.h 中涉及如下数据结构：\nSDS redis 中 SDS simple Dynamic string\n简单动态字符串\nC 语言中表示字符串的方式是字符数组，例如：\nchar data[]=\"xiaomotong\" 如果 C 语言需要扩容的话需要重新分配一个再大一点的内存，存放新的字符串，若每次都要重新分配字符串，对于效率和性能必然会大大降低，并且若某一个字符串是 “xiaomo\\0tong”\n这个时候，实际上 C 中 遇到 ‘\\0’ 就结束了，因此实际 “xiaomo\\0tong” 只会读取到xiaomo ,字符串长度就是 6\n因此 redis 中的 sds 数据结构是这样设计的，是通过一个成员来标志字符串的长度：\nSDS： free:0 len:6 char buf[]=\"xiaomo\" 若这个时候，我们需要在字符串后面追加字符串， sds 就会进行扩容，例如在后面加上 “tong” ， 那么 sds 的数据结构中的值会变成如下： free:10 len:10 char buf[]=\"xiaomotong\" 最后的 \"xiaomotong\" 也是带有\\0的，这也保持了 C 语言的标准，redis 中对于 sds 数据结构扩容是成倍增加的，但是到了一定的级别，例如 1M 的时候，就不会翻倍的扩容，而是做加法 例如 1M 变成 2M ， 2M 变成 3M 等等\nSDS 的优势： 二进制安全的数据结构 内存预分配机制，避免了频繁的内存分配 兼容 C 语言的库函数 redis 源码 sds 数据结构 现在我们看到的是 reids-6.2.5 sds 的数据结构，将以前的表示一个长度使用了 int 类型，是 32 字节的，能表示的长度可以达到 42 亿，其实远远没有必要使用 int32 ，太浪费资源了\n下面的数据结构，可以根据不同的需求，选取不同的数据结构进行使用\nstruct __attribute__ ((__packed__)) hisdshdr5 { unsigned char flags; /* 3 lsb of type, and 5 msb of string length */ char buf[]; }; struct __attribute__ ((__packed__)) hisdshdr8 { uint8_t len; /* used */ uint8_t alloc; /* excluding the header and null terminator */ unsigned char flags; /* 3 lsb of type, 5 unused bits */ char buf[]; }; struct __attribute__ ((__packed__)) hisdshdr16 { uint16_t len; /* used */ uint16_t alloc; /* excluding the header and null terminator */ unsigned char flags; /* 3 lsb of type, 5 unused bits */ char buf[]; }; struct __attribute__ ((__packed__)) hisdshdr32 { uint32_t len; /* used */ uint32_t alloc; /* excluding the header and null terminator */ unsigned char flags; /* 3 lsb of type, 5 unused bits */ char buf[]; }; struct __attribute__ ((__packed__)) hisdshdr64 { uint64_t len; /* used */ uint64_t alloc; /* excluding the header and null terminator */ unsigned char flags; /* 3 lsb of type, 5 unused bits */ char buf[]; }; hisdshdr5 用于长度在 0 – 2^5 - 1 范围内\nhisdshdr8 用于长度在 2^5– 2^8 - 1 范围内\nhisdshdr16 用于长度在 2^8 – 2^16 - 1 范围内\nhisdshdr32 用于长度在 2^16 – 2^32 - 1 范围内\nhisdshdr64 用于长度在 2^32 – 2^64 - 1 范围内\n上述的 unsigned char flags 占用 1 个字节，8个 bit 位：\n其中 3 位 用于表示类型 其中 5 位 用于表示字符串的长度 前面 3 个 bit 位，能表示的数字范围是 0 - 7 ，对于应到如下宏 #define HI_SDS_TYPE_5 0 #define HI_SDS_TYPE_8 1 #define HI_SDS_TYPE_16 2 #define HI_SDS_TYPE_32 3 #define HI_SDS_TYPE_64 4 #define HI_SDS_TYPE_MASK 7 源码实现是通过与操作来获取到具体的数据结构类型的：\n咱们以 hisdshdr8 数据结构为例子，unsigned char flags 是这样的\nlen 表示已经使用的长度\nalloc 预分配的空间大小\nflag 表示使用哪一种数据结构（前 3 个 bit）\nbuf 实际存储的字符串\n那么，我们就能够计算出来，该数据结构的空间剩余 free = alloc - len\n源码中 sds.h 下的函数 hisds hi_sdsnewlen(const void *init, size_t initlen) 使用 一个 init 指针和 initlen 长度，来创建一个字符串\nhisds hi_sdsnewlen(const void *init, size_t initlen) { void *sh; hisds s; // 计算type，获取需要使用的数据结构类型 char type = hi_sdsReqType(initlen); // 现在默认使用 HI_SDS_TYPE_8 了 if (type == HI_SDS_TYPE_5 \u0026\u0026 initlen == 0) type = HI_SDS_TYPE_8; int hdrlen = hi_sdsHdrSize(type); unsigned char *fp; /* flags pointer. */ // 分配内存 sh = hi_s_malloc(hdrlen+initlen+1); if (sh == NULL) return NULL; if (!init) memset(sh, 0, hdrlen+initlen+1); s = (char*)sh+hdrlen; fp = ((unsigned char*)s)-1; // 根据不同的类型对数据结构初始化 switch(type) { case HI_SDS_TYPE_5: { *fp = type | (initlen \u003c\u003c HI_SDS_TYPE_BITS); break; } case HI_SDS_TYPE_8: { HI_SDS_HDR_VAR(8,s); sh-\u003elen = initlen; sh-\u003ealloc = initlen; *fp = type; break; } case HI_SDS_TYPE_16: ... case HI_SDS_TYPE_32: ... case HI_SDS_TYPE_64: ... } if (initlen \u0026\u0026 init) memcpy(s, init, initlen); // 兼容 C 库，字符串后面加上 \\0 s[initlen] = '\\0'; return s; } hi_sdsReqType 根据字符串的长度来计算所使用的数据类型\nhi_sdsHdrSize 根据不同的类型，获取该类型需要分配的空间大小\nhi_s_malloc 开辟内存，调用的是alloc.h中的 hi_malloc，具体实现就看不到了\nswitch(type) … 根据不同的类型，来将对应的数据结构做初始化\ns[initlen] = ‘\\0’ 兼容 C 库，字符串后面加上 ’\\0’\nredis k-v 底层设计原理 redis 是如何存储海量数据的？\nredis 中数据是以 key-value 的方式来存储的，key 都是字符串，而 value 根据不同的数据结构表现形式也不太一样\n他们的存储方式是以 数组 + 链表的方式存储的：\n数组 数组中存放的是链表的地址\n链表 链表中存储的是具体的数据\n举个例子：\n上面有说到 redis 里面的 key 都是字符串的方式，那么如何与数组和链表进行结合呢？\n具体逻辑是使用 hash 函数，将字符串 key 按照算法计算出一个索引值，这个值就是数组的索引，该索引对应的数组元素是指向一个链表的，链表中存放具体的数据\ndict[10] 作为数组，每一个元素会指向一条链表\n现在我们要插入 k1 - v1 , k2 - v2 , k3 - v3\n通过 hash 函数进行计算：\nhash(k1) % 10 = 0 hash(k2) % 10 = 1 此处对 10 取模的原因是，整个数组就只能存放 10 个元素\n那么结果是这样的\ndict[0] -\u003e (k1,v1) -\u003e null dict[1] -\u003e (k2,v2) -\u003e null 若这个时候咱们插入的 (k3，v3) 计算出来的索引与前面已有数据的冲突了咋办？\nhash(k3) % 10 = 1 这就会出现 hash 冲突了，当 hash 冲突的时候，若 k3 与 k2 是相等了，那么就会直接更新 k2 对应的 value 值\n若 k3 与 k2 不同，则会通过链地址法来解决 hash 冲突，会把 (k3，v3) 通过头插法来插入到原有的链表中，如：\ndict[0] -\u003e (k1,v1) -\u003e null dict[1] -\u003e (k3,v3) -\u003e (k2,v2) -\u003e null 小结：\n对于上述的 hash ，相同的输入，一定会有相同的输出 不同的输入，也有可能有相同的输出，此时就 hash 冲突了，是需要解决的 参考资料：\nredis_doc\nreids 源码 reids-6.2.5 Redis 6.2.5 is the latest stable version.\n欢迎点赞，关注，收藏 朋友们，你的支持和鼓励，是我坚持分享，提高质量的动力\n欢迎大家对文章中的源码细节进行讨论和分享，不足之处还请多多指教，如果大佬们有更好的学习方法还请给予指导，谢谢\n1、评论区超过 10 人互动（不含作者本人），作者可以以自己的名义抽奖送出掘金徽章 2 枚（掘金官方承担）\n好了，本次就到这里\n技术是开放的，我们的心态，更应是开放的。拥抱变化，向阳而生，努力向前行。\n我是小魔童哪吒，欢迎点赞关注收藏，下次见~\n",
+  "wordCount" : "693",
+  "inLanguage": "en",
+  "datePublished": "2022-07-08T21:55:47+08:00",
+  "dateModified": "2022-07-08T21:55:47+08:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://qingconglaixueit.github.io/post/redis%E4%B8%ADsds%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E5%BA%95%E5%B1%82%E8%AE%BE%E8%AE%A1%E5%8E%9F%E7%90%86/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "阿兵云原生",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://qingconglaixueit.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://qingconglaixueit.github.io/" accesskey="h" title="阿兵云原生 (Alt + H)">阿兵云原生</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title">
+      Redis中sds数据结构和底层设计原理
+    </h1>
+    <div class="post-meta"><span title='2022-07-08 21:55:47 +0800 CST'>July 8, 2022</span>
+
+</div>
+  </header> 
+  <div class="post-content"><h1 id="redis-系列redis-学习十五redis-sds数据结构和底层设计原理">【Redis 系列】redis 学习十五，redis sds数据结构和底层设计原理<a hidden class="anchor" aria-hidden="true" href="#redis-系列redis-学习十五redis-sds数据结构和底层设计原理">#</a></h1>
+<p>redis 是 C 语言写的，那么我们思考一下 redis 是如何表示一个字符串的？redis 的数据结构和 C 语言的数据结构是一样的吗？</p>
+<p>我们可以看到 redis 源码中的 sds 库函数，和 sds 的具体实现，分别有如下 2 个文件：</p>
+<ul>
+<li><strong>sds.h</strong></li>
+<li><strong>sds.c</strong></li>
+</ul>
+<p>具体路径是：<code>deps/hiredis/sds.h</code> , <code>deps/hiredis/sds.c</code></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/97f6954d142f4f5a99e7cc5c34558956~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<p><strong>sds.h 中涉及如下数据结构：</strong></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7fcb8f6ad76d4c82ad12d1353edf2f09~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<h2 id="sds">SDS<a hidden class="anchor" aria-hidden="true" href="#sds">#</a></h2>
+<p>redis 中 SDS simple Dynamic string</p>
+<p>简单动态字符串</p>
+<p>C 语言中表示字符串的方式是字符数组，例如：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">char</span> data[]<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;xiaomotong&#34;</span>
+</span></span></code></pre></div><p>如果 C 语言需要扩容的话需要重新分配一个再大一点的内存，存放新的字符串，若每次都要重新分配字符串，对于效率和性能必然会大大降低，并且若某一个字符串是<code> “xiaomo\0tong”</code></p>
+<p>这个时候，实际上 C 中 遇到 ‘\0’ 就结束了，因此实际 <code> “xiaomo\0tong”</code> 只会读取到<code>xiaomo</code> ,字符串长度就是 6</p>
+<p>因此 redis 中的 <strong>sds</strong> 数据结构是这样设计的，是通过一个成员来标志字符串的长度：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>SDS<span style="color:#960050;background-color:#1e0010">：</span>
+</span></span><span style="display:flex;"><span>    free:<span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    len:<span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> buf[]<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;xiaomo&#34;</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">若这个时候，我们需要在字符串后面追加字符串，</span> sds <span style="color:#960050;background-color:#1e0010">就会进行扩容，例如在后面加上</span> <span style="color:#960050;background-color:#1e0010">“</span>tong<span style="color:#960050;background-color:#1e0010">”</span> <span style="color:#960050;background-color:#1e0010">，</span> <span style="color:#960050;background-color:#1e0010">那么</span> sds <span style="color:#960050;background-color:#1e0010">的数据结构中的值会变成如下：</span>
+</span></span><span style="display:flex;"><span>    free:<span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>    len:<span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> buf[]<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;xiaomotong&#34;</span>      
+</span></span></code></pre></div><p>最后的 <code>&quot;xiaomotong&quot;</code> 也是带有<code>\0</code>的，这也保持了 C 语言的标准，redis 中对于 sds 数据结构扩容是成倍增加的，但是到了一定的级别，例如 1M 的时候，就不会翻倍的扩容，而是做加法 例如 1M 变成 2M ， 2M 变成 3M 等等</p>
+<h2 id="sds-的优势">SDS 的优势：<a hidden class="anchor" aria-hidden="true" href="#sds-的优势">#</a></h2>
+<ul>
+<li>二进制安全的数据结构</li>
+<li>内存预分配机制，避免了频繁的内存分配</li>
+<li>兼容 C 语言的库函数</li>
+</ul>
+<h2 id="redis-源码-sds-数据结构">redis 源码 sds 数据结构<a hidden class="anchor" aria-hidden="true" href="#redis-源码-sds-数据结构">#</a></h2>
+<p>现在我们看到的是 <strong>reids-6.2.5</strong>  sds 的数据结构，将以前的表示一个长度使用了 int 类型，是 32 字节的，能表示的长度可以达到 <strong>42 亿</strong>，其实远远没有必要使用 <strong>int32</strong> ，太浪费资源了</p>
+<p>下面的数据结构，可以根据不同的需求，选取不同的数据结构进行使用</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">__attribute__</span> ((__packed__)) hisdshdr5 {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> flags; <span style="color:#75715e">/* 3 lsb of type, and 5 msb of string length */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> buf[];
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">__attribute__</span> ((__packed__)) hisdshdr8 {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint8_t</span> len; <span style="color:#75715e">/* used */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint8_t</span> alloc; <span style="color:#75715e">/* excluding the header and null terminator */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> flags; <span style="color:#75715e">/* 3 lsb of type, 5 unused bits */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> buf[];
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">__attribute__</span> ((__packed__)) hisdshdr16 {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint16_t</span> len; <span style="color:#75715e">/* used */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint16_t</span> alloc; <span style="color:#75715e">/* excluding the header and null terminator */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> flags; <span style="color:#75715e">/* 3 lsb of type, 5 unused bits */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> buf[];
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">__attribute__</span> ((__packed__)) hisdshdr32 {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint32_t</span> len; <span style="color:#75715e">/* used */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint32_t</span> alloc; <span style="color:#75715e">/* excluding the header and null terminator */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> flags; <span style="color:#75715e">/* 3 lsb of type, 5 unused bits */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> buf[];
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">__attribute__</span> ((__packed__)) hisdshdr64 {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint64_t</span> len; <span style="color:#75715e">/* used */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint64_t</span> alloc; <span style="color:#75715e">/* excluding the header and null terminator */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> flags; <span style="color:#75715e">/* 3 lsb of type, 5 unused bits */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> buf[];
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><ul>
+<li><strong>hisdshdr5</strong></li>
+</ul>
+<p>用于长度在  <strong>0 &ndash; 2^5 - 1</strong> 范围内</p>
+<ul>
+<li><strong>hisdshdr8</strong></li>
+</ul>
+<p>用于长度在  <strong>2^5&ndash; 2^8 - 1</strong> 范围内</p>
+<ul>
+<li><strong>hisdshdr16</strong></li>
+</ul>
+<p>用于长度在  <strong>2^8 &ndash; 2^16 - 1</strong> 范围内</p>
+<ul>
+<li><strong>hisdshdr32</strong></li>
+</ul>
+<p>用于长度在  <strong>2^16 &ndash; 2^32 - 1</strong> 范围内</p>
+<ul>
+<li><strong>hisdshdr64</strong></li>
+</ul>
+<p>用于长度在  <strong>2^32 &ndash; 2^64 - 1</strong> 范围内</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f84e5f0145034b4d810304970101b472~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<p>上述的 <code> unsigned char flags</code> 占用 1 个字节，8个 bit 位：</p>
+<ul>
+<li>其中 <strong>3 位</strong> 用于表示类型</li>
+<li>其中 <strong>5 位</strong> 用于表示字符串的长度</li>
+</ul>
+<p>前面 3 个 bit 位，能表示的数字范围是 0 - 7 ，对于应到如下宏
+<img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/45ccc05a32684794841b895d0e58fca1~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#define HI_SDS_TYPE_5  0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define HI_SDS_TYPE_8  1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define HI_SDS_TYPE_16 2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define HI_SDS_TYPE_32 3
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define HI_SDS_TYPE_64 4
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define HI_SDS_TYPE_MASK 7
+</span></span></span></code></pre></div><p>源码实现是通过与操作来获取到具体的数据结构类型的：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1f50f39a70c342f388fcadf9f2eed4cf~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<p>咱们以 <strong>hisdshdr8</strong> 数据结构为例子，<code>unsigned char flags</code> 是这样的</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/28afe044344d43da973e54b7a6d46178~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<ul>
+<li>len</li>
+</ul>
+<p>表示已经使用的长度</p>
+<ul>
+<li>alloc</li>
+</ul>
+<p>预分配的空间大小</p>
+<ul>
+<li>flag</li>
+</ul>
+<p>表示使用哪一种数据结构（前 3 个 bit）</p>
+<ul>
+<li>buf</li>
+</ul>
+<p>实际存储的字符串</p>
+<p>那么，我们就能够计算出来，该数据结构的空间剩余 <strong>free = alloc - len</strong></p>
+<p>源码中 sds.h 下的函数 <code>hisds hi_sdsnewlen(const void *init, size_t initlen) </code></p>
+<p><strong>使用 一个 init 指针和 initlen 长度，来创建一个字符串</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>hisds <span style="color:#a6e22e">hi_sdsnewlen</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>init, size_t initlen) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>sh;
+</span></span><span style="display:flex;"><span>    hisds s;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 计算type，获取需要使用的数据结构类型
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">char</span> type <span style="color:#f92672">=</span> hi_sdsReqType(initlen);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 现在默认使用 HI_SDS_TYPE_8 了
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (type <span style="color:#f92672">==</span> HI_SDS_TYPE_5 <span style="color:#f92672">&amp;&amp;</span> initlen <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) type <span style="color:#f92672">=</span> HI_SDS_TYPE_8;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> hdrlen <span style="color:#f92672">=</span> hi_sdsHdrSize(type);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>fp; <span style="color:#75715e">/* flags pointer. */</span>
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 分配内存
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    sh <span style="color:#f92672">=</span> hi_s_malloc(hdrlen<span style="color:#f92672">+</span>initlen<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (sh <span style="color:#f92672">==</span> NULL) <span style="color:#66d9ef">return</span> NULL;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>init)
+</span></span><span style="display:flex;"><span>        memset(sh, <span style="color:#ae81ff">0</span>, hdrlen<span style="color:#f92672">+</span>initlen<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>    s <span style="color:#f92672">=</span> (<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)sh<span style="color:#f92672">+</span>hdrlen;
+</span></span><span style="display:flex;"><span>    fp <span style="color:#f92672">=</span> ((<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)s)<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 根据不同的类型对数据结构初始化
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">switch</span>(type) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> HI_SDS_TYPE_5: {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">*</span>fp <span style="color:#f92672">=</span> type <span style="color:#f92672">|</span> (initlen <span style="color:#f92672">&lt;&lt;</span> HI_SDS_TYPE_BITS);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> HI_SDS_TYPE_8: {
+</span></span><span style="display:flex;"><span>            HI_SDS_HDR_VAR(<span style="color:#ae81ff">8</span>,s);
+</span></span><span style="display:flex;"><span>            sh<span style="color:#f92672">-&gt;</span>len <span style="color:#f92672">=</span> initlen;
+</span></span><span style="display:flex;"><span>            sh<span style="color:#f92672">-&gt;</span>alloc <span style="color:#f92672">=</span> initlen;
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">*</span>fp <span style="color:#f92672">=</span> type;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> HI_SDS_TYPE_16: ...
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> HI_SDS_TYPE_32: ...
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> HI_SDS_TYPE_64: ...
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (initlen <span style="color:#f92672">&amp;&amp;</span> init)
+</span></span><span style="display:flex;"><span>        memcpy(s, init, initlen);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 兼容 C 库，字符串后面加上 \0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    s[initlen] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;\0&#39;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> s;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>hi_sdsReqType</li>
+</ul>
+<p>根据字符串的长度来计算所使用的数据类型</p>
+<ul>
+<li>hi_sdsHdrSize</li>
+</ul>
+<p>根据不同的类型，获取该类型需要分配的空间大小</p>
+<ul>
+<li>hi_s_malloc</li>
+</ul>
+<p>开辟内存，调用的是<code>alloc.h</code>中的 <code>hi_malloc</code>，具体实现就看不到了</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bbb14600af894bef951e168b7aa80f88~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<ul>
+<li>switch(type) …</li>
+</ul>
+<p>根据不同的类型，来将对应的数据结构做初始化</p>
+<ul>
+<li>s[initlen] = &lsquo;\0&rsquo;</li>
+</ul>
+<p>兼容 C 库，字符串后面加上 ’\0’</p>
+<h2 id="redis-k-v-底层设计原理">redis k-v 底层设计原理<a hidden class="anchor" aria-hidden="true" href="#redis-k-v-底层设计原理">#</a></h2>
+<p>redis 是如何存储海量数据的？</p>
+<p>redis 中数据是以 key-value 的方式来存储的，key 都是字符串，而 value 根据不同的数据结构表现形式也不太一样</p>
+<p>他们的存储方式是以 数组 + 链表的方式存储的：</p>
+<ul>
+<li>数组</li>
+</ul>
+<p>数组中存放的是链表的地址</p>
+<ul>
+<li>链表</li>
+</ul>
+<p>链表中存储的是具体的数据</p>
+<p><strong>举个例子：</strong></p>
+<p>上面有说到 redis 里面的 key 都是字符串的方式，那么如何与数组和链表进行结合呢？</p>
+<p>具体逻辑是使用 hash 函数，将字符串 key 按照算法计算出一个索引值，这个值就是数组的索引，该索引对应的数组元素是指向一个链表的，链表中存放具体的数据</p>
+<ul>
+<li>
+<p>dict[10] 作为数组，每一个元素会指向一条链表</p>
+</li>
+<li>
+<p>现在我们要插入 k1 - v1 , k2 - v2 , k3 - v3</p>
+</li>
+</ul>
+<p>通过 hash 函数进行计算：</p>
+<pre tabindex="0"><code>hash(k1) % 10 = 0
+
+hash(k2) % 10 = 1
+</code></pre><p>此处对 10 取模的原因是，整个数组就只能存放 10 个元素</p>
+<p>那么结果是这样的</p>
+<pre tabindex="0"><code>dict[0] -&gt; (k1,v1) -&gt; null
+dict[1] -&gt; (k2,v2) -&gt; null
+</code></pre><p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e0a5c59d0888429bbf0b9609c21101d6~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<p>若这个时候咱们插入的 (k3，v3) 计算出来的索引与前面已有数据的冲突了咋办？</p>
+<pre tabindex="0"><code>hash(k3) % 10 = 1
+</code></pre><p>这就会<strong>出现 hash 冲突</strong>了，当 hash 冲突的时候，若 k3 与 k2 是相等了，那么就会直接更新 k2 对应的 value 值</p>
+<p>若 k3 与 k2 不同，则会通过<strong>链地址法来解决 hash 冲突</strong>，会把  (k3，v3)  通过头插法来插入到原有的链表中，如：</p>
+<pre tabindex="0"><code>dict[0] -&gt; (k1,v1) -&gt; null
+dict[1] -&gt; (k3,v3) -&gt; (k2,v2) -&gt; null
+</code></pre><p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/de6c72801aba4cafba0b3ed97fd69957~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<p><strong>小结</strong>：</p>
+<ul>
+<li>对于上述的 hash ，相同的输入，一定会有相同的输出</li>
+<li>不同的输入，也有可能有相同的输出，此时就 hash 冲突了，是需要解决的</li>
+</ul>
+<p>参考资料：</p>
+<ul>
+<li>
+<p><a href="http://www.redis.cn/">redis_doc</a></p>
+</li>
+<li>
+<p>reids 源码   <strong>reids-6.2.5</strong> <a href="https://download.redis.io/releases/redis-6.2.5.tar.gz">Redis 6.2.5 is the latest stable version.</a></p>
+</li>
+</ul>
+<h2 id="欢迎点赞关注收藏">欢迎点赞，关注，收藏<a hidden class="anchor" aria-hidden="true" href="#欢迎点赞关注收藏">#</a></h2>
+<p>朋友们，你的支持和鼓励，是我坚持分享，提高质量的动力</p>
+<p><strong>欢迎大家对文章中的源码细节进行讨论和分享，不足之处还请多多指教，如果大佬们有更好的学习方法还请给予指导，谢谢</strong></p>
+<p>1、评论区超过 10 人互动（不含作者本人），作者可以以自己的名义抽奖送出掘金徽章 2 枚（掘金官方承担）</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/676bb8ad289d4598ab5365a5de86b8ff~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<p>好了，本次就到这里</p>
+<p>技术是开放的，我们的心态，更应是开放的。拥抱变化，向阳而生，努力向前行。</p>
+<p>我是<strong>小魔童哪吒</strong>，欢迎点赞关注收藏，下次见~</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+    <span>&copy; 2022 <a href="https://qingconglaixueit.github.io/">阿兵云原生</a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

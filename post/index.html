@@ -133,6 +133,28 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2>Redis中sds数据结构和底层设计原理
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>【Redis 系列】redis 学习十五，redis sds数据结构和底层设计原理 redis 是 C 语言写的，那么我们思考一下 redis 是如何表示一个字符串的？redis 的数据结构和 C 语言的数据结构是一样的吗？
+我们可以看到 redis 源码中的 sds 库函数，和 sds 的具体实现，分别有如下 2 个文件：
+sds.h sds.c 具体路径是：deps/hiredis/sds.h , deps/hiredis/sds.c
+sds.h 中涉及如下数据结构：
+SDS redis 中 SDS simple Dynamic string
+简单动态字符串
+C 语言中表示字符串的方式是字符数组，例如：
+char data[]=&#34;xiaomotong&#34; 如果 C 语言需要扩容的话需要重新分配一个再大一点的内存，存放新的字符串，若每次都要重新分配字符串，对于效率和性能必然会大大降低，并且若某一个字符串是 “xiaomo\0tong”
+这个时候，实际上 C 中 遇到 ‘\0’ 就结束了，因此实际 “xiaomo\0tong” 只会读取到xiaomo ,字符串长度就是 6
+因此 redis 中的 sds 数据结构是这样设计的，是通过一个成员来标志字符串的长度：
+SDS： free:0 len:6 char buf[]=&#34;xiaomo&#34; 若这个时候，我们需要在字符串后面追加字符串， sds 就会进行扩容，例如在后面加上 “tong” ， 那么 sds 的数据结构中的值会变成如下： free:10 len:10 char buf[]=&#34;xiaomotong&#34; 最后的 &#34;xiaomotong&#34; 也是带有\0的，这也保持了 C 语言的标准，redis 中对于 sds 数据结构扩容是成倍增加的，但是到了一定的级别，例如 1M 的时候，就不会翻倍的扩容，而是做加法 例如 1M 变成 2M ， 2M 变成 3M 等等...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-07-08 21:55:47 +0800 CST'>July 8, 2022</span></footer>
+  <a class="entry-link" aria-label="post link to Redis中sds数据结构和底层设计原理" href="https://qingconglaixueit.github.io/post/redis%E4%B8%ADsds%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E5%BA%95%E5%B1%82%E8%AE%BE%E8%AE%A1%E5%8E%9F%E7%90%86/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2>2022-07-03 年中简述
     </h2>
   </header>
