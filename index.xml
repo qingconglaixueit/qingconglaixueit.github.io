@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>My New Hugo Site</title>
+    <title>阿兵云原生</title>
     <link>https://qingconglaixueit.github.io/</link>
-    <description>Recent content on My New Hugo Site</description>
+    <description>Recent content on 阿兵云原生</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 08 Jul 2022 21:40:19 +0800</lastBuildDate><atom:link href="https://qingconglaixueit.github.io/index.xml" rel="self" type="application/rss+xml" />
