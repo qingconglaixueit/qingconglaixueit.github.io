@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>谈谈对GMP的简单认识 | 阿兵云原生</title>
+<meta name="keywords" content="">
+<meta name="description" content="犹记得最开始学习 golang 的时候，大佬们分享 GMP 模型的时候，总感觉云里雾里，听了半天，并没有一个很清晰的概念，不知 xmd 是否会有这样的体会
+虽然 golang 入门很简单，但是对于理解 golang 的设计思想和原理，还是需要一定时间的积累和沉淀，更多的应该是思想上的沉淀
+希望这篇文章能够对你了解 golang 的 GMP 模型有一点帮助
+文章分别从一下三个方面来谈谈我对 GMP 模型认识
+golang 中调度器的变化及其作用 有了进程，线程，为什么会出现协程 GMP 模型中的 G,M,P 分别都做着什么样的事情 golang 中的调度器的变化及其作用 调度器，scheduler
+怎么理解呢？调度器就像是一个管理者，负责安排事项，负责调度不同人在指定时间在某个岗位上完成自己的价值交付
+正如 linux 调度器一样，将就绪的进程调度成执行状态，或者将执行状态的进程，打断，变成阻塞状态，再变成就绪状态
+比如说一个经典的单进程 和 多进程/多线程的操作系统，
+我们可以看到在单进程系统中，只需要无脑的将进程串行排列好， CPU 会串行去执行任务，如果遇到进程1 阻塞的情况，其他进程也没有办法被 cpu 执行，那么进程2 ，进程3 ，进程4 就都要等待前面的进程完成执行完毕，才能到自己执行
+可以看出单进程对于 CPU 的使用过于任性，浪费 CPU 的资源，演进到多进程/多线程操作系统的时候，就出现了调度器
+上图中我们可以对比看到，在多进程/多线程的操作系统中，cpu 的时间片被分割的更加的小，对于 cpu 资源的利用率是大大的增加了，因为 cpu 可以在进程1阻塞的时候，切换去执行进程2
+例如，当进程1 执行过程中，发生了阻塞，那么调度器就会就会将 cpu 切换到进程2 中进行执行，同理，进程2 阻塞的时候， cpu 就会被切换到进程 3 进行执行，当然，这就看是哪个进程先抢到 cpu 资源了
+可以看到，调度器在这里的作用就是最大限度的利用上 CPU 的资源，管理进程在 CPU 上按照一定的的顺序执行任务，就好比一个优秀的管家可以合理安排好不同的员工在指定的时间上专注的处理某项事务">
+<meta name="author" content="">
+<link rel="canonical" href="https://qingconglaixueit.github.io/post/%E8%B0%88%E8%B0%88%E5%AF%B9gmp%E7%9A%84%E7%AE%80%E5%8D%95%E8%AE%A4%E8%AF%86/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.d7fb4cbf980fe688a21621b06a795933c4e6bb2d4070ec940667af1715d84af2.css" integrity="sha256-1/tMv5gP5oiiFiGwanlZM8Tmuy1AcOyUBmevFxXYSvI=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://qingconglaixueit.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://qingconglaixueit.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://qingconglaixueit.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://qingconglaixueit.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://qingconglaixueit.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript><meta property="og:title" content="谈谈对GMP的简单认识" />
+<meta property="og:description" content="犹记得最开始学习 golang 的时候，大佬们分享 GMP 模型的时候，总感觉云里雾里，听了半天，并没有一个很清晰的概念，不知 xmd 是否会有这样的体会
+虽然 golang 入门很简单，但是对于理解 golang 的设计思想和原理，还是需要一定时间的积累和沉淀，更多的应该是思想上的沉淀
+希望这篇文章能够对你了解 golang 的 GMP 模型有一点帮助
+文章分别从一下三个方面来谈谈我对 GMP 模型认识
+golang 中调度器的变化及其作用 有了进程，线程，为什么会出现协程 GMP 模型中的 G,M,P 分别都做着什么样的事情 golang 中的调度器的变化及其作用 调度器，scheduler
+怎么理解呢？调度器就像是一个管理者，负责安排事项，负责调度不同人在指定时间在某个岗位上完成自己的价值交付
+正如 linux 调度器一样，将就绪的进程调度成执行状态，或者将执行状态的进程，打断，变成阻塞状态，再变成就绪状态
+比如说一个经典的单进程 和 多进程/多线程的操作系统，
+我们可以看到在单进程系统中，只需要无脑的将进程串行排列好， CPU 会串行去执行任务，如果遇到进程1 阻塞的情况，其他进程也没有办法被 cpu 执行，那么进程2 ，进程3 ，进程4 就都要等待前面的进程完成执行完毕，才能到自己执行
+可以看出单进程对于 CPU 的使用过于任性，浪费 CPU 的资源，演进到多进程/多线程操作系统的时候，就出现了调度器
+上图中我们可以对比看到，在多进程/多线程的操作系统中，cpu 的时间片被分割的更加的小，对于 cpu 资源的利用率是大大的增加了，因为 cpu 可以在进程1阻塞的时候，切换去执行进程2
+例如，当进程1 执行过程中，发生了阻塞，那么调度器就会就会将 cpu 切换到进程2 中进行执行，同理，进程2 阻塞的时候， cpu 就会被切换到进程 3 进行执行，当然，这就看是哪个进程先抢到 cpu 资源了
+可以看到，调度器在这里的作用就是最大限度的利用上 CPU 的资源，管理进程在 CPU 上按照一定的的顺序执行任务，就好比一个优秀的管家可以合理安排好不同的员工在指定的时间上专注的处理某项事务" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://qingconglaixueit.github.io/post/%E8%B0%88%E8%B0%88%E5%AF%B9gmp%E7%9A%84%E7%AE%80%E5%8D%95%E8%AE%A4%E8%AF%86/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-07-17T12:08:00&#43;08:00" />
+<meta property="article:modified_time" content="2022-07-17T12:08:00&#43;08:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="谈谈对GMP的简单认识"/>
+<meta name="twitter:description" content="犹记得最开始学习 golang 的时候，大佬们分享 GMP 模型的时候，总感觉云里雾里，听了半天，并没有一个很清晰的概念，不知 xmd 是否会有这样的体会
+虽然 golang 入门很简单，但是对于理解 golang 的设计思想和原理，还是需要一定时间的积累和沉淀，更多的应该是思想上的沉淀
+希望这篇文章能够对你了解 golang 的 GMP 模型有一点帮助
+文章分别从一下三个方面来谈谈我对 GMP 模型认识
+golang 中调度器的变化及其作用 有了进程，线程，为什么会出现协程 GMP 模型中的 G,M,P 分别都做着什么样的事情 golang 中的调度器的变化及其作用 调度器，scheduler
+怎么理解呢？调度器就像是一个管理者，负责安排事项，负责调度不同人在指定时间在某个岗位上完成自己的价值交付
+正如 linux 调度器一样，将就绪的进程调度成执行状态，或者将执行状态的进程，打断，变成阻塞状态，再变成就绪状态
+比如说一个经典的单进程 和 多进程/多线程的操作系统，
+我们可以看到在单进程系统中，只需要无脑的将进程串行排列好， CPU 会串行去执行任务，如果遇到进程1 阻塞的情况，其他进程也没有办法被 cpu 执行，那么进程2 ，进程3 ，进程4 就都要等待前面的进程完成执行完毕，才能到自己执行
+可以看出单进程对于 CPU 的使用过于任性，浪费 CPU 的资源，演进到多进程/多线程操作系统的时候，就出现了调度器
+上图中我们可以对比看到，在多进程/多线程的操作系统中，cpu 的时间片被分割的更加的小，对于 cpu 资源的利用率是大大的增加了，因为 cpu 可以在进程1阻塞的时候，切换去执行进程2
+例如，当进程1 执行过程中，发生了阻塞，那么调度器就会就会将 cpu 切换到进程2 中进行执行，同理，进程2 阻塞的时候， cpu 就会被切换到进程 3 进行执行，当然，这就看是哪个进程先抢到 cpu 资源了
+可以看到，调度器在这里的作用就是最大限度的利用上 CPU 的资源，管理进程在 CPU 上按照一定的的顺序执行任务，就好比一个优秀的管家可以合理安排好不同的员工在指定的时间上专注的处理某项事务"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://qingconglaixueit.github.io/post/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "谈谈对GMP的简单认识",
+      "item": "https://qingconglaixueit.github.io/post/%E8%B0%88%E8%B0%88%E5%AF%B9gmp%E7%9A%84%E7%AE%80%E5%8D%95%E8%AE%A4%E8%AF%86/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "谈谈对GMP的简单认识",
+  "name": "谈谈对GMP的简单认识",
+  "description": "犹记得最开始学习 golang 的时候，大佬们分享 GMP 模型的时候，总感觉云里雾里，听了半天，并没有一个很清晰的概念，不知 xmd 是否会有这样的体会\n虽然 golang 入门很简单，但是对于理解 golang 的设计思想和原理，还是需要一定时间的积累和沉淀，更多的应该是思想上的沉淀\n希望这篇文章能够对你了解 golang 的 GMP 模型有一点帮助\n文章分别从一下三个方面来谈谈我对 GMP 模型认识\ngolang 中调度器的变化及其作用 有了进程，线程，为什么会出现协程 GMP 模型中的 G,M,P 分别都做着什么样的事情 golang 中的调度器的变化及其作用 调度器，scheduler\n怎么理解呢？调度器就像是一个管理者，负责安排事项，负责调度不同人在指定时间在某个岗位上完成自己的价值交付\n正如 linux 调度器一样，将就绪的进程调度成执行状态，或者将执行状态的进程，打断，变成阻塞状态，再变成就绪状态\n比如说一个经典的单进程 和 多进程/多线程的操作系统，\n我们可以看到在单进程系统中，只需要无脑的将进程串行排列好， CPU 会串行去执行任务，如果遇到进程1 阻塞的情况，其他进程也没有办法被 cpu 执行，那么进程2 ，进程3 ，进程4 就都要等待前面的进程完成执行完毕，才能到自己执行\n可以看出单进程对于 CPU 的使用过于任性，浪费 CPU 的资源，演进到多进程/多线程操作系统的时候，就出现了调度器\n上图中我们可以对比看到，在多进程/多线程的操作系统中，cpu 的时间片被分割的更加的小，对于 cpu 资源的利用率是大大的增加了，因为 cpu 可以在进程1阻塞的时候，切换去执行进程2\n例如，当进程1 执行过程中，发生了阻塞，那么调度器就会就会将 cpu 切换到进程2 中进行执行，同理，进程2 阻塞的时候， cpu 就会被切换到进程 3 进行执行，当然，这就看是哪个进程先抢到 cpu 资源了\n可以看到，调度器在这里的作用就是最大限度的利用上 CPU 的资源，管理进程在 CPU 上按照一定的的顺序执行任务，就好比一个优秀的管家可以合理安排好不同的员工在指定的时间上专注的处理某项事务",
+  "keywords": [
+    
+  ],
+  "articleBody": "犹记得最开始学习 golang 的时候，大佬们分享 GMP 模型的时候，总感觉云里雾里，听了半天，并没有一个很清晰的概念，不知 xmd 是否会有这样的体会\n虽然 golang 入门很简单，但是对于理解 golang 的设计思想和原理，还是需要一定时间的积累和沉淀，更多的应该是思想上的沉淀\n希望这篇文章能够对你了解 golang 的 GMP 模型有一点帮助\n文章分别从一下三个方面来谈谈我对 GMP 模型认识\ngolang 中调度器的变化及其作用 有了进程，线程，为什么会出现协程 GMP 模型中的 G,M,P 分别都做着什么样的事情 golang 中的调度器的变化及其作用 调度器，scheduler\n怎么理解呢？调度器就像是一个管理者，负责安排事项，负责调度不同人在指定时间在某个岗位上完成自己的价值交付\n正如 linux 调度器一样，将就绪的进程调度成执行状态，或者将执行状态的进程，打断，变成阻塞状态，再变成就绪状态\n比如说一个经典的单进程 和 多进程/多线程的操作系统，\n我们可以看到在单进程系统中，只需要无脑的将进程串行排列好， CPU 会串行去执行任务，如果遇到进程1 阻塞的情况，其他进程也没有办法被 cpu 执行，那么进程2 ，进程3 ，进程4 就都要等待前面的进程完成执行完毕，才能到自己执行\n可以看出单进程对于 CPU 的使用过于任性，浪费 CPU 的资源，演进到多进程/多线程操作系统的时候，就出现了调度器\n上图中我们可以对比看到，在多进程/多线程的操作系统中，cpu 的时间片被分割的更加的小，对于 cpu 资源的利用率是大大的增加了，因为 cpu 可以在进程1阻塞的时候，切换去执行进程2\n例如，当进程1 执行过程中，发生了阻塞，那么调度器就会就会将 cpu 切换到进程2 中进行执行，同理，进程2 阻塞的时候， cpu 就会被切换到进程 3 进行执行，当然，这就看是哪个进程先抢到 cpu 资源了\n可以看到，调度器在这里的作用就是最大限度的利用上 CPU 的资源，管理进程在 CPU 上按照一定的的顺序执行任务，就好比一个优秀的管家可以合理安排好不同的员工在指定的时间上专注的处理某项事务\n那么 golang 的调度器是不是也是和 linux 中的调度器有着想通之处呢？\n来看看调度器在 golang 中的具体作用是干啥的\n在 golang 中，调度器的实现简单来看实际上是由协程和线程按照一定的逻辑来组合起来的，其实也是扮演着一个协调和调度的作用，调度的对象是协程和线程，协程是需要被调度到线程中来运行的，这个动作就是调度器干的\n通常用 G 来表示协程 用 M 来表示线程 正如是这样来实现调度器的：\n我们可以看到，当每一个 M 想要从全局队列中取 G 出来执行的时候，是需要访问全局队列的锁，这是一把互斥锁，同一时间只能有 1 个 M 在访问\nGolang 的调度器此处当然也能让多个 M 处理不同的 G，达到多进程/多线程 并发处理事项的目的\n可我们知道，加锁，是会影响到我们系统的整体性能的，毕竟那么多 M 都在竞争这一把锁，势必同一时间没有抢到的锁的 M 就要等待了\n为什么调度器会被淘汰掉？ 看到上图，细心的我们可以发现，\n所以，这个调度器缺点也是比较明显的：\n第一，多个 M 都要并发的去获取全局队列中的 G ，会造成锁竞争 ， 此处操作全局队列的情况有如下几种情况\n创建 G 调度 G 销毁 G 第二， 线程 M 在执行 G 的过程中，如果 G 阻塞了，那么 M 也就阻塞了，这个时候，CPU 就需要切换到其他的 M 上执行 G，这个切换的过程也是对于 CPU 资源的浪费\n正如人的大脑，同时处理多个事项，当 事项 1 未处理完毕，就去处理事项 2，那么需要重新理清思绪去执行，若这个时候又需要切换到 事项 1 的时候，就需要花更多的时间来回顾之前事项 1 处理的上下文了， 所以在工作中，没有特别必要，不要打扰别人\n第三， 我们知道在 golang 中，一个 G 也是可以再创建 G 的，就叫 G1 吧，那么创建的这个 G1 就需要交给其他的 M 来进行执行了，因为当前的 M 正在执行 G，自己忙不过来，因此需要将 G1 交给 M1 执行\n这也是一个很明显的问题\n正如上述例子一样， 2 个人排查相关问题，但是信息和认知不一致，很明显是小猪可能是比较难排查出问题来的\n就像 M 执行 G 新创建了 G1，但是是交给 M1 来执行的， M1 并不知道 G1 和 G 的关系，M1 执行起来就可能会出现问题，例如需要 G 的一些上下文，但是 M1 并不知情\n因此，随着时间的推移，对于性能的要求是越来越高，当然是要想办法换一个与时俱进，需要符合时代潮流的管家了，自然就出现了一个新的调度器替代了原有的调度器\n出现新的调度器，自然是解决了旧的调度器的缺点，并且还带来了一些新的属性和价值，具体的新调度器策略我们可以在下文中进行展示\n为什么会出现协程 在来看另外一个问题，为什么会出现协程，自然是因为使用进程和线程不能够满足我们的某些需求了，此处的需求是指对于性能的要求，是对 CPU 利用效率的需求\n上图中我们有说到，对于多进程/多线程并发的时候，我们有提高 CPU 的利用率，尽可能的利用好 CPU 的时间片，但是对于 CPU 从 进程/线程1 切换到去执行进程/线程 2 的过程中，是会产生消耗的，但是这个消耗很难避免\n那么我们知道 CPU 其实执行的是线程，那么如果 1 个线程里面还可以分成多个程序进行并发岂不是可以大大的提高我们当前线程的使用效率？\n我们从 C/C++ 中知道，咱们的一个32位系统的机器，进程实际上是开辟了一个 4G 的虚拟空间，具体 4G 虚拟空间都包含了什么，我们可以简单的看看这个图，本次不在此细聊\n那线程大概也是需要 4M 的空间，那么我们在一定程度上大量的开辟进程或者线程，必然会带来系统中 内存占用高，调度 CPU 切换的消耗高 的问题\n后来，我们知道线程实际上是分为内核态和用户态的\n当然，用户态的线程是依赖于内核态线程的，用户态中需要执行的内容，是需要放在内核态线程上进行执行的，另外， CPU 只知道有内核态线程的存在，意味着，CPU 只认内核态线程\n此处说的内核态，和用户态，其实就是对应到我们说的 M 和 G\n内核态线程 – 线程 用户态线程 – 协程 协程不会陷入到内核态中，因此在 M 不变的情况下，切换 G 就是非常轻快的了，协程简要有如下特点：\n占用内存空间小，只占用 几 kb ，比起进程，线程来说，真的是很小了 调度灵活，他是处于用户态进行调度的 根据协程和线程处于的用户态和内核态，我们可以看到调度的机制是不一样的，\n内核态中的线程，实际上是抢占式的，是又 CPU 调度的\n用户态中的线程，即协程，是由用户态调度的，此处的用户态调度，就可以理解是一个队列了，只能一个一个的去执行了，一个协程执行完毕之后，让出 CPU ，才会执行下一个协程\n好比我们代码中，多个协程，其中 1 个协程 panic 了，如何不捕获的话，是不是整个程序都崩溃了\n对于 CPU 只认内核态线程这一点，咱理解起来就想到与一个公司的老板，只认每个产品线上的总监一样，你这个主管后面不管有多人少人在干活，老板只认为是你这个主管在干活\n当然一个公司也不仅仅只有 1 个老板，就像计算机系统里面也会有多个 CPU ，但是道理是一样的\n如何理解 GMP 模型 GMP 分别表示 协程 goroutine，线程 thread，处理器 processor\n他们三组成了新的调度器，他们三者的关系这样的\n咱们从图中可以知道有全局队列，本地队列\n全局队列还是和之前一样，从里面里面 G 的创建，调度，销毁 都是需要访问互斥锁的\nP 的本地队列 自己维护了一个 G 列表，最长是 256 个，那 P 的个数一般是 GOMAXPROCS 个，如果本地的队列满了，那么 P 会将队列中的一半给到全局队列中\n从本地队列中取 G 是不需要加锁的，直接取即可，且如果队列中的 G 又创建了 G1 ，那么这个 G1 也是会被优先加入到当前本地队列的\n此处我们可以看到 M 是和 P 进行对应了，当 M 需要运行 G 的时候，就需要先找到一个合适的 P ，从 P 中获取 G， 如果 P 为空，那么 M 就会从全局队列中获取一批 G 放到 P 的队列中\n或者是 M 也会从其他的 P 的队列中偷一半的 G 到当前 P 的队列中\n从这里我们可以知道，新的调度器，已经解决了旧的调度器的一部分问题了（不需要每次都去找全局队列）\n那么 P 是啥时候创建，创建多少个？M 又是啥时候创建的，创建多少个呢？ P 和 M 在数量上有必然联系吗？\nP 是在程序启动的时候，读取环境变量中 GOMAXPROC ，来创建具体 P 的个数\nM 的创建实际上是，若 P 中有很多任务 G ，如果有空闲的 M，那么 P 就会找任意空闲 M 来进行处理，如果没有空闲的 M ，那么调度器就会去创建 M 来执行 P 中的 任务\n那么新的调度器还有哪些优势呢？ 第一\n提高了线程的复用率，如果当前线程执行完当前 P 的任务之后，当前的 M 会尝试去偷其他 P 里面的 G 来进行执行，这样我们就尽可能的避免了线程的创建，销毁带来的开销\n第二\n如果当前的 M 在执行 G 的时候，出现了阻塞，那么 M 也会很懂事的让出当前的 P，让其他 M 来执行 P 中的任务，当前的 M 就继续处理当前的 G\n第三\n上述我们说到当前 M 会去从其他 P 的队列中偷 G，这个是在当前 M 对应的 P 中没有 G 的时候，优先去做的事情， 如果其他的 P 也没有 G 的时候，当前 M 才会去全局队列中拿\n从这里就可以开始，新的调度器，已经是在大大的弱化了全局队列的作用\n本次先聊到这里，相信你对 GMP 的基本理论也有一些了解了吧\n感谢阅读，欢迎交流，点个赞，关注一波 再走吧\n我正在参与掘金技术社区创作者签约计划招募活动，点击链接报名投稿。\n\\\n",
+  "wordCount" : "437",
+  "inLanguage": "en",
+  "datePublished": "2022-07-17T12:08:00+08:00",
+  "dateModified": "2022-07-17T12:08:00+08:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://qingconglaixueit.github.io/post/%E8%B0%88%E8%B0%88%E5%AF%B9gmp%E7%9A%84%E7%AE%80%E5%8D%95%E8%AE%A4%E8%AF%86/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "阿兵云原生",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://qingconglaixueit.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://qingconglaixueit.github.io/" accesskey="h" title="阿兵云原生 (Alt + H)">阿兵云原生</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title">
+      谈谈对GMP的简单认识
+    </h1>
+    <div class="post-meta"><span title='2022-07-17 12:08:00 +0800 CST'>July 17, 2022</span>
+
+</div>
+  </header> 
+  <div class="post-content"><p>犹记得最开始学习 golang 的时候，大佬们分享 GMP 模型的时候，总感觉云里雾里，听了半天，并没有一个很清晰的概念，不知 xmd 是否会有这样的体会</p>
+<p>虽然 golang 入门很简单，但是对于理解 golang 的设计思想和原理，还是需要一定时间的积累和沉淀，<strong>更多的应该是思想上的沉淀</strong></p>
+<p><strong>希望这篇文章能够对你了解 golang 的 GMP 模型有一点帮助</strong></p>
+<p>文章分别从一下三个方面来谈谈我对 GMP 模型认识</p>
+<ul>
+<li>golang 中调度器的变化及其作用</li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li>有了进程，线程，为什么会出现协程</li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li>GMP 模型中的 G,M,P 分别都做着什么样的事情</li>
+</ul>
+<h1 id="golang-中的调度器的变化及其作用">golang 中的调度器的变化及其作用<a hidden class="anchor" aria-hidden="true" href="#golang-中的调度器的变化及其作用">#</a></h1>
+<p>调度器，scheduler</p>
+<p>怎么理解呢？<strong>调度器就像是一个管理者，负责安排事项</strong>，负责调度不同人在指定时间在某个岗位上完成自己的价值交付</p>
+<p>正如 linux 调度器一样，将就绪的进程调度成执行状态，或者将执行状态的进程，打断，变成阻塞状态，再变成就绪状态</p>
+<p>比如说一个经典的单进程 和 多进程/多线程的操作系统，</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2ba207994e264adcb9f19af84c4093c8~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<p>我们可以看到在单进程系统中，只需要无脑的将进程串行排列好， CPU 会串行去执行任务，<strong>如果遇到进程1 阻塞的情况，其他进程也没有办法被 cpu 执行</strong>，那么进程2 ，进程3 ，进程4 就都要等待前面的进程完成执行完毕，才能到自己执行</p>
+<p>可以看出单进程对于 CPU 的使用过于任性，浪费 CPU 的资源，<strong>演进到多进程/多线程操作系统的时候，就出现了调度器</strong></p>
+<p>上图中我们可以对比看到，在多进程/多线程的操作系统中，<strong>cpu 的时间片被分割的更加的小，对于 cpu 资源的利用率是大大的增加了，因为 cpu 可以在进程1阻塞的时候，切换去执行进程2</strong></p>
+<p>例如，当进程1 执行过程中，<strong>发生了阻塞，那么调度器就会就会将 cpu 切换到进程2 中进行执行，同理，进程2 阻塞的时候， cpu 就会被切换到进程 3 进行执行</strong>，当然，这就看是哪个进程先抢到 cpu 资源了</p>
+<p>可以看到，调度器在这里的作用就是最大限度的利用上 CPU 的资源，管理进程在 CPU 上按照一定的的顺序执行任务，<strong>就好比一个优秀的管家可以合理安排好不同的员工在指定的时间上专注的处理某项事务</strong></p>
+<p>那么 <strong>golang 的调度器</strong>是不是也是和 linux 中的调度器有着想通之处呢？</p>
+<p><strong>来看看调度器在 golang 中的具体作用是干啥的</strong></p>
+<p>在 golang 中，调度器的实现简单来看实际上是由协程和线程按照一定的逻辑来组合起来的，其实也是扮演着一个协调和调度的作用，<strong>调度的对象是协程和线程</strong>，协程是需要被调度到线程中来运行的，这个动作就是调度器干的</p>
+<ul>
+<li><strong>通常用 G 来表示协程</strong></li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li><strong>用 M 来表示线程</strong></li>
+</ul>
+<p>正如是这样来实现调度器的：</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ea28357ae327414898e4e87bc7121689~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<p>我们可以看到，当每一个 M 想要从全局队列中取 G 出来执行的时候，是需要访问全局队列的锁，<strong>这是一把互斥锁</strong>，同一时间只能有 1 个 M 在访问</p>
+<p>Golang 的调度器此处当然也能让多个 M 处理不同的 G，<strong>达到多进程/多线程 并发处理事项的目的</strong></p>
+<p>可我们知道，加锁，<strong>是会影响到我们系统的整体性能的，毕竟那么多 M 都在竞争这一把锁</strong>，势必同一时间没有抢到的锁的 M 就要等待了</p>
+<h1 id="为什么调度器会被淘汰掉"><strong>为什么调度器会被淘汰掉？</strong><a hidden class="anchor" aria-hidden="true" href="#为什么调度器会被淘汰掉">#</a></h1>
+<p>看到上图，细心的我们可以发现，</p>
+<p>所以，这个调度器<strong>缺点</strong>也是比较明显的：</p>
+<p><strong>第一</strong>，多个 M 都要并发的去获取全局队列中的 G ，会造成锁竞争 ， 此处操作全局队列的情况有如下几种情况</p>
+<ul>
+<li>创建 G</li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li>调度 G</li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li>销毁 G</li>
+</ul>
+<p><strong>第二，</strong> 线程 M 在执行 G 的过程中，如果 G 阻塞了，那么 M 也就阻塞了，这个时候，CPU 就需要切换到其他的 M 上执行 G，这个切换的过程也是对于 CPU 资源的浪费</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/da11381ab0394363b6b1f9cbd63ed8c6~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<p>正如人的大脑，同时处理多个事项，当 事项 1 未处理完毕，就去处理事项 2，那么需要重新理清思绪去执行，<strong>若这个时候又需要切换到 事项 1 的时候，就需要花更多的时间来回顾之前事项 1 处理的上下文了，</strong> 所以在工作中，没有特别必要，不要打扰别人</p>
+<p><strong>第三，</strong> 我们知道在 golang 中，一个 G 也是可以再创建 G 的，就叫 G1 吧，那么创建的这个 G1 就需要交给其他的 M 来进行执行了，因为当前的 M 正在执行 G，自己忙不过来，<strong>因此需要将 G1 交给 M1 执行</strong></p>
+<p>这也是一个很明显的问题</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d7fd3ffe46ac46dfa26956618afe68a0~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<p>正如上述例子一样， 2 个人排查相关问题，但是信息和认知不一致，很明显是小猪可能是比较难排查出问题来的</p>
+<p><strong>就像 M 执行 G 新创建了 G1，但是是交给 M1 来执行的， M1 并不知道 G1 和 G 的关系，M1 执行起来就可能会出现问题，例如需要 G 的一些上下文，但是 M1 并不知情</strong></p>
+<p>因此，随着时间的推移，对于性能的要求是越来越高，当然是要想办法换一个与时俱进，需要符合时代潮流的管家了，自然就出现了一个<strong>新的调度器替代了原有的调度器</strong></p>
+<p>出现新的调度器，自然是解决了旧的调度器的缺点，并且还带来了一些新的属性和价值，具体的新调度器策略我们可以在下文中进行展示</p>
+<h1 id="为什么会出现协程">为什么会出现协程<a hidden class="anchor" aria-hidden="true" href="#为什么会出现协程">#</a></h1>
+<p>在来看另外一个问题，为什么会出现协程，自然是因为使用进程和线程不能够满足我们的某些需求了，<strong>此处的需求是指对于性能的要求，是对 CPU 利用效率的需求</strong></p>
+<p>上图中我们有说到，对于多进程/多线程并发的时候，我们有提高 CPU 的利用率，尽可能的利用好 CPU 的时间片，但是对于 CPU 从 进程/线程1 切换到去执行进程/线程 2 的过程中，是会产生消耗的，但是这个消耗很难避免</p>
+<p>那么我们知道 CPU 其实执行的是线程，那么<strong>如果 1 个线程里面还可以分成多个程序进行并发岂不是可以大大的提高我们当前线程的使用效率？</strong></p>
+<p>我们从 C/C++ 中知道，咱们的一个32位系统的机器，<strong>进程实际上是开辟了一个 4G 的虚拟空间</strong>，具体 4G 虚拟空间都包含了什么，我们可以简单的看看这个图，本次不在此细聊</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3ed0d9269366453096f85e3fa13afee4~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<p>那线程大概也是需要 4M 的空间，那么我们在一定程度上大量的开辟进程或者线程，必然会带来系统中 <strong>内存占用高，调度 CPU 切换的消耗高</strong> 的问题</p>
+<p>后来，我们知道线程实际上是分为<strong>内核态和用户态的</strong></p>
+<p>当然，用户态的线程是依赖于内核态线程的，用户态中需要执行的内容，是需要放在内核态线程上进行执行的，另外， <strong>CPU 只知道有内核态线程的存在，意味着，CPU 只认内核态线程</strong></p>
+<p>此处说的内核态，和用户态，其实就是对应到我们说的 <strong>M 和 G</strong></p>
+<ul>
+<li>内核态线程 &ndash; <strong>线程</strong></li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li>用户态线程 &ndash; <strong>协程</strong></li>
+</ul>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/24cccdfa4e7d46919c4dd12f9cb5df2c~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<p>协程不会陷入到内核态中，因此在 M 不变的情况下，切换 G 就是非常轻快的了，协程简要有如下特点：</p>
+<ul>
+<li><strong>占用内存空间小，只占用 几 kb</strong> ，比起进程，线程来说，真的是很小了</li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li><strong>调度灵活</strong>，他是处于用户态进行调度的</li>
+</ul>
+<p>根据协程和线程处于的用户态和内核态，我们可以看到调度的机制是不一样的，</p>
+<p><strong>内核态中的线程，实际上是抢占式的，是又 CPU 调度的</strong></p>
+<p><strong>用户态中的线程，即协程，是由用户态调度的，此处的用户态调度，就可以理解是一个队列了，只能一个一个的去执行了，一个协程执行完毕之后，让出 CPU ，才会执行下一个协程</strong></p>
+<p>好比我们代码中，多个协程，其中 1 个协程 panic 了，如何不捕获的话，是不是整个程序都崩溃了</p>
+<p><strong>对于 CPU 只认内核态线程这一点</strong>，咱理解起来就想到与一个公司的老板，只认每个产品线上的总监一样，你这个主管后面不管有多人少人在干活，<strong>老板只认为是你这个主管在干活</strong></p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c63c6074206443f78d0197b83f19a098~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<p>当然一个公司也不仅仅只有 1 个老板，就像计算机系统里面也会有多个 CPU ，但是道理是一样的</p>
+<h1 id="如何理解-gmp-模型">如何理解 GMP 模型<a hidden class="anchor" aria-hidden="true" href="#如何理解-gmp-模型">#</a></h1>
+<p><strong>GMP 分别表示 协程 goroutine，线程 thread，处理器 processor</strong></p>
+<p>他们三组成了新的调度器，他们三者的关系这样的</p>
+<p><img loading="lazy" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5fa35286b41f44f1a1262a45bf7099b7~tplv-k3u1fbpfcp-zoom-1.image" alt=""  />
+</p>
+<p>咱们从图中可以知道有全局队列，本地队列</p>
+<p><strong>全局队列</strong>还是和之前一样，从里面里面 G 的创建，调度，销毁 都是需要访问互斥锁的</p>
+<p><strong>P 的本地队列</strong> 自己维护了一个 G 列表，最长是 <strong>256 个</strong>，<strong>那 P 的个数一般是 GOMAXPROCS 个</strong>，如果本地的队列满了，那么 P 会将队列中的一半给到全局队列中</p>
+<p>从本地队列中取 G 是不需要加锁的，直接取即可，且如果队列中的 G 又创建了 G1 ，那么这个 G1 也是会被优先加入到当前本地队列的</p>
+<p>此处我们可以看到 <strong>M 是和 P 进行对应了</strong>，当 M 需要运行 G 的时候，就需要先找到一个合适的 P ，从 P 中获取 G， <strong>如果 P 为空，那么 M 就会从全局队列中获取一批 G 放到 P 的队列中</strong></p>
+<p><strong>或者是 M 也会从其他的 P 的队列中偷一半的 G 到当前 P 的队列中</strong></p>
+<p>从这里我们可以知道，新的调度器，<strong>已经解决了旧的调度器的一部分问题了（不需要每次都去找全局队列）</strong></p>
+<p><strong>那么 P 是啥时候创建，创建多少个？M 又是啥时候创建的，创建多少个呢？ P 和 M 在数量上有必然联系吗？</strong></p>
+<p>P 是在程序启动的时候，读取环境变量中 GOMAXPROC ，<strong>来创建具体 P 的个数</strong></p>
+<p><strong>M 的创建</strong>实际上是，若 P 中有很多任务 G ，如果有空闲的 M，那么 P 就会找任意空闲 M 来进行处理，如果没有空闲的 M ，那么调度器就会去创建 M 来执行 P 中的 任务</p>
+<h1 id="那么新的调度器还有哪些优势呢">那么新的调度器还有哪些优势呢？<a hidden class="anchor" aria-hidden="true" href="#那么新的调度器还有哪些优势呢">#</a></h1>
+<p><strong>第一</strong></p>
+<p><strong>提高了线程的复用率</strong>，如果当前线程执行完当前 P 的任务之后，当前的 M 会尝试去偷其他 P 里面的 G 来进行执行，<strong>这样我们就尽可能的避免了线程的创建，销毁带来的开销</strong></p>
+<p><strong>第二</strong></p>
+<p>如果当前的 M 在执行 G 的时候，出现了阻塞，那么 M 也会很懂事的让出当前的 P，<strong>让其他 M 来执行 P 中的任务</strong>，<strong>当前的 M 就继续处理当前的 G</strong></p>
+<p><strong>第三</strong></p>
+<p>上述我们说到当前 M 会去从其他 P 的队列中偷 G，这个是在当前 M 对应的 P 中没有 G 的时候，优先去做的事情， <strong>如果其他的 P 也没有 G 的时候，当前 M 才会去全局队列中拿</strong></p>
+<p>从这里就可以开始，新的调度器，已经是在大大的弱化了全局队列的作用</p>
+<p>本次先聊到这里，相信你对 GMP 的基本理论也有一些了解了吧</p>
+<p><strong>感谢阅读，欢迎交流，点个赞，关注一波 再走吧</strong></p>
+<p>我正在参与掘金技术社区创作者签约计划招募活动，<a href="https://juejin.cn/post/7112770927082864653">点击链接报名投稿</a>。</p>
+<p>\</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+    <span>&copy; 2022 <a href="https://qingconglaixueit.github.io/">阿兵云原生</a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
