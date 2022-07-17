@@ -133,6 +133,27 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2>GRPC客户端需要连接池吗
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>发现的问题 在微服务开发中，gRPC 的应用绝对少不了，一般情况下，内部微服务交互，通常是使用 RPC 进行通信，如果是外部通信的话，会提供 https 接口文档
+对于 gRPC 的基本使用可以查看文章 gRPC介绍
+对于 gRPC ，我们需要基本知道如下的一些知识点：
+gRPC 的基本四种模式的应用场景
+请求响应模式 客户端数据流模式 服务端数据流模式 双向流模式 Proto 文件的定义和使用 gRPC 拦截器的应用 ， 基本的可以查看这篇 gRPC 拦截器
+实际上有客户端拦截器 和 服务端拦截器，具体详细的可以自行学习 gRPC 的设计原理细节 Go-Kit 的使用 当然今天并不是要聊 gRPC 的应用或者原理，而是想聊我们在开发过程中很容易遇到的问题：
+未复用 gRPC 客户端连接，影响性能 最近审查各个服务代码中，发现整个部门使用 gRPC 客户端请求服务端接口的时候，都是会新建一个连接，然后调用服务端接口，使用完毕之后就 close 掉， 例如这样
+这会有什么问题呢？
+正常简单的使用不会有啥问题，但如果是面临高并发的情况，性能问题很容易就会出现，例如我们在做性能测试的时候，就会发现，打一会性能测试，客户端请求服务端的时候就会报错：
+rpc error: code = Unavailable desc = all SubConns are in TransientFailure, latest connection error: connection error: desc = &#34;transport: Error while dialing dial tcp xxx:xxx: connect: connection refused...</p>
+  </div>
+  <footer class="entry-footer"><span title='2022-07-17 12:06:00 +0800 CST'>July 17, 2022</span></footer>
+  <a class="entry-link" aria-label="post link to GRPC客户端需要连接池吗" href="https://qingconglaixueit.github.io/post/grpc%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%9C%80%E8%A6%81%E8%BF%9E%E6%8E%A5%E6%B1%A0%E5%90%97/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2>Redis中sds数据结构和底层设计原理
     </h2>
   </header>
