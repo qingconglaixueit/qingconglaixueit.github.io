@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！ | 阿兵云原生</title>
+    <meta property="og:title" content="团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！ - 阿兵云原生">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2023-04-26T17:50:02&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2023-04-26T17:50:02&#43;08:00'>
+        
+    <meta name="Keywords" content="golang,go语言,go语言笔记,博客,软件架构,公众号,小程序">
+    <meta name="description" content="团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！">
+        
+    <meta name="author" content="阿兵云原生">
+    <meta property="og:url" content="https://qingconglaixueit.github.io/post/tuanduibiandong/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+        <link rel="stylesheet" href='/css/douban.css'>
+    
+        <link rel="stylesheet" href='/css/other.css'>
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://qingconglaixueit.github.io/">
+                        阿兵云原生
+                    </a>
+                
+                <p class="description">专注于Go语言(golang),软件架构</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://qingconglaixueit.github.io/">Home</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/tools/" title="工具">工具</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">Table of Contents</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#工作团队变动裁员年底降薪拿股权">工作：团队变动，裁员，年底降薪，拿股权</a></li>
+    <li><a href="#对于云原生技术方向的思考和今年进程">对于云原生技术方向的思考和今年进程</a></li>
+    <li><a href="#生活健身读书小刀刮喉咙">生活：健身读书，小刀刮喉咙</a></li>
+    <li><a href="#买买买买房买车持续进行中见她父母">买买买：买房买车持续进行中，见她父母</a></li>
+    <li><a href="#走出去尝试搞自媒体尝试微信接入-chatgpt">走出去：尝试搞自媒体，尝试微信接入 ChatGPT</a></li>
+    <li><a href="#未来展望">未来展望</a></li>
+    <li><a href="#欢迎点赞关注收藏">欢迎点赞，关注，收藏</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！</h1>
+        </header>
+        
+  <time datetime="2023-04-26T09:50:02Z" class="post-meta meta-date dt-published">
+    2023-04-26
+  </time>
+
+
+
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="post-content">
+            <p>年底，又是一个总结过去和展望未来的时刻，在病痛交加的周六，捂着被子，拿着手机回顾我这时而平凡时而精彩的 2022，回望本年，<strong>又是没有财务自由的一年，团队变动，裁员，年底降薪，拿股权，健身，小刀刮喉咙，见她的父母，今年都经历个遍</strong></p>
+<p>对于<strong>财务自由</strong>。这个词相信兄弟们并不陌生，但每个人对财务自由的理解不尽相同。</p>
+<p>一些人认为财务自由就是可以买各种奢侈品，不需要去考虑钱不够的事情。另一些人认为财务自由是有非常非常多的钱，但是没有一个清晰的定义，然而我认为的财务自由是我可以不想做什么就可以不做什么。在不影响生活水平的情况下，<strong>手上的现金流总是为正</strong>的，且被动收入能够大于我的主动收入。然而今年还是没有实现，但是一直在路上</p>
+<p>接下来本文分别从以下几个方面来聊一聊，关于我的 2022 年</p>
+<ol>
+<li>工作：团队变动，裁员，年底降薪，拿股权</li>
+<li><strong>对于云原生技术方向的思考</strong></li>
+<li>生活：健身读书，小刀刮喉咙</li>
+<li>买买买：买房买车持续进行中，见她父母</li>
+<li>走出去：尝试搞自媒体，<strong>尝试微信接入 ChatGPT</strong></li>
+<li>未来展望</li>
+</ol>
+<h2 id="工作团队变动裁员年底降薪拿股权">工作：团队变动，裁员，年底降薪，拿股权</h2>
+<p><strong>团队变动，裁员 N+1</strong></p>
+<p>今年部门内的团队各种大变样，一年下来换了5个小组，一个小组里面的人从快 20 个人到现在变得只剩下 4 个人</p>
+<p>一部分是自己走了，一部分直接被裁员拿 N+1。</p>
+<p>对拿 N+1 的真的爽歪歪，那一阵子很多人都想被裁员，可是你绩效没有拿 C，没有机会被裁，于是乎，大部分人嘴上说着躺平，喊着摆烂，实际上卷得比以前还狠了一些</p>
+<p><strong>然而对于很多优秀的兄弟们，如果自己摆烂的话，自己这一关就过不去，很难办</strong></p>
+<p>如上情况都是基于公司开始开源节流，裁掉职级低的，留下职级高的，并且还要更多招大佬进来。</p>
+<p>然而招的大佬仍然还是做以前低职级的人干的活。这真的太讽刺了。</p>
+<p>不过今年一年对于环境和线上部署这一块，倒是比以前方便了很多。全面容器化，往云原生方向走，真的能够做到一键升级，一键回滚，灰度发布，环境共享，流量染色，大大的提高了开发效率，测试效率和上线效率。</p>
+<p>以前主机环境升级最长的时间超过8个小时，现在升级只需要几分钟，这点变化带来的效果还是非常明显的。</p>
+<p><strong>拿股权，年底降薪</strong></p>
+<p>由于入职以来绩效一直都是比较 ok 的，今年有幸拿到了股权激励，然而本应该是一件开心的事，然而后面发生的事情却不那么妙</p>
+<p>今年来一直在不断的降各种福利，降人工成本，已经让大家感受到了一丝丝寒气，然而万万没想到，到了年底，开始玩起了降薪的操作，这让我们彻底感受到寒气逼人，让人心都凉了半截，直呼还不如裁掉我，我想 N+1</p>
+<p>另外拿了股权也并没有什么用处，我身边的朋友在某里某讯拿了股权，一些是由于各种原因并没有到行权的时刻就离职了，或者到行权的时刻，股价大跌</p>
+<p>自然，如果股权激励是公司百分百授予的那还好，可是如果是还需要自己出一部分钱买入，那确实就不那么 nice 了，我经历的公司中股权激励都是需要自己的出一部分钱的，下次要去一个百分百给股权的坑，这才有动力，哈哈哈</p>
+<p>顺便说一下，一般股权分为 3 年行权，第一年行权 40%，第二年行权 30%，第三年行权 30% ，所以如果这家公司发展势头不错，自己也喜欢公司的氛围，且自己在这里仍然可以逐步提升自己的技术和综合能力，那么留下来的几率还是非常大的，然而现实却事与愿违，<strong>看来这个股权大概率只是一张没有办法落地的电子签了</strong></p>
+<h2 id="对于云原生技术方向的思考和今年进程">对于云原生技术方向的思考和今年进程</h2>
+<p>云原生涉及的技术和组件众多，例如下面这张图所显示的
+
+        <img class="mx-auto" alt="landscape.png" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/73a130122c194668917f345816f3f843~tplv-k3u1fbpfcp-watermark.image?" />   
+    </p>
+<p>组件那么多，技术那么多，不可能全部都抓一点吧，总还是会根据实际工作去实践和精进，今年在工作中对于云原生方面学到了这些东西：</p>
+<p><strong>云原生语言层面，Go 自然是首屈一指</strong></p>
+<ol>
+<li>继续精进 Go，不断的使用学习到的新知识去调整和架构业务代码，引用更加合理的设计去优化历史遗留问题</li>
+<li>分别梳理和细化了关于反射，切片，通道，map，interface{}，指针，结构体等数据类型的源码实现，不够完整的部分持续在补充</li>
+<li>工作上进行代码优化，性能优化，收益明显，例如可以查看历史文章关于组织结构同步的优化一文</li>
+</ol>
+<ul>
+<li><a href="https://juejin.cn/post/7173841434456358948">GO 中的指针？</a></li>
+<li><a href="https://juejin.cn/post/7176448102910394405">Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍</a></li>
+<li><a href="https://juejin.cn/post/7175707748779163703">Go 语言中 panic 和 recover 搭配使用</a></li>
+<li>&hellip;</li>
+</ul>
+<p><strong>RPC 部分</strong></p>
+<ol>
+<li>RPC：GRPC（阅读了部分源码）</li>
+<li>GRPC-GATEWAY</li>
+<li>GRPC-GATEWAY Swagger</li>
+</ol>
+<p>一直以来 RPC 在微服务中也是使用频率相当高的一个利器，今年阅读了部分 RPC 相关源码， 还需要再次阅读，深入理解，下一次更文，手撸一个自定义的 rpc 框架</p>
+<p>另外则是通过所学，将项目中的 外部通过 http 打进我们的网关层服务，然后再通过 grpc 调用后面的微服务，调整为直接上 GRPC-GATEWAY ，外部直接打到 APISIX 后转发到我们的 GRPC-GATEWAY 即可最终请求到我们提供的 grpc 服务，<strong>演进之后，就只需要维护微服务代码即可了，效率翻番</strong></p>
+<p>不过 Swagger 并没有使用到项目上，而是使用的 EOLINK，简单原因也是因为 EOLINK 能够很好的闭环整条链路</p>
+<ul>
+<li><a href="https://juejin.cn/post/7145474477978025997">gRPC-Gateway 快速实战</a></li>
+</ul>
+<p><strong>API 网关</strong></p>
+<p>APIGATEWAY：APISIX</p>
+<p>很明显他是一个网关，应该有的内容他都有，引入 APISIX 之后，我们将原来的自写的网关服务逐步废弃，完全拥抱云原生，虽然一路也跌跌撞撞，不过也为我们提供了各种失败经验，这是一个成熟的开发者必经之路吧😂</p>
+<p><strong>微服务框架部分</strong></p>
+<p>GO-ZERO 微服务框架（使用 GO-ZERO 框架实现自己的自定义需求，熟悉框架的使用，阅读框架源码模仿和实现自己的工具包）</p>
+<p>有 go-zero，go-micro 自然还有其他的就不多说了，最终选择了 go-zero，自然是因为他的资料丰富，正好自己也有需求，看到了 go-zero 作者的文章，便产生了学习 go-zero 的兴趣，一口气将 go-zero 学下来，编写自己的项目，用起来还是非常顺手的，建议感兴趣的 xdm 都可以去尝试一波</p>
+<p>go-zero 的各种好处可以查看我们的关于 go-zero 的历史文章，他<strong>自带链路跟踪，负载均衡，熔断机制，自动降载哦，超时机制以及告警机制等等</strong>，最 nice 的一定是 go-zero 提供了自己的工具 <strong>goctl</strong> ，能非常容易的为我们一键生成框架代码，我们只需要根据自己的需求去添中业务逻辑即可</p>
+<p>因为一个作者，或者因为一篇文章去学习了一个框架，对于 xdm 们来说，应该也是家常便饭了吧</p>
+<ul>
+<li><a href="https://juejin.cn/post/7138960256054345741">微服务框架 go-zero 快速实战</a></li>
+</ul>
+<p><strong>日志收集，监控告警</strong></p>
+<ol>
+<li>ELK</li>
+<li>GRAFANA</li>
+<li>Prometheus</li>
+<li>Superset</li>
+<li>Elasticsearch</li>
+<li>Kafka，Rabbitmq</li>
+</ol>
+<p>一开始数据收集数据打点只是为了给运营的同学使用（其他小组有现成的），便直接使用了这一套，那就是 <strong>Elasticsearch + Kafka + Superset</strong> 的方式来进行实现，实现比较简单</p>
+<p>例如使用 Go 编写的应用，关键位置打点数据写到 ES 的 Kafka 引擎上，进而写入到 ES 中，运营的同学就可以简单的在可视化的 SupperSet 界面上通过简单的 sql 就可以看到各种打点数据的变化</p>
+<p>但是弊端也是非常明显的，这并不能为我们提前预知风险，不能告警，而且这样的打点对于自身 Go 应用是有一定影响的</p>
+<p>因此后期上了更加有效的 <strong>Prometheus + GRAFANA</strong>  的方式，能够加入各种自定义的监控，可以提前预警等等，且运维人员可以直接将这一套用起来</p>
+<p>自然，使用 ELK 早就是查日志的标配了，用起来比去跳板机上查起来方便的太多了</p>
+<p><strong>容器化</strong></p>
+<ol>
+<li>DOCKER</li>
+<li>KUBERNETES</li>
+<li>HELM</li>
+</ol>
+<p>今年持续在学习容器化方面的知识，不过给予的精力不是太多，主要是对于 k8s CNI 部分的内容接触的还比较少，记下来需要攻克</p>
+<p>显然对于这些技术仅仅是细读了 <strong>docker 和 Kubernetes in Action</strong> 是远远不够的，今年更多的是花在实战上面，自然都是应用方面，遇到的一些 k8s 问题，能够自行解决一部分，但还是存在无法解决的问题，有的时候可能就是重装环境。。。</p>
+<p>k8s 中使用 helm 来进行服务的升级回滚是相当方便的，我们用起来非常顺手，自然工作中都是会弄成自动化的</p>
+<ul>
+<li><a href="https://juejin.cn/post/7149361165284409374">如何将自己的镜像使用 helm 部署</a></li>
+</ul>
+<p>我们使用容器化，更多的是为了提效，降低开发人员和测试人员的环境负担，只要环境好了，效率能够提高一倍不止</p>
+<p>因此在下一年需要手写一个 docker，按照模块深入的阅读 k8s 内部源码，提升自己对其的理解程度</p>
+<p><strong>服务代理</strong></p>
+<p>Service Proxy：TREAFIK PROXY</p>
+<p>TREAFIK PROXY 是 k8s 中用于服务代理的，外部请求打进 k8s 环境之后，TREAFIK PROXY 会去根据 <strong>IngressRoute</strong> 里面配置的各种匹配规则进行命中，命中之后就会将请求转发给对应的 <strong>Service</strong>，最终请求到到对应的 Pod</p>
+<p>此处看起来是不是有点像 nginx？？</p>
+<p><strong>服务发现，配置中心</strong></p>
+<p>Service Discovery： ETCD，NACOS</p>
+<p>还在主机环境的时候我们使用 ETCD 来进行服务发现，切换到 k8s 之后，服务发现则使用 k8s 内部的机制，另选用 NACOS 作为我们服务的配置中心</p>
+<p>再未引入 NACOS 做配置中心之前，配置文件是不能热修改的，必须要重启服务，虽然在 k8s 中是滚动升级了，但是修改个配置还要去重启服务，这也太 low 了，因此有了 NACOS 的用武之地</p>
+<p><strong>服务网格</strong></p>
+<p>Service Mesh ：ISTIO</p>
+<p>其中上 ISTIO 仍然是为了解决环境问题，解决开发模式的问题，没有 ISTIO 的时候，人手一套环境，维护成本极高，且多个服务版本不一致，总是出现各种奇奇怪怪的问题</p>
+<p>引入 ISTIO 之后，可以根据每个服务的流量进行转发，保证自己标签的流量只会请求到同一个标签的其他服务上，那么一套标准环境，就可以多个人在上面进行开发和调试，而且完全可以调试同一个服务，<strong>只要标签不同即可，环境维护成本大大降低，效率极速提升</strong></p>
+<p>自然，作用不仅于此，后续会陆续使用到线上的各种方式的灰度发布，还在持续验证中</p>
+<p><strong>链路跟踪</strong></p>
+<p>使用的是 jaeger</p>
+<p>关于 jeager 的介绍可以查看历史文章，使用了链路跟踪之后，若整个链路出现了问题，你第一时间不是去跳板机上看服务的日志，而是到 jaeger dashboad 上去看实际的链路再哪里断了，根据断掉的地方再继续去查看错误原因，就能够快速高效的知道本次请求链路为什么为失败了，详细的可以查看：</p>
+<ul>
+<li><a href="https://juejin.cn/post/7170877799237386254">微服务线上问题排查困难？不知道问题出在哪一环？那是你还不会分布式链路追踪</a></li>
+</ul>
+<p><strong>小结</strong></p>
+<p>如上就是我今年在云原生方面的一点学习和实战心得，篇幅有限没有分享了具体的技术细节，更多的是分享一下关于学习和应用这些技术带给我和工作上发生的天翻地覆的改变一点也不为过，看过这边文章的 xdm 肯定有感受</p>
+<ul>
+<li><a href="https://juejin.cn/post/7165062697825468452">如何从主机环境演变到云原生开发模式？</a></li>
+</ul>
+<p>使用这些技术，自然是为了提效，提高质量，当然很多时候也是为了拓宽自己的知识面，满足自己的好奇心，对于一个程序员来说，好奇心被满足了那是多么的酷，特别是再你冥思苦想设计出了一件成品的时候，那可是相当开心</p>
+<p>在这个云时代，<strong>我们完全有理由拥抱 Go，拥抱云原生</strong>，燥起来吧，持续提升，持续分享，持续精进</p>
+<h2 id="生活健身读书小刀刮喉咙">生活：健身读书，小刀刮喉咙</h2>
+<p>生活上总会在思考，什么事情，自己能够持续去做很久呢？</p>
+<p>过去或许只有活着，但是今年开始<strong>持续的健身，持续的读书，持续的思考</strong>。</p>
+<p>今年一年中，在keep上运动，保持每周运动三次。引体向上和俯卧撑间隔着做，每一次都会做腹肌，并且不断的向上进阶，现在已经达到<strong>K5</strong>级别了。目前为止今年健身耗时 <strong>4836</strong> 分钟，从年初开始，健身总时长稳定攀升</p>
+<p>
+        <img class="mx-auto" alt="image.png" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a7a083c4c6f04655a740d6e50a8dd4be~tplv-k3u1fbpfcp-watermark.image?" />   
+    </p>
+<p>从一个引体向上都没有办法正常拉起到现在可以做10~15个引体向上，从做<strong>10</strong>个俯卧撑都比较费劲儿到现在练习一次俯卧撑可以做<strong>240</strong>多个，运动健身带给我的变化就是更加的自信，更加的阳光，肩部和胸部变得宽厚和结实。</p>
+<p><strong>这是半年前开始练了一点</strong></p>
+<p>
+        <img class="mx-auto" alt="image.png" src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d932f1d68d024811859ccde80d204cd9~tplv-k3u1fbpfcp-watermark.image?" />   
+    </p>
+<p>然而，持续保持运动健身近一年的我，还是逃不掉伤风感冒，应该不是阳了，虽然也小刀刮喉咙，虽然也头疼一晚上睡不着觉，但是不发烧，吃药保养 <strong>3-4</strong> 天就好的差不多了，完全不需要居家办公，症状较轻，轻到吃完药之后，我以为我又行了，我又可以开始健身了？？然后不能嘚瑟，出门就冷的瑟瑟发抖。。。<strong>此处一定要注意，生病康复好不能立刻运动，还需要养一阵子，大概一到两周才能开始运动</strong></p>
+<p><strong>对于读书</strong>，今年初给自己定下的目标是阅读<strong>10</strong>本书。可是读着读着发现读书并不是一个计数器，不是在乎读了多少本书，而是应该在乎自己在书籍中思考了多少，<strong>自己转换了多少</strong>，要能够从书中获得新知，能够去辨证的看待书中的内容。能够用自己的话去看阐述书中的主要内容，并且有自己独到的观点，自然，最终的结果也远远超过10本</p>
+<p>我印象深刻的一本书是 <strong>打开心智</strong>，另外一本是 <strong>认知觉醒</strong>。</p>
+<p>
+        <img class="mx-auto" alt="image.png" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bfcc1d9666d140589b12e74dd1a85242~tplv-k3u1fbpfcp-watermark.image?" />   
+    </p>
+<p>其实这两本书里面都讲到了关于大脑的结构，大脑都倾向于去做那些简单的、不耗费能量的事情。因而我们去做一些有一定难度或者陌生的事情的时候，我会觉得很抗拒。因为对于大脑来说，这需要消耗大量的能量。</p>
+<p>实际上还是要培养自己的习惯，例如让自己的健身读书，作为惯常行为，就像每天都会吃饭喝水上厕所一样。当你做这些事情都不需要消耗什么能量的时候，那么你是最容易持续下去的，如果做一件事情，你需要消耗很多的能量去保持自律，那么这件事情很难长期的持续上去。</p>
+<p>另外一个印象比较深的是 <strong>富爸爸穷爸爸</strong>。这本书已经是第 <strong>2</strong> 次阅读了。仍然能够收获新的东西，特别是对于现金流的理解。真真实实的去找到<strong>现金流游戏</strong>来进行了实操。实实在在地感受到现金流是如何计算的。如果我们的现金流总是没有办法高于我们的主动收入，那么我们永远都会像老鼠赛跑那样活着。只要一没有工作，那么就无法支付生活中的各种账单。</p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7ce24793822244199ec7a2a14951f422~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>那么对于理财还处在学习当中，实践的机会还比较少，不过现金游戏游戏真的还是非常好玩的，推荐大家都可以去玩一玩。</p>
+<p>最近在看刘震云的<strong>一句顶一万句</strong>，有没有兄弟也在看的，可以评论交流一下。</p>
+<h2 id="买买买买房买车持续进行中见她父母">买买买：买房买车持续进行中，见她父母</h2>
+<p>本来年初计划先把车买了，然而万万没想到，女朋友将钱投到基金和股市里面去了，这可真是心大。</p>
+<p>对于今年的基金和股市大家都知道，绿的不能再绿了，也不知道什么时候能够回本。</p>
+<p>然而到现在，她已经很久没有提买车的事情了😂😂，或许是因为她还将她父母给的买车钱也投入到基金里面的缘故吧</p>
+<p>关于买房，自然是刚需房，不知道我们这一代年轻人为什么会有这样的执念，结婚一定要去买个房，或许是社会强行加上的标准吧，如果你不去在乎了也觉得无所谓，就像秋天里的第一杯奶茶，冬天里的第一次火锅一样，这些可不都是网红的各种营销套路吗</p>
+<p>然后买房这个事情，<strong>在中国人心里感觉已经是根深蒂固了</strong>，毕竟是得有一个家，那自然得有一个房？更多的不应该是有爱的人才会有家吗，无论在哪</p>
+<p><strong>说到底，房还是要买，毕竟自己的房子随便造</strong>😁💕</p>
+<p>可今年房地产持续爆雷。银行现在利率也放得相对比较低，可偏偏就在这种时候，越不敢买，还在持续关注中，就怕买到高点，或许很多人也这样想吧。</p>
+<p>刚需买房还是非常有必要的，租几十年的房，钱也给出去了，但房不是自己的，可你买了房，还几十年的贷款，钱给出去了，房是自己的。</p>
+<p>另外一个原因就是对于未来的不确定性，不确定是回老家还是在大城市定居。</p>
+<p>对于那些在老家工作的人，到点就下班，别提多羡慕了，躺得平平的。在大城市打拼，没有自己的生活，还累得跟狗一样。</p>
+<p>对这个目前也还在思考当中，思考自己到底需要啥，暂时还没有定论，不过在当前疫情爆发高峰的时刻，大家都在关注疫情，我们可以尝试也去关注一下房地产，刚需和改善还是很有必要的</p>
+<h2 id="走出去尝试搞自媒体尝试微信接入-chatgpt">走出去：尝试搞自媒体，尝试微信接入 ChatGPT</h2>
+<p>向外拓宽自己还是非常有必要的，今年继续搞微信公众号，粉丝数量已经有 200 左右，当然这个数值还是非常的低，不过好在也在持续增加。</p>
+<p>这不，今年年底开始微信接入 ChatGPT ，陆陆续续的我的个人技术交流群逐渐有了人气，大家在群里都会讨论关于机器人的那些事，如果你也感兴趣的话，也可以加进来哦</p>
+<ul>
+<li><a href="https://juejin.cn/post/7176813187705077816">我的个人微信也迅速接入了 ChatGPT</a></li>
+</ul>
+<p>说实话确实没有在微信公众号上花费多少精力，更多的还是在掘金上，参与活动摸鱼，赢奖品，对，就是这么实在。</p>
+<p>但对于更文这个事情来说，还是会期望自己能够写出高质量的文章，在提高自己的同时也能够给别人带来价值。</p>
+<p>当然也会出现为了赶文章而写一些水文的情况。应该叫做短文。😂😂😂</p>
+<p>另外自己的想法也比较多，尝试去搞自媒体，去做某音某条某挂的视频号。我们大家都知道，在中国如果你只做技术的话，你真的没有办法发展的很好，而且很多公司居然研发的地位还是比较低的</p>
+<p><strong>所以我们不仅要提高技术水平，还需要去提高自身的综合能力。</strong></p>
+<p>然而发现如果总是更新自己不是非常感兴趣的视频，真的很难持续创作下去，找到自己能够长期持续做下去且感兴趣的内容相当重要。</p>
+<p>现在也在培养自己阅读和分析时事的习惯。目前来看还比较入门，需要持续提高自己的认知，逐步尝试的去做下来。</p>
+<p><strong>当然以上做的健身，阅读，更文，搞自媒体都是为了一定程度的提升自己的技术水平，身体素质和认知</strong></p>
+<p>当你认知不够的时候，凭运气赚来的钱总会凭实力给亏掉。提升认知，提升自己的思维相当重要。</p>
+<p>对于这一点兄弟们不知道有没有感受。且进入公司的两个人，发展路径完全不同。一般而言总会是思维缜密，思考全面的那个人会发展的更好，当然这样的人和你对接起来也是非常方便的。</p>
+<p>一眼就能看清本质的，人和一辈子都看不清本质的人，明显是两个不一样的人生。</p>
+<p>另外，今年终于要去她家了，忐忑中。。。</p>
+<h2 id="未来展望">未来展望</h2>
+<ol>
+<li>开始写有质量的书评。先定一个小目标，明年写 <strong>12</strong> 条书评。</li>
+<li>持续健身。内脏脂肪达到 <strong>4.0</strong>，从一周三练调整为一周四练，巧克力腹肌更加明显。<strong>标准的引体向上能够一次性做20个</strong>。</li>
+<li>投入一定的精力放到微信公众号上，目标至少增加到 <strong>600</strong> 个粉丝</li>
+<li>深入思考不做技术还能通过什么样的方式去赚钱，如何提升自己的现金流，输出方法并实践</li>
+<li>累积主动约饭 <strong>10</strong> 次，了解不同行业的从者的思维方式，继续拓宽认知</li>
+<li>拿下 <strong>CKA</strong>  K8S 认证工程师</li>
+<li>阅读 <strong>k8s 源码</strong>，输出相关文章 <strong>10</strong> 篇</li>
+</ol>
+<p>这就是我的 2022 年，总结起来一句话，<strong>人的可塑性是很强的，只要肯训练</strong>，在这样的大环境，希望大家都能修炼好内功，待未来春暖花开时，我们才能更加自如的过我们的人生</p>
+<p>如果上述内容和观众老爷的生活有所雷同，纯属巧合🤣</p>
+<p><strong>感谢阅读，欢迎交流，点个赞，关注一波 再走吧</strong></p>
+<h2 id="欢迎点赞关注收藏">欢迎点赞，关注，收藏</h2>
+<p>朋友们，你的支持和鼓励，是我坚持分享，提高质量的动力</p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/deea344017934d34b4ed1dea9a048abc~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>好了，本次就到这里</p>
+<p>技术是开放的，我们的心态，更应是开放的。拥抱变化，向阳而生，努力向前行。</p>
+<p>我是<strong>阿兵云原生</strong>，欢迎点赞关注收藏，下次见~</p>
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>Author: </strong><a rel="author" href="https://qingconglaixueit.github.io/">阿兵云原生</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="https://qingconglaixueit.github.io/post/tuanduibiandong/">https://qingconglaixueit.github.io/post/tuanduibiandong/</a></li>
+        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/post/hebijuanai/">Hebijuanai</a></li>
+        
+        <li><a href="/post/wodegetrenweixin/">我的个人微信迅速接入了chatgpt</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            No tags
+            
+        </div>
+    </article>
+    
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "yourdiscussshortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "your github repo"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2023 <a href="https://qingconglaixueit.github.io/">阿兵云原生 By 阿兵云原生</a>
+        
+    </div>
+    <br />
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">阿兵云原生</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+<style type="text/css">
+div.highlight {
+    position: relative;
+    margin: 1em 0px;
+}
+
+.copy-code {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 5px;
+    font: inherit;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    --radius: 8px;
+}
+
+div.highlight:hover .copy-code,pre:hover .copy-code {
+    display: block;
+}
+
+</style>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+    <script src='/js/douban.js'></script>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='https://qingconglaixueit.github.io/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://qingconglaixueit.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/tuanduibiandong/" title="团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！" target="_blank">团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/hebijuanai/" title="Hebijuanai" target="_blank">Hebijuanai</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/wodegetrenweixin/" title="我的个人微信迅速接入了chatgpt" target="_blank">我的个人微信迅速接入了chatgpt</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title" style="color:red">Ads</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a href="xxxx" title="xxxxx" target="_blank" style="color:red">
+                
+                    <img src="xxxx">
+                
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="xxxx" title="xxx">xx</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="https://qingconglaixueit.github.io/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
