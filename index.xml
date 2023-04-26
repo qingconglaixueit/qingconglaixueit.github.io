@@ -6,7 +6,16 @@
     <description>Recent content on 阿兵云原生</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Wed, 26 Apr 2023 11:50:34 +0800</lastBuildDate><atom:link href="https://qingconglaixueit.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 26 Apr 2023 15:24:34 +0800</lastBuildDate><atom:link href="https://qingconglaixueit.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>我的个人微信迅速接入了chatgpt</title>
+      <link>https://qingconglaixueit.github.io/post/wodegetrenweixin/</link>
+      <pubDate>Wed, 26 Apr 2023 15:24:34 +0800</pubDate>
+      
+      <guid>https://qingconglaixueit.github.io/post/wodegetrenweixin/</guid>
+      <description>本文主要来聊聊如何快速使用个人微信接入 ChatGPT，欢迎 xdm 尝试起来，仅供学习参考，切莫用于做不正当的事情 关于 ChatGPT 我们每个人都可以简单的使用上，不需要你有很强的技术背景，不需要你有公众号，甚至不需要你自己接入，只要你有一个微信号，就可以享受到 ChatGPT 带给你的惊喜，那么我们开始吧 本文分别从</description>
+    </item>
+    
     <item>
       <title>Helloworld</title>
       <link>https://qingconglaixueit.github.io/post/helloworld/</link>
