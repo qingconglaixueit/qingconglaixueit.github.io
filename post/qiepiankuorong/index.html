@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍 | 阿兵云原生</title>
+    <meta property="og:title" content="Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍 - 阿兵云原生">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2023-04-27T10:45:02&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2023-04-27T10:45:02&#43;08:00'>
+        
+    <meta name="Keywords" content="golang,go语言,go语言笔记,博客,软件架构,公众号,小程序">
+    <meta name="description" content="Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍">
+        
+    <meta name="author" content="阿兵云原生">
+    <meta property="og:url" content="https://qingconglaixueit.github.io/post/qiepiankuorong/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+        <link rel="stylesheet" href='/css/douban.css'>
+    
+        <link rel="stylesheet" href='/css/other.css'>
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://qingconglaixueit.github.io/">
+                        阿兵云原生
+                    </a>
+                
+                <p class="description">专注于Go语言(golang),软件架构</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://qingconglaixueit.github.io/">Home</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/tools/" title="工具">工具</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">Table of Contents</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#扩容是针对切片的数组无法扩容">扩容是针对切片的，数组无法扩容</a></li>
+    <li><a href="#切片扩容到底是扩容到原来的几倍">切片扩容到底是扩容到原来的几倍？</a>
+      <ul>
+        <li><a href="#案例1-向一个cap-为-0-的切片中追加-2000-个元素查看被扩容了几次">案例1 向一个cap 为 0 的切片中追加 2000 个元素，查看被扩容了几次</a></li>
+        <li><a href="#案例2-再次验证切片容量小于-1024触发到扩容就一定是扩容-2-倍吗">案例2 再次验证切片容量小于 1024，触发到扩容就一定是扩容 2 倍吗</a></li>
+        <li><a href="#源码赏析">源码赏析</a></li>
+        <li><a href="#小结">小结</a></li>
+      </ul>
+    </li>
+    <li><a href="#我们一般使用切片的时候可以如何避免频繁的扩容">我们一般使用切片的时候可以如何避免频繁的扩容？</a></li>
+    <li><a href="#欢迎点赞关注收藏">欢迎点赞，关注，收藏</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍</h1>
+        </header>
+        
+  <time datetime="2023-04-27T02:45:02Z" class="post-meta meta-date dt-published">
+    2023-04-27
+  </time>
+
+
+
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="post-content">
+            <p><strong>本次主要来聊聊关于切片的扩容是如何扩的，还请大佬们不吝赐教</strong></p>
+<p>切片，相信大家用了 Go 语言那么久这这种数据类型并不陌生，但是平日里聊到关于切片是如何扩容的，很多人可能会张口就来，切片扩容的时候，如果老切片的容量小于 1024 那么就再扩容 1倍，也就是新的切片容量是老切片容量的两倍，同理，如果老切片容量大于 1024，那么就扩容1.25 倍</p>
+<p>一个人这么说，多个人这么说，你可能就信了😂😂，可是大家都这么认为，我们就应该盲从吗？还是要自己去确认真实的扩容逻辑和实现方式，那就开始吧😁</p>
+<p>结论先行，<strong>切片对于扩容并不一定是 2 倍，1.25倍，这个要看实际情况</strong></p>
+<p>本文分别从如下几点来聊聊切片的扩容</p>
+<ul>
+<li>扩容是针对切片的，数组无法扩容</li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li>切片扩容到底是扩容到原来的几倍？</li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li>我们一般使用切片的时候可以如何避免频繁的扩容？</li>
+</ul>
+<h2 id="扩容是针对切片的数组无法扩容">扩容是针对切片的，数组无法扩容</h2>
+<p>首先需要明确，数组是不能扩容的，数组定义的时候就已经是定长的了，无法扩容</p>
+<p>切片是可以扩容的，我们可以通过 append 追加的方式来向已有的切片尾部进行追加，若原有切片已满，那么就会发生扩容</p>
+<p>另外，我们知道数组是一段连续的内存地址，同一种数据类型的数据集合，例如这样</p>
+<pre><code>func main() {
+   log.SetFlags(log.Lshortfile)
+   var demoArray = [5]int{1, 2, 3, 4, 5}
+   log.Print(&quot;unsafe.sizeof(int) == &quot;,unsafe.Sizeof(demoArray[0]))
+   for i, _ := range demoArray {
+      log.Printf(&quot;&amp;demoAraay[%d] == %p&quot;, i, &amp;demoArray[i])
+   }
+ }
+</code></pre><p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6340ec90c19a40648352ea96120ffdb5~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>可以看到在这个案例的环境中，一个 int 类型的变量占用 8 个字节，自然对于 demoArray 数组中，地址是连续的，每一个元素占用的空间也是我们所期望的</p>
+<p><strong>那么切片的数据地址也是连续的吗？？</strong></p>
+<p>如果有人问这个问题，实际上是想问切片的底层数组的地址是不是也是连续的</p>
+<p>我们知道，切片 slice 在 Go 中是一个结构体，其中 array 字段是一个指针，指向了一块连续的内存地址，也就是底层数组</p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/660d27e5bd604f8dac6c1135486ffc5c~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<pre><code>type slice struct {
+   array unsafe.Pointer
+   len   int
+   cap   int
+}
+</code></pre><p>其中 len 字段记录了当前底层数组的实际有的元素个数，cap 表示底层数组的容量，自然也是切片slice 的容量</p>
+<pre><code>func main(){
+    var demoSli = []int{1,2,3,4,5}
+    log.Printf(&quot;len == %d,cap == %d&quot;,len(demoSli),cap(demoSli))
+    for i, _ := range demoSli {
+       log.Printf(&quot;&amp;demoSli[%d] == %p&quot;, i, &amp;demoSli[i])
+    }
+}
+</code></pre><p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c0acbafdb5324c2da1ae5a318f661f84~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>自然，demoSli 中的元素打印出来，地址也是连续的，没有毛病</p>
+<p>此处 xdm 模拟的时候，切勿去打印拷贝值的地址，例如下面这种方式是相当不明智的</p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b88b70f9b1014a5bb3b70923d02dbb64~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>现在简单的去给 切片追加一个元素</p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/816d0d361b0a4dea98d7ef4d089152f3~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>可以看到切片的容量变成了原来的两倍（容量从 5 扩容成 10），且切片中底层数组的元素地址自然也是连续的，不需要着急下结论，继续往下看，好戏在后头</p>
+<h2 id="切片扩容到底是扩容到原来的几倍">切片扩容到底是扩容到原来的几倍？</h2>
+<h3 id="案例1-向一个cap-为-0-的切片中追加-2000-个元素查看被扩容了几次">案例1 向一个cap 为 0 的切片中追加 2000 个元素，查看被扩容了几次</h3>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/33988ea53bd74c68bf532411cc1802f1~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>总共是扩容了 14 次</p>
+<p>可以看到切片容量小于 1024 时，触发扩容都是扩容到原来的 2 倍，但是 大于 1024 之后，有的是 1.25 倍，有的是 1.35 倍，有的大于 1.35 倍，那么这是为什么呢？后面统一看源码</p>
+<h3 id="案例2-再次验证切片容量小于-1024触发到扩容就一定是扩容-2-倍吗">案例2 再次验证切片容量小于 1024，触发到扩容就一定是扩容 2 倍吗</h3>
+<ul>
+<li>先初始化一个切片，里面有 5 个元素，len 为 5，cap 为 5</li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li>再向切片中追加 6 个元素，分别是 <code>6,7,8,9,10,11</code></li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li>最终查看切片的容量是多少</li>
+</ul>
+<pre><code>func main(){
+    var demoSli = []int{1, 2, 3, 4, 5}
+    log.Printf(&quot;len == %d,cap == %d&quot;, len(demoSli), cap(demoSli))
+    for i, _ := range demoSli {
+       log.Printf(&quot;&amp;demoSli[%d] == %p&quot;, i, &amp;demoSli[i])
+    }
+    
+    demoSli = append(demoSli,6,7,8,9,10,11)
+    log.Printf(&quot;len == %d,cap == %d&quot;,len(demoSli),cap(demoSli))
+    for i, _ := range demoSli {
+       log.Printf(&quot;&amp;demoSli[%d] == %p&quot;, i, &amp;demoSli[i])
+    }
+}
+</code></pre><p>通过这一段代码，我们可以看到，讲一个 len 为 5，cap 为 5 的切片，追加数字 6 的时候，切片应该要扩容到 10，然后追加到数字 11 的时候，切片应该扩容到 20，可实际真的是这样吗？</p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6cd508cd6f4f4bd5926cf9578db6b9e4~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>xdm 可以将上述 demo 贴到自己环境试试，<strong>得到的结果仍然会是切片的容量 cap 最终是 12，并不是 20</strong></p>
+<p>那么这一切都是为什么呢？我们来查看源码一探究竟</p>
+<h3 id="源码赏析">源码赏析</h3>
+<p>查看公共库中 <code>runtime/slice.go</code> 的 <strong>growslice 函数就可以解开我们的疑惑</strong></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8bb9f20d26c34e0da4e82dc672be55e4~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>可以看出在我们使用 append 对切片追加元素的时候，实际上会调用到 <strong>growslice 函数，</strong> growslice 中的核心逻辑我们就可以理解为计算基本的 newcap 和进行字节对齐</p>
+<ol>
+<li><strong>进行基本的新切片容量计算</strong></li>
+</ol>
+<pre><code>// 省略部分
+newcap := old.cap
+doublecap := newcap + newcap
+if cap &gt; doublecap {
+   newcap = cap
+} else {
+   if old.cap &lt; 1024 {
+      newcap = doublecap
+   } else {
+      // Check 0 &lt; newcap to detect overflow
+      // and prevent an infinite loop.
+      for 0 &lt; newcap &amp;&amp; newcap &lt; cap {
+         newcap += newcap / 4
+      }
+      // Set newcap to the requested cap when
+      // the newcap calculation overflowed.
+      if newcap &lt;= 0 {
+         newcap = cap
+      }
+   }
+}
+// 省略部分
+</code></pre><p>此处逻辑可以知道</p>
+<ul>
+<li>如果当前传入的 cap 是比原有切片 cap 的 2 倍还要大，那么就会按照当前传入的 cap 来作为新切片的容量</li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li>
+<p>否则去校验原有切片的容量是否小于 1024</p>
+<ul>
+<li>若小于 1024 ，则按照原有的切片容量的 2 倍进行扩容</li>
+<li>若大于等于 1024 ，那么就按照原有切片的 1.25 倍继续扩容</li>
+</ul>
+</li>
+</ul>
+<p>然后是否看到这里就就结束了呢？就下定论来呢？并不，我们切莫断章取义，需要看全整个流程</p>
+<ol start="2">
+<li><strong>进行基本的字节对齐</strong></li>
+</ol>
+<p><strong>growslice 函数</strong> 计算出基本的 newcap 之后，还需要按照类型进行基本的字节对齐，此处字节对齐之后主要是 <strong>roundupsize</strong> 的函数实现，顺便将其涉及到的常量放到一起给大家展示一波</p>
+<pre><code>const (
+   _MaxSmallSize = 32768
+   smallSizeDiv = 8
+   smallSizeMax = 1024
+   largeSizeDiv = 128
+   _NumSizeClasses = 68
+   _PageShift = 13
+)
+func roundupsize(size uintptr) uintptr {
+   if size &lt; _MaxSmallSize {
+      if size &lt;= smallSizeMax-8 {
+         return uintptr(class_to_size[size_to_class8[divRoundUp(size, smallSizeDiv)]])
+      } else {
+         return uintptr(class_to_size[size_to_class128[divRoundUp(size-smallSizeMax, largeSizeDiv)]])
+      }
+   }
+   if size+ _PageSize &lt; size {
+      return size
+   }
+   return alignUp(size, _PageSize)
+}
+
+func divRoundUp(n, a uintptr) uintptr {
+   // a is generally a power of two. This will get inlined and
+   // the compiler will optimize the division.
+   return (n + a - 1) / a
+}
+var size_to_class8 = [smallSizeMax/smallSizeDiv + 1]uint8{0, 1, 2, 3, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, ...}
+</code></pre><p>光看这个函数，没啥感觉，函数逻辑比较简单，就是基本的计算和索引，那么我们讲上述的<strong>案例2</strong>带入，来计算一下</p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d5260ef936b3452ca34162437b73b6d8~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>此处很明确，当前旧的切片的 cap 为 5</p>
+<p>也就是 <strong>growslice 函数</strong> 中 old.cap 为 5，传入的 cap 为 11，因此<code> cap &gt; 2*old.cap</code></p>
+<p><strong>因此 newcap 此处等于 11</strong></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e977037f8fdb44fb95df5f82d1155475~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p><strong>开始计算字节对齐之后的结果</strong></p>
+<ul>
+<li>roundupsize(uintptr(newcap) * sys.<em>PtrSize</em>) ，其中 newcap = 11，sys.<em>PtrSize = 8</em>，则 <strong>roundupsize</strong> 参数传入 <strong>88 ，此环境指针占用 8 字节</strong></li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li>
+<p>按照如下逻辑进行计算</p>
+<ul>
+<li>divRoundUp(88, 8) = 11</li>
+<li>size_to_class8[11] = 8</li>
+<li>class_to_size[8] = 96</li>
+</ul>
+</li>
+</ul>
+<p>此处环境我们的 int 类型是占用 8 个字节，<strong>因此最终的 newcap = 96/8 = 12</strong></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/37e6115ba0814d4899cf45fbf26fc030~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>经过上述源码的处理，最终我们就可以正常的得到最终切片容量被扩容到 12 ，xdm 可以去看实际的源码</p>
+<h3 id="小结">小结</h3>
+<p>使用 append 进行切片扩容的时候，先会按照基本的逻辑来计算 <strong>newcap</strong> 的大小</p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8cf702418d9f41eab7c90158026eea48~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p><strong>最终再进行字节对齐</strong></p>
+<p>那么实际上，最终的切片容量一般是<strong>会等于或者大于原有的 2倍 或者是 1.25 倍的</strong></p>
+<h2 id="我们一般使用切片的时候可以如何避免频繁的扩容">我们一般使用切片的时候可以如何避免频繁的扩容？</h2>
+<p>一般在使用切片的时候，尽量避免频繁的去扩容，我们可以对已知数据量的数据，进行一次性去分配切片的容量</p>
+<p>例如，数据量有 1000 个，那么我们就可以使用 make 的方式来进行初始化</p>
+<pre><code>sli := make([]int, 0, 1000)
+</code></pre><p>本次就是这样，如果对源码还挺感兴趣的话，xdm 可以去实际查看一下源码哦，希望对你有帮助</p>
+<p><strong>感谢阅读，欢迎交流，点个赞，关注一波 再走吧</strong></p>
+<h2 id="欢迎点赞关注收藏">欢迎点赞，关注，收藏</h2>
+<p>朋友们，你的支持和鼓励，是我坚持分享，提高质量的动力</p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d79b47c4604b49d7a08ed67f9f6e99b5~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>技术是开放的，我们的心态，更应是开放的。拥抱变化，向阳而生，努力向前行。</p>
+<p>我是<strong>阿兵云原生</strong>，欢迎点赞关注收藏，下次见~</p>
+<p><strong>文中提到的技术点，感兴趣的可以查看这些文章：</strong></p>
+<ul>
+<li><a href="https://juejin.cn/post/7018951329133363208">你以为传切片就是传引用了吗？</a></li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li><a href="https://juejin.cn/post/7172730607162621983">【切片】基础不扎实引发的问题</a></li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li><a href="https://juejin.cn/post/7175707748779163703">Go 语言中 panic 和 recover 搭配使用</a></li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li><a href="https://juejin.cn/post/7176068424060108855">Go 语言中的反射</a></li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li><a href="https://juejin.cn/post/7172358378306404366">你真的知道 GO 中 nil 代表什么吗？</a></li>
+</ul>
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>Author: </strong><a rel="author" href="https://qingconglaixueit.github.io/">阿兵云原生</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="https://qingconglaixueit.github.io/post/qiepiankuorong/">https://qingconglaixueit.github.io/post/qiepiankuorong/</a></li>
+        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/post/tuanduibiandong/">团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！</a></li>
+        
+        <li><a href="/post/hebijuanai/">何必卷 AI </a></li>
+        
+        <li><a href="/post/wodegetrenweixin/">我的个人微信迅速接入了chatgpt</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            No tags
+            
+        </div>
+    </article>
+    
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "yourdiscussshortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "your github repo"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2023 <a href="https://qingconglaixueit.github.io/">阿兵云原生 By 阿兵云原生</a>
+        
+    </div>
+    <br />
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">阿兵云原生</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+<style type="text/css">
+div.highlight {
+    position: relative;
+    margin: 1em 0px;
+}
+
+.copy-code {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 5px;
+    font: inherit;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    --radius: 8px;
+}
+
+div.highlight:hover .copy-code,pre:hover .copy-code {
+    display: block;
+}
+
+</style>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+    <script src='/js/douban.js'></script>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='https://qingconglaixueit.github.io/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://qingconglaixueit.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/qiepiankuorong/" title="Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍" target="_blank">Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/tuanduibiandong/" title="团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！" target="_blank">团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/hebijuanai/" title="何必卷 AI " target="_blank">何必卷 AI </a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/wodegetrenweixin/" title="我的个人微信迅速接入了chatgpt" target="_blank">我的个人微信迅速接入了chatgpt</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title" style="color:red">Ads</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a href="xxxx" title="xxxxx" target="_blank" style="color:red">
+                
+                    <img src="xxxx">
+                
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="xxxx" title="xxx">xx</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="https://qingconglaixueit.github.io/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
