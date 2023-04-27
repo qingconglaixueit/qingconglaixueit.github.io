@@ -6,7 +6,16 @@
     <description>Recent content on 阿兵云原生</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Thu, 27 Apr 2023 10:52:54 +0800</lastBuildDate><atom:link href="https://qingconglaixueit.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 27 Apr 2023 11:02:59 +0800</lastBuildDate><atom:link href="https://qingconglaixueit.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>我们要不要使用 ORM？</title>
+      <link>https://qingconglaixueit.github.io/post/orm/</link>
+      <pubDate>Thu, 27 Apr 2023 11:02:59 +0800</pubDate>
+      
+      <guid>https://qingconglaixueit.github.io/post/orm/</guid>
+      <description>本次主要来聊聊关于 ORM 的内容，欢迎评论交流，欢迎批评指正 分别从如下 4 个方面来展开 ORM 他是个啥？ 为什么要用 ORM？ ORM 给我们带来了哪些问题？ 如何去考虑是否要使用 ORM？ ORM 他是个啥？ 一提到 ORM 很多同学知道他是跟数据库相关的一个内容，但是并不清楚他到底是这个啥，自己需不需要，到底怎么玩？ 实际上</description>
+    </item>
+    
     <item>
       <title>Go 语言中 panic 和 recover 搭配使用</title>
       <link>https://qingconglaixueit.github.io/post/panic_revovery/</link>
