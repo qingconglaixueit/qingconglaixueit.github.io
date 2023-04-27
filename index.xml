@@ -6,7 +6,16 @@
     <description>Recent content on 阿兵云原生</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Thu, 27 Apr 2023 10:48:12 +0800</lastBuildDate><atom:link href="https://qingconglaixueit.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 27 Apr 2023 10:52:54 +0800</lastBuildDate><atom:link href="https://qingconglaixueit.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go 语言中 panic 和 recover 搭配使用</title>
+      <link>https://qingconglaixueit.github.io/post/panic_revovery/</link>
+      <pubDate>Thu, 27 Apr 2023 10:52:54 +0800</pubDate>
+      
+      <guid>https://qingconglaixueit.github.io/post/panic_revovery/</guid>
+      <description>本次主要聊聊 Go 语言中关于 panic 和 recover 搭配使用 ，以及 panic 的基本原理 最近工作中审查代码的时候发现一段代码，类似于如下这样，将 recover 放到一个子协程里面，期望去捕获主协程的程序异常 看到此处，是否会想这段代码在项目中是想当然写出来的吧，然而平日中，大多问题是出现在认知偏差上，那么本次，我们就来消除一下</description>
+    </item>
+    
     <item>
       <title>Go 语言中的反射</title>
       <link>https://qingconglaixueit.github.io/post/fanshe/</link>

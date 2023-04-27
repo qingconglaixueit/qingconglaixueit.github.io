@@ -9,20 +9,20 @@
     <meta name="referrer" content="no-referrer-when-downgrade">
     
 
-    <title>Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍 | 阿兵云原生</title>
-    <meta property="og:title" content="Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍 - 阿兵云原生">
+    <title>Go 语言中 panic 和 recover 搭配使用 | 阿兵云原生</title>
+    <meta property="og:title" content="Go 语言中 panic 和 recover 搭配使用 - 阿兵云原生">
     <meta property="og:type" content="article">
         
-    <meta property="article:published_time" content='2023-04-27T10:45:02&#43;08:00'>
+    <meta property="article:published_time" content='2023-04-27T10:52:54&#43;08:00'>
         
         
-    <meta property="article:modified_time" content='2023-04-27T10:45:02&#43;08:00'>
+    <meta property="article:modified_time" content='2023-04-27T10:52:54&#43;08:00'>
         
     <meta name="Keywords" content="golang,go语言,go语言笔记,博客,软件架构,公众号,小程序">
-    <meta name="description" content="Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍">
+    <meta name="description" content="Go 语言中 panic 和 recover 搭配使用">
         
     <meta name="author" content="阿兵云原生">
-    <meta property="og:url" content="https://qingconglaixueit.github.io/post/qiepiankuorong/">
+    <meta property="og:url" content="https://qingconglaixueit.github.io/post/panic_revovery/">
     <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
 
     <link rel="stylesheet" href='/css/normalize.css'>
@@ -142,16 +142,14 @@
     <div class="post-toc-content">
         <nav id="TableOfContents">
   <ul>
-    <li><a href="#扩容是针对切片的数组无法扩容">扩容是针对切片的，数组无法扩容</a></li>
-    <li><a href="#切片扩容到底是扩容到原来的几倍">切片扩容到底是扩容到原来的几倍？</a>
-      <ul>
-        <li><a href="#案例1-向一个cap-为-0-的切片中追加-2000-个元素查看被扩容了几次">案例1 向一个cap 为 0 的切片中追加 2000 个元素，查看被扩容了几次</a></li>
-        <li><a href="#案例2-再次验证切片容量小于-1024触发到扩容就一定是扩容-2-倍吗">案例2 再次验证切片容量小于 1024，触发到扩容就一定是扩容 2 倍吗</a></li>
-        <li><a href="#源码赏析">源码赏析</a></li>
-        <li><a href="#小结">小结</a></li>
-      </ul>
-    </li>
-    <li><a href="#我们一般使用切片的时候可以如何避免频繁的扩容">我们一般使用切片的时候可以如何避免频繁的扩容？</a></li>
+    <li><a href="#正常捕获异常">正常捕获异常</a></li>
+    <li><a href="#并没有捕获到异常">并没有捕获到异常</a></li>
+    <li><a href="#panic-基本原理">panic 基本原理</a></li>
+    <li><a href="#源码中的-runtimegopanic">源码中的 <strong>runtime.gopanic</strong></a></li>
+    <li><a href="#fatalpanic"><strong>fatalpanic</strong></a></li>
+    <li><a href="#recover">recover</a></li>
+    <li><a href="#runtimegorecover"><strong>runtime.gorecover</strong></a></li>
+    <li><a href="#总结">总结</a></li>
     <li><a href="#欢迎点赞关注收藏">欢迎点赞，关注，收藏</a></li>
   </ul>
 </nav>
@@ -190,10 +188,10 @@
 </script>
     <article class="post">
         <header>
-            <h1 class="post-title">Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍</h1>
+            <h1 class="post-title">Go 语言中 panic 和 recover 搭配使用</h1>
         </header>
         
-  <time datetime="2023-04-27T02:45:02Z" class="post-meta meta-date dt-published">
+  <time datetime="2023-04-27T02:52:54Z" class="post-meta meta-date dt-published">
     2023-04-27
   </time>
 
@@ -208,255 +206,278 @@
         
         
         <div class="post-content">
-            <p><strong>本次主要来聊聊关于切片的扩容是如何扩的，还请大佬们不吝赐教</strong></p>
-<p>切片，相信大家用了 Go 语言那么久这这种数据类型并不陌生，但是平日里聊到关于切片是如何扩容的，很多人可能会张口就来，切片扩容的时候，如果老切片的容量小于 1024 那么就再扩容 1倍，也就是新的切片容量是老切片容量的两倍，同理，如果老切片容量大于 1024，那么就扩容1.25 倍</p>
-<p>一个人这么说，多个人这么说，你可能就信了😂😂，可是大家都这么认为，我们就应该盲从吗？还是要自己去确认真实的扩容逻辑和实现方式，那就开始吧😁</p>
-<p>结论先行，<strong>切片对于扩容并不一定是 2 倍，1.25倍，这个要看实际情况</strong></p>
-<p>本文分别从如下几点来聊聊切片的扩容</p>
-<ul>
-<li>扩容是针对切片的，数组无法扩容</li>
-</ul>
-<!-- raw HTML omitted -->
-<ul>
-<li>切片扩容到底是扩容到原来的几倍？</li>
-</ul>
-<!-- raw HTML omitted -->
-<ul>
-<li>我们一般使用切片的时候可以如何避免频繁的扩容？</li>
-</ul>
-<h2 id="扩容是针对切片的数组无法扩容">扩容是针对切片的，数组无法扩容</h2>
-<p>首先需要明确，数组是不能扩容的，数组定义的时候就已经是定长的了，无法扩容</p>
-<p>切片是可以扩容的，我们可以通过 append 追加的方式来向已有的切片尾部进行追加，若原有切片已满，那么就会发生扩容</p>
-<p>另外，我们知道数组是一段连续的内存地址，同一种数据类型的数据集合，例如这样</p>
+            <p><strong>本次主要聊聊 Go 语言中关于 panic 和 recover 搭配使用 ，以及 panic 的基本原理</strong></p>
+<p>最近工作中审查代码的时候发现一段代码，类似于如下这样，将 recover 放到一个子协程里面，期望去捕获主协程的程序异常</p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dadc90fe28714b1e899b2ad729ac146c~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>看到此处，是否会想这段代码在项目中是想当然写出来的吧，然而平日中，大多问题是出现在认知偏差上，那么本次，我们就来消除一下这个认知偏差</p>
+<p>关于 Go 语言中显示的使用 panic 的地方不多，一般 panic ，基本上会出现在咱们程序出现异常退出的时候</p>
+<p><strong>例如访问了空指针里面的值，则会 panic 报错无效的内存地址，又例如访问量数组中不存在的数组所索引，或者切片索引，那么会报错 panic 数组越界等等</strong></p>
+<p>可是碰到这些 panic 的时候，实际上我们并不期望当前的服务直接挂掉，而是期望这个异常能够被识别，且不影响程序其他部分的模块运行</p>
+<h2 id="正常捕获异常">正常捕获异常</h2>
+<p>在 Go 中可以将 defer 和 recover 进行搭配使用，可以捕获和处理大部分的异常情况，例如可以这样</p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/15e5867daad34d74bb1a27833be9707e~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>这里可以看到，recover 捕获异常和发生异常的部分是在同一个协程中，实验证明是可以正常捕获并且处理异常</p>
+<h2 id="并没有捕获到异常">并没有捕获到异常</h2>
+<ol>
+<li>直接不做显示的 recover，自然 panic 程序崩溃会如期而至，此处我们显示的使用 panic 函数来制造恐慌</li>
+</ol>
 <pre><code>func main() {
    log.SetFlags(log.Lshortfile)
-   var demoArray = [5]int{1, 2, 3, 4, 5}
-   log.Print(&quot;unsafe.sizeof(int) == &quot;,unsafe.Sizeof(demoArray[0]))
-   for i, _ := range demoArray {
-      log.Printf(&quot;&amp;demoAraay[%d] == %p&quot;, i, &amp;demoArray[i])
-   }
- }
-</code></pre><p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6340ec90c19a40648352ea96120ffdb5~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
-<p>可以看到在这个案例的环境中，一个 int 类型的变量占用 8 个字节，自然对于 demoArray 数组中，地址是连续的，每一个元素占用的空间也是我们所期望的</p>
-<p><strong>那么切片的数据地址也是连续的吗？？</strong></p>
-<p>如果有人问这个问题，实际上是想问切片的底层数组的地址是不是也是连续的</p>
-<p>我们知道，切片 slice 在 Go 中是一个结构体，其中 array 字段是一个指针，指向了一块连续的内存地址，也就是底层数组</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/660d27e5bd604f8dac6c1135486ffc5c~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
-<pre><code>type slice struct {
-   array unsafe.Pointer
-   len   int
-   cap   int
-}
-</code></pre><p>其中 len 字段记录了当前底层数组的实际有的元素个数，cap 表示底层数组的容量，自然也是切片slice 的容量</p>
-<pre><code>func main(){
-    var demoSli = []int{1,2,3,4,5}
-    log.Printf(&quot;len == %d,cap == %d&quot;,len(demoSli),cap(demoSli))
-    for i, _ := range demoSli {
-       log.Printf(&quot;&amp;demoSli[%d] == %p&quot;, i, &amp;demoSli[i])
-    }
-}
-</code></pre><p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c0acbafdb5324c2da1ae5a318f661f84~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
-<p>自然，demoSli 中的元素打印出来，地址也是连续的，没有毛病</p>
-<p>此处 xdm 模拟的时候，切勿去打印拷贝值的地址，例如下面这种方式是相当不明智的</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b88b70f9b1014a5bb3b70923d02dbb64~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
-<p>现在简单的去给 切片追加一个元素</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/816d0d361b0a4dea98d7ef4d089152f3~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
-<p>可以看到切片的容量变成了原来的两倍（容量从 5 扩容成 10），且切片中底层数组的元素地址自然也是连续的，不需要着急下结论，继续往下看，好戏在后头</p>
-<h2 id="切片扩容到底是扩容到原来的几倍">切片扩容到底是扩容到原来的几倍？</h2>
-<h3 id="案例1-向一个cap-为-0-的切片中追加-2000-个元素查看被扩容了几次">案例1 向一个cap 为 0 的切片中追加 2000 个元素，查看被扩容了几次</h3>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/33988ea53bd74c68bf532411cc1802f1~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
-<p>总共是扩容了 14 次</p>
-<p>可以看到切片容量小于 1024 时，触发扩容都是扩容到原来的 2 倍，但是 大于 1024 之后，有的是 1.25 倍，有的是 1.35 倍，有的大于 1.35 倍，那么这是为什么呢？后面统一看源码</p>
-<h3 id="案例2-再次验证切片容量小于-1024触发到扩容就一定是扩容-2-倍吗">案例2 再次验证切片容量小于 1024，触发到扩容就一定是扩容 2 倍吗</h3>
-<ul>
-<li>先初始化一个切片，里面有 5 个元素，len 为 5，cap 为 5</li>
-</ul>
-<!-- raw HTML omitted -->
-<ul>
-<li>再向切片中追加 6 个元素，分别是 <code>6,7,8,9,10,11</code></li>
-</ul>
-<!-- raw HTML omitted -->
-<ul>
-<li>最终查看切片的容量是多少</li>
-</ul>
-<pre><code>func main(){
-    var demoSli = []int{1, 2, 3, 4, 5}
-    log.Printf(&quot;len == %d,cap == %d&quot;, len(demoSli), cap(demoSli))
-    for i, _ := range demoSli {
-       log.Printf(&quot;&amp;demoSli[%d] == %p&quot;, i, &amp;demoSli[i])
-    }
-    
-    demoSli = append(demoSli,6,7,8,9,10,11)
-    log.Printf(&quot;len == %d,cap == %d&quot;,len(demoSli),cap(demoSli))
-    for i, _ := range demoSli {
-       log.Printf(&quot;&amp;demoSli[%d] == %p&quot;, i, &amp;demoSli[i])
-    }
-}
-</code></pre><p>通过这一段代码，我们可以看到，讲一个 len 为 5，cap 为 5 的切片，追加数字 6 的时候，切片应该要扩容到 10，然后追加到数字 11 的时候，切片应该扩容到 20，可实际真的是这样吗？</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6cd508cd6f4f4bd5926cf9578db6b9e4~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
-<p>xdm 可以将上述 demo 贴到自己环境试试，<strong>得到的结果仍然会是切片的容量 cap 最终是 12，并不是 20</strong></p>
-<p>那么这一切都是为什么呢？我们来查看源码一探究竟</p>
-<h3 id="源码赏析">源码赏析</h3>
-<p>查看公共库中 <code>runtime/slice.go</code> 的 <strong>growslice 函数就可以解开我们的疑惑</strong></p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8bb9f20d26c34e0da4e82dc672be55e4~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
-<p>可以看出在我们使用 append 对切片追加元素的时候，实际上会调用到 <strong>growslice 函数，</strong> growslice 中的核心逻辑我们就可以理解为计算基本的 newcap 和进行字节对齐</p>
-<ol>
-<li><strong>进行基本的新切片容量计算</strong></li>
-</ol>
-<pre><code>// 省略部分
-newcap := old.cap
-doublecap := newcap + newcap
-if cap &gt; doublecap {
-   newcap = cap
-} else {
-   if old.cap &lt; 1024 {
-      newcap = doublecap
-   } else {
-      // Check 0 &lt; newcap to detect overflow
-      // and prevent an infinite loop.
-      for 0 &lt; newcap &amp;&amp; newcap &lt; cap {
-         newcap += newcap / 4
-      }
-      // Set newcap to the requested cap when
-      // the newcap calculation overflowed.
-      if newcap &lt;= 0 {
-         newcap = cap
-      }
-   }
-}
-// 省略部分
-</code></pre><p>此处逻辑可以知道</p>
-<ul>
-<li>如果当前传入的 cap 是比原有切片 cap 的 2 倍还要大，那么就会按照当前传入的 cap 来作为新切片的容量</li>
-</ul>
-<!-- raw HTML omitted -->
-<ul>
-<li>
-<p>否则去校验原有切片的容量是否小于 1024</p>
-<ul>
-<li>若小于 1024 ，则按照原有的切片容量的 2 倍进行扩容</li>
-<li>若大于等于 1024 ，那么就按照原有切片的 1.25 倍继续扩容</li>
-</ul>
-</li>
-</ul>
-<p>然后是否看到这里就就结束了呢？就下定论来呢？并不，我们切莫断章取义，需要看全整个流程</p>
-<ol start="2">
-<li><strong>进行基本的字节对齐</strong></li>
-</ol>
-<p><strong>growslice 函数</strong> 计算出基本的 newcap 之后，还需要按照类型进行基本的字节对齐，此处字节对齐之后主要是 <strong>roundupsize</strong> 的函数实现，顺便将其涉及到的常量放到一起给大家展示一波</p>
-<pre><code>const (
-   _MaxSmallSize = 32768
-   smallSizeDiv = 8
-   smallSizeMax = 1024
-   largeSizeDiv = 128
-   _NumSizeClasses = 68
-   _PageShift = 13
-)
-func roundupsize(size uintptr) uintptr {
-   if size &lt; _MaxSmallSize {
-      if size &lt;= smallSizeMax-8 {
-         return uintptr(class_to_size[size_to_class8[divRoundUp(size, smallSizeDiv)]])
-      } else {
-         return uintptr(class_to_size[size_to_class128[divRoundUp(size-smallSizeMax, largeSizeDiv)]])
-      }
-   }
-   if size+ _PageSize &lt; size {
-      return size
-   }
-   return alignUp(size, _PageSize)
-}
 
-func divRoundUp(n, a uintptr) uintptr {
-   // a is generally a power of two. This will get inlined and
-   // the compiler will optimize the division.
-   return (n + a - 1) / a
+   panic(&quot;panic coming...&quot;)
+
 }
-var size_to_class8 = [smallSizeMax/smallSizeDiv + 1]uint8{0, 1, 2, 3, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, ...}
-</code></pre><p>光看这个函数，没啥感觉，函数逻辑比较简单，就是基本的计算和索引，那么我们讲上述的<strong>案例2</strong>带入，来计算一下</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d5260ef936b3452ca34162437b73b6d8~tplv-k3u1fbpfcp-zoom-1.image" />   
+</code></pre><p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/de296ce5409c4bfcb967b42aeb510b9b~tplv-k3u1fbpfcp-zoom-1.image" />   
     </p>
-<p>此处很明确，当前旧的切片的 cap 为 5</p>
-<p>也就是 <strong>growslice 函数</strong> 中 old.cap 为 5，传入的 cap 为 11，因此<code> cap &gt; 2*old.cap</code></p>
-<p><strong>因此 newcap 此处等于 11</strong></p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e977037f8fdb44fb95df5f82d1155475~tplv-k3u1fbpfcp-zoom-1.image" />   
+<ol start="2">
+<li>不使用 defer 来进行处理</li>
+</ol>
+<pre><code>func main() {
+   log.SetFlags(log.Lshortfile)
+    if err := recover(); err != nil {
+     log.Println(&quot;recover panic : &quot;, err)
+    }
+   panic(&quot;panic coming...&quot;)
+
+}
+</code></pre><p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/91742bc2edb1465ea0fca5a9b2501bf0~tplv-k3u1fbpfcp-zoom-1.image" />   
     </p>
-<p><strong>开始计算字节对齐之后的结果</strong></p>
+<p>自然 recover 函数是在 panic 调用之前就已经执行，此时是还没有异常需要捕获和恢复的，待程序运行到 panic 处的时候，实际上并没有没有处理程序崩溃的异常</p>
+<p>结果，仍然是程序崩溃</p>
+<ol start="3">
+<li>当然，还有文章开头提到的出现 panic 的位置和捕获和处理程序崩溃异常的位置不在同一个协程，自然也是没法捕获到的，这一点需要注意，其他的语言可能不是这样，但是 Go 中是这样的</li>
+</ol>
+<h2 id="panic-基本原理">panic 基本原理</h2>
+<p>看了上述现象，实际上还是对知识点理解得不够，使用的时候想当然了，就像使用 defer 一样，如果对他不够了解的话，使用的时候，确实会出现一些奇奇怪怪的现象，对于 defer 的使用可以查看文末的文章地址</p>
+<ol>
+<li>panic 函数和 recover 函数，Go 源码<code>builtin\builtin.go</code>中可以看到注释</li>
+</ol>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/31442b50f30547c681e857c7b7ff6e9a~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>注释中有说关于 panic 和 recover 的使用是作用于当前协程的，因此我们使用的时候，如果跨协程教程使用，自然不会达到我们期望的效果</p>
+<ol start="2">
+<li>继续查看关于 panic 的源码，实际上是一个结构，放到 defer 结构里面的一个指针，源码位置：<code>runtime\runtime2.go</code></li>
+</ol>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f584a09614c24655a65b0020b0151f6d~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>_panic 的结构如下：</p>
+<pre><code>type _panic struct {
+   argp      unsafe.Pointer
+   arg       interface{}
+   link      *_panic
+   pc        uintptr
+   sp        unsafe.Pointer
+   recovered bool
+   aborted   bool
+   goexit    bool
+}
+</code></pre><p>上述两个结构表达的意思是，程序中出现 panic 的时候，实际上都会创建一个 _panic 结构，这个 _panic 结构里面存储了当前程序崩溃的一些必要信息，如下：</p>
+<ol>
+<li>argp</li>
+</ol>
+<p>是一个 unsafe.Pointer 类型的成员，指向 defer 调用参数的指针</p>
+<ol start="2">
+<li>arg</li>
+</ol>
+<p>出现 panic 的原因，如果我们显示调用 panic，那么就是我们填入 panic 函数中的参数，例如上述的 <code>panic coming ...</code></p>
+<ol start="3">
+<li>link</li>
+</ol>
+<p>是一个指针，指向上一个，最近的一个 _panic 结构的地址，实际上此处就可以看到这个指针对应的是一个链表，一个又多个 _panic 结构组成的链表</p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ba9bf8f8678b49cfa8eb4854ea847fde~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<ol start="4">
+<li>recovered</li>
+</ol>
+<p>panic 是否已经处理完毕，即当前的这个 panic 是否是已经被 recover 了</p>
+<ol start="5">
+<li>aborted</li>
+</ol>
+<p>表示当前的 panic 是否被中止</p>
+<ol start="6">
+<li>对于 pc 和 sp 自然就是我们熟知的 pc 通用寄存器，在汇编中是指向当前运行指令的下一条指令，sp 则是栈指针 stack pointer，用于入栈和出栈的</li>
+</ol>
+<p>我们知道运行函数的时候需要入栈，运行完毕之后需要出栈</p>
+<h2 id="源码中的-runtimegopanic">源码中的 <strong>runtime.gopanic</strong></h2>
+<p>那么我们继续来阅读源码，上述看到 sp 和 pc ，那么我们就简单写一个 panic 的代码来看看汇编到底是怎么执行的，不用担心看不懂，我们只需要看关键词就行</p>
+<p>还是上面的程序</p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/25d348689d904737b487c2a4ac441ab1~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>程序运行的时候可以执行 <code>go tool compile -S main.go</code></p>
+<p>可以看到汇编代码，可能其他的看不懂，但是我们可以看到如下关键词</p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/00406cd240c3440e9ee951e792253864~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <ul>
-<li>roundupsize(uintptr(newcap) * sys.<em>PtrSize</em>) ，其中 newcap = 11，sys.<em>PtrSize = 8</em>，则 <strong>roundupsize</strong> 参数传入 <strong>88 ，此环境指针占用 8 字节</strong></li>
+<li>log.(*Logger).SetFlags(SB) 即是执行到我们调用 log 去设置参数</li>
 </ul>
 <!-- raw HTML omitted -->
 <ul>
-<li>
-<p>按照如下逻辑进行计算</p>
-<ul>
-<li>divRoundUp(88, 8) = 11</li>
-<li>size_to_class8[11] = 8</li>
-<li>class_to_size[8] = 96</li>
+<li>程序走到 panic 函数的时候，实际上是执行了 <strong>runtime.gopanic</strong> 函数，我们一起看看源码</li>
 </ul>
-</li>
-</ul>
-<p>此处环境我们的 int 类型是占用 8 个字节，<strong>因此最终的 newcap = 96/8 = 12</strong></p>
 <p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/37e6115ba0814d4899cf45fbf26fc030~tplv-k3u1fbpfcp-zoom-1.image" />   
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/70673dc4e77d4f92a3b82155cb684fc2~tplv-k3u1fbpfcp-zoom-1.image" />   
     </p>
-<p>经过上述源码的处理，最终我们就可以正常的得到最终切片容量被扩容到 12 ，xdm 可以去看实际的源码</p>
-<h3 id="小结">小结</h3>
-<p>使用 append 进行切片扩容的时候，先会按照基本的逻辑来计算 <strong>newcap</strong> 的大小</p>
+<p><strong>代码中可以看到</strong> <strong><code>p.recovered</code></strong> <strong>逻辑下的关于 recover 的逻辑被删除掉了，在文章的后面会继续说到，当前我们先关注 panic 的事项</strong></p>
+<p><strong>runtime.gopanic</strong> 程序的逻辑大体是这样的</p>
+<ol>
+<li>获取当前 协程 的指针</li>
+</ol>
+<!-- raw HTML omitted -->
+<ol start="2">
+<li>初始化一个 _panic 结构 p，并将当前协程上对应的数据赋值给到 p 上，且将 当前协程 _panic 挂到 link 上</li>
+</ol>
+<!-- raw HTML omitted -->
+<ol start="3">
+<li>进入循环后，拿到当前协程的 _defer 数据</li>
+</ol>
+<!-- raw HTML omitted -->
+<ol start="4">
+<li>查看 _defer 指针数据 中是否有 defer 调用，如果有则执行</li>
+</ol>
+<!-- raw HTML omitted -->
+<ol start="5">
+<li>处理完基本逻辑之后，打印 panic 信息，例如我们 demo 中的<code> panic coming ... </code>信息</li>
+</ol>
+<!-- raw HTML omitted -->
+<ol start="6">
+<li>最终退出程序</li>
+</ol>
+<p>Xdm 可以看上图，自己捋一捋逻辑就清晰了</p>
+<p>接着，我们来看</p>
+<h2 id="fatalpanic"><strong>fatalpanic</strong></h2>
 <p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8cf702418d9f41eab7c90158026eea48~tplv-k3u1fbpfcp-zoom-1.image" />   
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9b54e334e468404f927678c480113876~tplv-k3u1fbpfcp-zoom-1.image" />   
     </p>
-<p><strong>最终再进行字节对齐</strong></p>
-<p>那么实际上，最终的切片容量一般是<strong>会等于或者大于原有的 2倍 或者是 1.25 倍的</strong></p>
-<h2 id="我们一般使用切片的时候可以如何避免频繁的扩容">我们一般使用切片的时候可以如何避免频繁的扩容？</h2>
-<p>一般在使用切片的时候，尽量避免频繁的去扩容，我们可以对已知数据量的数据，进行一次性去分配切片的容量</p>
-<p>例如，数据量有 1000 个，那么我们就可以使用 make 的方式来进行初始化</p>
-<pre><code>sli := make([]int, 0, 1000)
-</code></pre><p>本次就是这样，如果对源码还挺感兴趣的话，xdm 可以去实际查看一下源码哦，希望对你有帮助</p>
+<p>通过 <strong>runtime.gopanic</strong> 我们可以看到 <strong>fatalpanic</strong> 函数基本上就是做一个收尾工作了，如果上述程序处理完毕之后， <strong>fatalpanic</strong> 校验到 panic 是需要 recover 的，那么就打印 [recovered]</p>
+<p>打印的这个信息是由 上图中 <strong>printpanics 完成的</strong></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4544c310ee9744d0b4e6232ec5d517b4~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>这下知道 panic 是如何去执行的了，那么对于现在来研究 recover 是如何落实的</p>
+<h2 id="recover">recover</h2>
+<p>还是同一个例子，咱们将 defer 部分的代码注打开，来继续看看效果</p>
+<pre><code>func main() {
+   log.SetFlags(log.Lshortfile)
+
+   defer func() {
+      if err := recover(); err != nil {
+         log.Println(&quot;recover panic : &quot;, err)
+      }
+   }()
+
+   panic(&quot;panic coming...&quot;)
+
+}
+</code></pre><p>自然效果是我们期望的，捕获到了异常，且处理了</p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e75ac6102c2d4cddbd15c7809cd75971~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>继续打印汇编来查看一下关键词，是否有我们期望的函数出现</p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5ca06f91f492417a9475f3b54ccf5dec~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f76215d3ed7b400898a30372bb7681a4~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>此处我们可以看到，实际 Go 中调用了多个函数</p>
+<ol>
+<li>runtime.gorecover</li>
+</ol>
+<!-- raw HTML omitted -->
+<ol start="2">
+<li>main.main.opendefer</li>
+</ol>
+<!-- raw HTML omitted -->
+<ol start="3">
+<li>log.(*Logger).SetFlags</li>
+</ol>
+<!-- raw HTML omitted -->
+<ol start="4">
+<li>runtime.gopanic</li>
+</ol>
+<!-- raw HTML omitted -->
+<ol start="5">
+<li>runtime.deferreturn</li>
+</ol>
+<p>自然明眼人都看的出现，关键的函数实现自然是 <strong>runtime.gorecover ，那么我们来一探究竟</strong></p>
+<h2 id="runtimegorecover"><strong>runtime.gorecover</strong></h2>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/840f0ee1d09b450ca57c99ce819e07e6~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>查看源码我们可以知道， <strong>runtime.gorecover</strong> 实际上就是根据当前协程的 _panic 结构数据来判断是否需要恢复，如果需要则将<code> p.recovered = true</code></p>
+<p>自然在这里将当前协程的数据修改掉，正是为了后续执行 <strong>runtime.gopanic</strong> 的时候提供保障， <strong>runtime.gopanic</strong> 执行的时候就会去判断和处理这个 <code>p.recovered</code></p>
+<p>前文中提到的关于 <strong>runtime.gopanic</strong> 中 处理 <code>p.recovered</code> 的逻辑是这样的</p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/856d9246b01e421eac781337d52290c2~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/69d02e6244e74974b76362443ef0fdb7~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<ol>
+<li>如上可以看到 <strong>runtime.gorecover 去对</strong> <strong><code>p.recovered</code></strong> <strong>设置是否恢复</strong></li>
+</ol>
+<!-- raw HTML omitted -->
+<ol start="2">
+<li><strong>runtime.gopanic 中校验</strong> <strong><code>p.recovered</code></strong> <strong>已处理，则执行 recovery 函数</strong></li>
+</ol>
+<!-- raw HTML omitted -->
+<ol start="3">
+<li><strong>recovery 函数</strong>中去处理对应的寄存器的值去维护上下文</li>
+</ol>
+<!-- raw HTML omitted -->
+<ol start="4">
+<li>最后我们可以看到最终调用 gogo 函数跳回原来调用的位置</li>
+</ol>
+<p>因此，当我们在同一个协程中出现了 panic，且在同一个协程中去使用 defer 来配合 recover 来进行捕获异常和处理异常，就可以得以实现，看到这里，有没有觉得还是蛮简单的，不就是去对一个 <code>p.recovered</code> 进行配合处理吗</p>
+<p>自然，表面上是这样，其中对于寄存器的各种数据处理涉及的内容还是不少的，不过这不在我们今天聊的范畴中了</p>
+<h2 id="总结">总结</h2>
+<p>至此，相信你已经知道了这些</p>
+<ol>
+<li>为什么 panic 和 defer ，recover 配合使用的时候要在同一个协程中了吧</li>
+</ol>
+<!-- raw HTML omitted -->
+<ol start="2">
+<li>相信你还知道了 panic 和 recover 的处理流程</li>
+</ol>
+<p>当然，如果文章对你有帮助的话，欢迎留言评论哦</p>
 <p><strong>感谢阅读，欢迎交流，点个赞，关注一波 再走吧</strong></p>
 <h2 id="欢迎点赞关注收藏">欢迎点赞，关注，收藏</h2>
 <p>朋友们，你的支持和鼓励，是我坚持分享，提高质量的动力</p>
 <p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d79b47c4604b49d7a08ed67f9f6e99b5~tplv-k3u1fbpfcp-zoom-1.image" />   
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/01a7badd67e244f9a2135d4231bfab11~tplv-k3u1fbpfcp-zoom-1.image" />   
     </p>
 <p>技术是开放的，我们的心态，更应是开放的。拥抱变化，向阳而生，努力向前行。</p>
 <p>我是<strong>阿兵云原生</strong>，欢迎点赞关注收藏，下次见~</p>
 <p><strong>文中提到的技术点，感兴趣的可以查看这些文章：</strong></p>
 <ul>
-<li><a href="https://juejin.cn/post/7018951329133363208">你以为传切片就是传引用了吗？</a></li>
+<li><a href="https://juejin.cn/post/6975686540601245709">GO 中 defer的实现原理</a></li>
 </ul>
 <!-- raw HTML omitted -->
 <ul>
-<li><a href="https://juejin.cn/post/7172730607162621983">【切片】基础不扎实引发的问题</a></li>
+<li><a href="https://juejin.cn/post/7023396440621711396">GO 中的 defer 有哪些注意事项？上</a></li>
 </ul>
 <!-- raw HTML omitted -->
 <ul>
-<li><a href="https://juejin.cn/post/7175707748779163703">Go 语言中 panic 和 recover 搭配使用</a></li>
+<li><a href="https://juejin.cn/post/7023397319119175710">GO 中的 defer 有哪些注意事项？下</a></li>
 </ul>
 <!-- raw HTML omitted -->
 <ul>
-<li><a href="https://juejin.cn/post/7176068424060108855">Go 语言中的反射</a></li>
+<li><a href="https://juejin.cn/post/7173841434456358948">GO 中的指针？</a></li>
 </ul>
 <!-- raw HTML omitted -->
 <ul>
-<li><a href="https://juejin.cn/post/7172358378306404366">你真的知道 GO 中 nil 代表什么吗？</a></li>
+<li><a href="https://juejin.cn/post/7174221563372240933">GO 中优雅编码和降低圈复杂度</a></li>
 </ul>
 
         </div>
@@ -465,7 +486,7 @@ var size_to_class8 = [smallSizeMax/smallSizeDiv + 1]uint8{0, 1, 2, 3, 4, 5, 5, 6
 <div class="post-archive">
     <ul class="post-copyright">
         <li><strong>Author: </strong><a rel="author" href="https://qingconglaixueit.github.io/">阿兵云原生</a></li>
-        <li style="word-break:break-all"><strong>Link: </strong><a href="https://qingconglaixueit.github.io/post/qiepiankuorong/">https://qingconglaixueit.github.io/post/qiepiankuorong/</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="https://qingconglaixueit.github.io/post/panic_revovery/">https://qingconglaixueit.github.io/post/panic_revovery/</a></li>
         <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
     </ul>
 </div>
@@ -478,6 +499,10 @@ var size_to_class8 = [smallSizeMax/smallSizeDiv + 1]uint8{0, 1, 2, 3, 4, 5, 5, 6
 <div class="post-archive">
     <h2>See Also</h2>
     <ul class="listing">
+        
+        <li><a href="/post/fanshe/">Go 语言中的反射</a></li>
+        
+        <li><a href="/post/qiepiankuorong/">Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍</a></li>
         
         <li><a href="/post/tuanduibiandong/">团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！</a></li>
         
