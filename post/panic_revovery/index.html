@@ -1,114 +1,231 @@
-<!DOCTYPE html>
-<html lang="en" >
+<!doctype html>
+<html lang="zh-CN">
+<head>
 
-  <head>
     <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-
-<meta property="og:title" content="Go 语言中 panic 和 recover 搭配使用" />
-<meta property="og:description" content="本次主要聊聊 Go 语言中关于 panic 和 recover 搭配使用 ，以及 panic 的基本原理 最近工作中审查代码的时候发现一段代码，类似于如下这样，将 recover 放到一个子协程里面，期望去捕获主协程的程序异常 看到此处，是否会想这段代码在项目中是想当然写出来的吧，然而平日中，大多问题是出现在认知偏差上，那么本次，我们就来消除一下" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://qingconglaixueit.github.io/post/panic_revovery/" />
-<meta property="article:published_time" content="2023-04-27T10:52:54+08:00" />
-<meta property="article:modified_time" content="2023-04-27T10:52:54+08:00" />
-
-
-
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Go 语言中 panic 和 recover 搭配使用"/>
-<meta name="twitter:description" content="本次主要聊聊 Go 语言中关于 panic 和 recover 搭配使用 ，以及 panic 的基本原理 最近工作中审查代码的时候发现一段代码，类似于如下这样，将 recover 放到一个子协程里面，期望去捕获主协程的程序异常 看到此处，是否会想这段代码在项目中是想当然写出来的吧，然而平日中，大多问题是出现在认知偏差上，那么本次，我们就来消除一下"/>
-<meta name="generator" content="Hugo 0.81.0" />
-
-
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     
-<script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "BlogPosting",
-  "headline": "Go 语言中 panic 和 recover 搭配使用",
-  "url": "https://qingconglaixueit.github.io/post/panic_revovery/",
-  "wordCount": "2495",
-  "datePublished": "2023-04-27T10:52:54+08:00",
-  "dateModified": "2023-04-27T10:52:54+08:00",
-  "author": {
-    "@type": "Person",
-    "name": "阿兵云原生"
-  }
-}
-</script>
-
-
-
-    <link rel="canonical" href="https://qingconglaixueit.github.io/post/panic_revovery/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
 
     <title>Go 语言中 panic 和 recover 搭配使用 | 阿兵云原生</title>
+    <meta property="og:title" content="Go 语言中 panic 和 recover 搭配使用 - 阿兵云原生">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2023-04-27T10:52:54&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2023-04-27T10:52:54&#43;08:00'>
+        
+    <meta name="Keywords" content="golang,go语言,go语言笔记,博客,软件架构,公众号,小程序">
+    <meta name="description" content="Go 语言中 panic 和 recover 搭配使用">
+        
+    <meta name="author" content="阿兵云原生">
+    <meta property="og:url" content="https://qingconglaixueit.github.io/post/panic_revovery/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
 
-    
-    <!-- combined, minified CSS -->
-    
-    <link href="https://qingconglaixueit.github.io/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
-    
-
-    <!-- minified Font Awesome for SVG icons -->
-    
-    <script defer src="https://qingconglaixueit.github.io/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
-
-    <!-- RSS 2.0 feed -->
-    
-
-    
-
-  </head>
-
-  <body>
-
-    
-    <div class="blog-masthead">
-      <div class="container">
-        <nav class="nav blog-nav">
-          <a class="nav-link " href="https://qingconglaixueit.github.io/">Home</a>
-        </nav>
-      </div>
-    </div>
-    
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     
     
-    <header class="blog-header">
-      <div class="container">
-        <h1 class="blog-title" dir="auto"><a href="https://qingconglaixueit.github.io/" rel="home">阿兵云原生</a></h1>
-        <p class="lead blog-description" dir="auto">专注于IT互联网，包括但不限于Go语言(golang)、抖音分析、软件架构等</p>
-      </div>
-    </header>
     
     
+    
+    
+        <link rel="stylesheet" href='/css/douban.css'>
+    
+        <link rel="stylesheet" href='/css/other.css'>
+    
+</head>
 
-    
+<body>
+    <header id="header" class="clearfix">
     <div class="container">
-      <div class="row">
-        <div class="col-sm-8 blog-main">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://qingconglaixueit.github.io/">
+                        阿兵云原生
+                    </a>
+                
+                <p class="description">专注于Go语言(golang),软件架构</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://qingconglaixueit.github.io/">Home</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/tools/" title="工具">工具</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/about/" title="关于">关于</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/post/goisforlovers/" title="(Hu)go Template Primer">(Hu)go Template Primer</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/post/hugoisforlovers/" title="Getting Started with Hugo">Getting Started with Hugo</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/" title="tutorials">tutorials</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
 
-          
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">Table of Contents</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#正常捕获异常">正常捕获异常</a></li>
+    <li><a href="#并没有捕获到异常">并没有捕获到异常</a></li>
+    <li><a href="#panic-基本原理">panic 基本原理</a></li>
+    <li><a href="#源码中的-runtimegopanic">源码中的 <strong>runtime.gopanic</strong></a></li>
+    <li><a href="#fatalpanic"><strong>fatalpanic</strong></a></li>
+    <li><a href="#recover">recover</a></li>
+    <li><a href="#runtimegorecover"><strong>runtime.gorecover</strong></a></li>
+    <li><a href="#总结">总结</a></li>
+    <li><a href="#欢迎点赞关注收藏">欢迎点赞，关注，收藏</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">Go 语言中 panic 和 recover 搭配使用</h1>
+        </header>
+        
+  <time datetime="2023-04-27T02:52:54Z" class="post-meta meta-date dt-published">
+    2023-04-27
+  </time>
 
 
-<article class="blog-post">
-  <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/panic_revovery/">Go 语言中 panic 和 recover 搭配使用</a></h2>
-    <p class="blog-post-meta">
-<time datetime="2023-04-27T10:52:54+08:00">Thu Apr 27, 2023</time>
-</p>
-  </header>
-  <p><strong>本次主要聊聊 Go 语言中关于 panic 和 recover 搭配使用 ，以及 panic 的基本原理</strong></p>
+
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="post-content">
+            <p><strong>本次主要聊聊 Go 语言中关于 panic 和 recover 搭配使用 ，以及 panic 的基本原理</strong></p>
 <p>最近工作中审查代码的时候发现一段代码，类似于如下这样，将 recover 放到一个子协程里面，期望去捕获主协程的程序异常</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dadc90fe28714b1e899b2ad729ac146c~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dadc90fe28714b1e899b2ad729ac146c~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>看到此处，是否会想这段代码在项目中是想当然写出来的吧，然而平日中，大多问题是出现在认知偏差上，那么本次，我们就来消除一下这个认知偏差</p>
 <p>关于 Go 语言中显示的使用 panic 的地方不多，一般 panic ，基本上会出现在咱们程序出现异常退出的时候</p>
 <p><strong>例如访问了空指针里面的值，则会 panic 报错无效的内存地址，又例如访问量数组中不存在的数组所索引，或者切片索引，那么会报错 panic 数组越界等等</strong></p>
 <p>可是碰到这些 panic 的时候，实际上我们并不期望当前的服务直接挂掉，而是期望这个异常能够被识别，且不影响程序其他部分的模块运行</p>
 <h2 id="正常捕获异常">正常捕获异常</h2>
 <p>在 Go 中可以将 defer 和 recover 进行搭配使用，可以捕获和处理大部分的异常情况，例如可以这样</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/15e5867daad34d74bb1a27833be9707e~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/15e5867daad34d74bb1a27833be9707e~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>这里可以看到，recover 捕获异常和发生异常的部分是在同一个协程中，实验证明是可以正常捕获并且处理异常</p>
 <h2 id="并没有捕获到异常">并没有捕获到异常</h2>
 <ol>
@@ -120,7 +237,9 @@
    panic(&quot;panic coming...&quot;)
 
 }
-</code></pre><p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/de296ce5409c4bfcb967b42aeb510b9b~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+</code></pre><p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/de296ce5409c4bfcb967b42aeb510b9b~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <ol start="2">
 <li>不使用 defer 来进行处理</li>
 </ol>
@@ -132,7 +251,9 @@
    panic(&quot;panic coming...&quot;)
 
 }
-</code></pre><p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/91742bc2edb1465ea0fca5a9b2501bf0~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+</code></pre><p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/91742bc2edb1465ea0fca5a9b2501bf0~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>自然 recover 函数是在 panic 调用之前就已经执行，此时是还没有异常需要捕获和恢复的，待程序运行到 panic 处的时候，实际上并没有没有处理程序崩溃的异常</p>
 <p>结果，仍然是程序崩溃</p>
 <ol start="3">
@@ -143,12 +264,16 @@
 <ol>
 <li>panic 函数和 recover 函数，Go 源码<code>builtin\builtin.go</code>中可以看到注释</li>
 </ol>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/31442b50f30547c681e857c7b7ff6e9a~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/31442b50f30547c681e857c7b7ff6e9a~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>注释中有说关于 panic 和 recover 的使用是作用于当前协程的，因此我们使用的时候，如果跨协程教程使用，自然不会达到我们期望的效果</p>
 <ol start="2">
 <li>继续查看关于 panic 的源码，实际上是一个结构，放到 defer 结构里面的一个指针，源码位置：<code>runtime\runtime2.go</code></li>
 </ol>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f584a09614c24655a65b0020b0151f6d~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f584a09614c24655a65b0020b0151f6d~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>_panic 的结构如下：</p>
 <pre><code>type _panic struct {
    argp      unsafe.Pointer
@@ -173,7 +298,9 @@
 <li>link</li>
 </ol>
 <p>是一个指针，指向上一个，最近的一个 _panic 结构的地址，实际上此处就可以看到这个指针对应的是一个链表，一个又多个 _panic 结构组成的链表</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ba9bf8f8678b49cfa8eb4854ea847fde~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ba9bf8f8678b49cfa8eb4854ea847fde~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <ol start="4">
 <li>recovered</li>
 </ol>
@@ -189,10 +316,14 @@
 <h2 id="源码中的-runtimegopanic">源码中的 <strong>runtime.gopanic</strong></h2>
 <p>那么我们继续来阅读源码，上述看到 sp 和 pc ，那么我们就简单写一个 panic 的代码来看看汇编到底是怎么执行的，不用担心看不懂，我们只需要看关键词就行</p>
 <p>还是上面的程序</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/25d348689d904737b487c2a4ac441ab1~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/25d348689d904737b487c2a4ac441ab1~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>程序运行的时候可以执行 <code>go tool compile -S main.go</code></p>
 <p>可以看到汇编代码，可能其他的看不懂，但是我们可以看到如下关键词</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/00406cd240c3440e9ee951e792253864~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/00406cd240c3440e9ee951e792253864~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <ul>
 <li>log.(*Logger).SetFlags(SB) 即是执行到我们调用 log 去设置参数</li>
 </ul>
@@ -200,7 +331,9 @@
 <ul>
 <li>程序走到 panic 函数的时候，实际上是执行了 <strong>runtime.gopanic</strong> 函数，我们一起看看源码</li>
 </ul>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/70673dc4e77d4f92a3b82155cb684fc2~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/70673dc4e77d4f92a3b82155cb684fc2~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p><strong>代码中可以看到</strong> <strong><code>p.recovered</code></strong> <strong>逻辑下的关于 recover 的逻辑被删除掉了，在文章的后面会继续说到，当前我们先关注 panic 的事项</strong></p>
 <p><strong>runtime.gopanic</strong> 程序的逻辑大体是这样的</p>
 <ol>
@@ -229,10 +362,14 @@
 <p>Xdm 可以看上图，自己捋一捋逻辑就清晰了</p>
 <p>接着，我们来看</p>
 <h2 id="fatalpanic"><strong>fatalpanic</strong></h2>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9b54e334e468404f927678c480113876~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9b54e334e468404f927678c480113876~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>通过 <strong>runtime.gopanic</strong> 我们可以看到 <strong>fatalpanic</strong> 函数基本上就是做一个收尾工作了，如果上述程序处理完毕之后， <strong>fatalpanic</strong> 校验到 panic 是需要 recover 的，那么就打印 [recovered]</p>
 <p>打印的这个信息是由 上图中 <strong>printpanics 完成的</strong></p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4544c310ee9744d0b4e6232ec5d517b4~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4544c310ee9744d0b4e6232ec5d517b4~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>这下知道 panic 是如何去执行的了，那么对于现在来研究 recover 是如何落实的</p>
 <h2 id="recover">recover</h2>
 <p>还是同一个例子，咱们将 defer 部分的代码注打开，来继续看看效果</p>
@@ -249,10 +386,16 @@
 
 }
 </code></pre><p>自然效果是我们期望的，捕获到了异常，且处理了</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e75ac6102c2d4cddbd15c7809cd75971~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e75ac6102c2d4cddbd15c7809cd75971~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>继续打印汇编来查看一下关键词，是否有我们期望的函数出现</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5ca06f91f492417a9475f3b54ccf5dec~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f76215d3ed7b400898a30372bb7681a4~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5ca06f91f492417a9475f3b54ccf5dec~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f76215d3ed7b400898a30372bb7681a4~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>此处我们可以看到，实际 Go 中调用了多个函数</p>
 <ol>
 <li>runtime.gorecover</li>
@@ -275,12 +418,18 @@
 </ol>
 <p>自然明眼人都看的出现，关键的函数实现自然是 <strong>runtime.gorecover ，那么我们来一探究竟</strong></p>
 <h2 id="runtimegorecover"><strong>runtime.gorecover</strong></h2>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/840f0ee1d09b450ca57c99ce819e07e6~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/840f0ee1d09b450ca57c99ce819e07e6~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>查看源码我们可以知道， <strong>runtime.gorecover</strong> 实际上就是根据当前协程的 _panic 结构数据来判断是否需要恢复，如果需要则将<code> p.recovered = true</code></p>
 <p>自然在这里将当前协程的数据修改掉，正是为了后续执行 <strong>runtime.gopanic</strong> 的时候提供保障， <strong>runtime.gopanic</strong> 执行的时候就会去判断和处理这个 <code>p.recovered</code></p>
 <p>前文中提到的关于 <strong>runtime.gopanic</strong> 中 处理 <code>p.recovered</code> 的逻辑是这样的</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/856d9246b01e421eac781337d52290c2~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/69d02e6244e74974b76362443ef0fdb7~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/856d9246b01e421eac781337d52290c2~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/69d02e6244e74974b76362443ef0fdb7~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <ol>
 <li>如上可以看到 <strong>runtime.gorecover 去对</strong> <strong><code>p.recovered</code></strong> <strong>设置是否恢复</strong></li>
 </ol>
@@ -311,7 +460,9 @@
 <p><strong>感谢阅读，欢迎交流，点个赞，关注一波 再走吧</strong></p>
 <h2 id="欢迎点赞关注收藏">欢迎点赞，关注，收藏</h2>
 <p>朋友们，你的支持和鼓励，是我坚持分享，提高质量的动力</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/01a7badd67e244f9a2135d4231bfab11~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/01a7badd67e244f9a2135d4231bfab11~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>技术是开放的，我们的心态，更应是开放的。拥抱变化，向阳而生，努力向前行。</p>
 <p>我是<strong>阿兵云原生</strong>，欢迎点赞关注收藏，下次见~</p>
 <p><strong>文中提到的技术点，感兴趣的可以查看这些文章：</strong></p>
@@ -335,27 +486,48 @@
 <li><a href="https://juejin.cn/post/7174221563372240933">GO 中优雅编码和降低圈复杂度</a></li>
 </ul>
 
+        </div>
 
-  
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>Author: </strong><a rel="author" href="https://qingconglaixueit.github.io/">阿兵云原生</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="https://qingconglaixueit.github.io/post/panic_revovery/">https://qingconglaixueit.github.io/post/panic_revovery/</a></li>
+        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
+    </ul>
+</div>
+<br/>
 
-  
-  <hr>
-  <footer>
 
-  
-    <section>
-    <h4>Share</h4>
-    <nav class="nav sharing-icons">
-      <a class="nav-item" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fqingconglaixueit.github.io%2fpost%2fpanic_revovery%2f" title="Share on Facebook"><span class="fab fa-facebook-f fa-2x" aria-hidden="true"></span></a>
-      <a class="nav-item" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fqingconglaixueit.github.io%2fpost%2fpanic_revovery%2f" title="Share on LinkedIn"><span class="fab fa-linkedin-in fa-2x" aria-hidden="true"></span></a>
-      <a class="nav-item" href="https://twitter.com/intent/tweet?url=https%3a%2f%2fqingconglaixueit.github.io%2fpost%2fpanic_revovery%2f&amp;text=Go%20%e8%af%ad%e8%a8%80%e4%b8%ad%20panic%20%e5%92%8c%20recover%20%e6%90%ad%e9%85%8d%e4%bd%bf%e7%94%a8" title="Tweet this"><span class="fab fa-twitter fa-2x"></span></a>
-    </nav>
-  </section>
 
-  
+        
 
-  
-  <div id="disqus_thread"></div>
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/post/fanshe/">Go 语言中的反射</a></li>
+        
+        <li><a href="/post/qiepiankuorong/">Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍</a></li>
+        
+        <li><a href="/post/tuanduibiandong/">团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！</a></li>
+        
+        <li><a href="/post/hebijuanai/">何必卷 AI </a></li>
+        
+        <li><a href="/post/wodegetrenweixin/">我的个人微信迅速接入了chatgpt</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            No tags
+            
+        </div>
+    </article>
+    
+    <div id="disqus_thread"></div>
 <script type="application/javascript">
     var disqus_config = function () {
     
@@ -375,42 +547,270 @@
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-  
-  </footer>
-  
-
-</article> 
-
-
-
-        </div> <!-- /.blog-main -->
-
-        <aside class="col-sm-3 ml-auto blog-sidebar">
-  
-
-  
-
-  
-</aside>
-
-
-      </div> <!-- /.row -->
-    </div> <!-- /.container -->
-    
 
     
-    <footer class="blog-footer">
-      <p dir="auto">
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "your github repo"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2023 <a href="https://qingconglaixueit.github.io/">阿兵云原生 By 阿兵云原生</a>
+        
+    </div>
+    <br />
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">阿兵云原生</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+<style type="text/css">
+div.highlight {
+    position: relative;
+    margin: 1em 0px;
+}
+
+.copy-code {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 5px;
+    font: inherit;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    --radius: 8px;
+}
+
+div.highlight:hover .copy-code,pre:hover .copy-code {
+    display: block;
+}
+
+</style>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+    <script src='/js/douban.js'></script>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='https://qingconglaixueit.github.io/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
       
-      Blog template created by <a href="https://twitter.com/mdo">@mdo</a>, ported to Hugo by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
-      
-      </p>
-      <p>
-      <a href="#">Back to top</a>
-      </p>
-    </footer>
-    
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://qingconglaixueit.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
 
-  </body>
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/creating-a-new-theme/" title="Creating a New Theme" target="_blank">Creating a New Theme</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/migrate-from-jekyll/" title="Migrate to Hugo from Jekyll" target="_blank">Migrate to Hugo from Jekyll</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/orm/" title="我们要不要使用 ORM？" target="_blank">我们要不要使用 ORM？</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/panic_revovery/" title="Go 语言中 panic 和 recover 搭配使用" target="_blank">Go 语言中 panic 和 recover 搭配使用</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/fanshe/" title="Go 语言中的反射" target="_blank">Go 语言中的反射</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/qiepiankuorong/" title="Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍" target="_blank">Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/tuanduibiandong/" title="团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！" target="_blank">团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/hebijuanai/" title="何必卷 AI " target="_blank">何必卷 AI </a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/wodegetrenweixin/" title="我的个人微信迅速接入了chatgpt" target="_blank">我的个人微信迅速接入了chatgpt</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/goisforlovers/" title="(Hu)go Template Primer" target="_blank">(Hu)go Template Primer</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title" style="color:red">Ads</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a href="xxxx" title="xxxxx" target="_blank" style="color:red">
+                
+                    <img src="xxxx">
+                
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://qingconglaixueit.github.io/categories/Development/">Development (2)</a></li>
+    
+    <li><a href="https://qingconglaixueit.github.io/categories/golang/">golang (2)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://qingconglaixueit.github.io/tags/development/">development</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/go/">go</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/golang/">golang</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/hugo/">hugo</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/templates/">templates</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/themes/">themes</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="xxxx" title="xxx">xx</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="https://qingconglaixueit.github.io/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
 
 </html>

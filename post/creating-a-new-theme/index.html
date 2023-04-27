@@ -1,109 +1,265 @@
-<!DOCTYPE html>
-<html lang="en" >
+<!doctype html>
+<html lang="zh-CN">
+<head>
 
-  <head>
     <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-
-<meta property="og:title" content="Creating a New Theme" />
-<meta property="og:description" content="Introduction This tutorial will show you how to create a simple theme in Hugo. I assume that you are familiar with HTML, the bash command line, and that you are comfortable using Markdown to format content. I&rsquo;ll explain how Hugo uses templates and how you can organize your templates to create a theme. I won&rsquo;t cover using CSS to style your theme.
-We&rsquo;ll start with creating a new site with a very basic template. Then we&rsquo;ll add in a few pages and posts. With small variations on that, you will be able to create many different types of web sites.
-In this tutorial, commands that you enter will start with the &ldquo;$&rdquo; prompt. The output will follow. Lines that start with &ldquo;#&rdquo; are comments that I&rsquo;ve added to explain a point. When I show updates to a file, the &ldquo;:wq&rdquo; on the last line means to save the file." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://qingconglaixueit.github.io/post/creating-a-new-theme/" />
-<meta property="article:published_time" content="2014-09-28T00:00:00+00:00" />
-<meta property="article:modified_time" content="2014-09-28T00:00:00+00:00" />
-
-
-
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Creating a New Theme"/>
-<meta name="twitter:description" content="Introduction This tutorial will show you how to create a simple theme in Hugo. I assume that you are familiar with HTML, the bash command line, and that you are comfortable using Markdown to format content. I&rsquo;ll explain how Hugo uses templates and how you can organize your templates to create a theme. I won&rsquo;t cover using CSS to style your theme.
-We&rsquo;ll start with creating a new site with a very basic template. Then we&rsquo;ll add in a few pages and posts. With small variations on that, you will be able to create many different types of web sites.
-In this tutorial, commands that you enter will start with the &ldquo;$&rdquo; prompt. The output will follow. Lines that start with &ldquo;#&rdquo; are comments that I&rsquo;ve added to explain a point. When I show updates to a file, the &ldquo;:wq&rdquo; on the last line means to save the file."/>
-<meta name="generator" content="Hugo 0.81.0" />
-
-
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     
-<script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "BlogPosting",
-  "headline": "Creating a New Theme",
-  "url": "https://qingconglaixueit.github.io/post/creating-a-new-theme/",
-  "wordCount": "7232",
-  "datePublished": "2014-09-28T00:00:00+00:00",
-  "dateModified": "2014-09-28T00:00:00+00:00",
-  "author": {
-    "@type": "Person",
-    "name": "Michael Henderson"
-  }
-}
-</script>
-
-
-
-    <link rel="canonical" href="https://qingconglaixueit.github.io/post/creating-a-new-theme/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
 
     <title>Creating a New Theme | 阿兵云原生</title>
+    <meta property="og:title" content="Creating a New Theme - 阿兵云原生">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2014-09-28T00:00:00&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2014-09-28T00:00:00&#43;08:00'>
+        
+    <meta name="Keywords" content="golang,go语言,go语言笔记,博客,软件架构,公众号,小程序">
+    <meta name="description" content="Creating a New Theme">
+        <meta name="author" content="Michael Henderson">
+        
+    <meta property="og:url" content="https://qingconglaixueit.github.io/post/creating-a-new-theme/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
 
-    
-    <!-- combined, minified CSS -->
-    
-    <link href="https://qingconglaixueit.github.io/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
-    
-
-    <!-- minified Font Awesome for SVG icons -->
-    
-    <script defer src="https://qingconglaixueit.github.io/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
-
-    <!-- RSS 2.0 feed -->
-    
-
-    
-
-  </head>
-
-  <body>
-
-    
-    <div class="blog-masthead">
-      <div class="container">
-        <nav class="nav blog-nav">
-          <a class="nav-link " href="https://qingconglaixueit.github.io/">Home</a>
-        </nav>
-      </div>
-    </div>
-    
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     
     
-    <header class="blog-header">
-      <div class="container">
-        <h1 class="blog-title" dir="auto"><a href="https://qingconglaixueit.github.io/" rel="home">阿兵云原生</a></h1>
-        <p class="lead blog-description" dir="auto">专注于IT互联网，包括但不限于Go语言(golang)、抖音分析、软件架构等</p>
-      </div>
-    </header>
     
     
+    
+    
+        <link rel="stylesheet" href='/css/douban.css'>
+    
+        <link rel="stylesheet" href='/css/other.css'>
+    
+</head>
 
-    
+<body>
+    <header id="header" class="clearfix">
     <div class="container">
-      <div class="row">
-        <div class="col-sm-8 blog-main">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://qingconglaixueit.github.io/">
+                        阿兵云原生
+                    </a>
+                
+                <p class="description">专注于Go语言(golang),软件架构</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://qingconglaixueit.github.io/">Home</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/tools/" title="工具">工具</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/about/" title="关于">关于</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/post/goisforlovers/" title="(Hu)go Template Primer">(Hu)go Template Primer</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/post/hugoisforlovers/" title="Getting Started with Hugo">Getting Started with Hugo</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/" title="tutorials">tutorials</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
 
-          
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">Table of Contents</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#some-definitions">Some Definitions</a>
+      <ul>
+        <li><a href="#skins">Skins</a></li>
+        <li><a href="#the-home-page">The Home Page</a></li>
+        <li><a href="#site-configuration-file">Site Configuration File</a></li>
+        <li><a href="#content">Content</a></li>
+        <li><a href="#template-files">Template Files</a></li>
+      </ul>
+    </li>
+    <li><a href="#create-a-new-site">Create a New Site</a>
+      <ul>
+        <li><a href="#generate-the-html-for-the-new-site">Generate the HTML For the New Site</a></li>
+        <li><a href="#test-the-new-site">Test the New Site</a></li>
+      </ul>
+    </li>
+    <li><a href="#create-a-new-theme">Create a New Theme</a>
+      <ul>
+        <li><a href="#create-a-skeleton">Create a Skeleton</a></li>
+        <li><a href="#update-the-configuration-file-to-use-the-theme">Update the Configuration File to Use the Theme</a></li>
+        <li><a href="#generate-the-site">Generate the Site</a></li>
+      </ul>
+    </li>
+    <li><a href="#the-theme-development-cycle">The Theme Development Cycle</a>
+      <ul>
+        <li><a href="#purge-the-public-directory">Purge the public/ Directory</a></li>
+        <li><a href="#hugos-watch-option">Hugo&rsquo;s Watch Option</a></li>
+        <li><a href="#live-reload">Live Reload</a></li>
+        <li><a href="#development-commands">Development Commands</a></li>
+      </ul>
+    </li>
+    <li><a href="#update-the-home-page-template">Update the Home Page Template</a>
+      <ul>
+        <li><a href="#make-a-static-home-page">Make a Static Home Page</a></li>
+        <li><a href="#build-a-dynamic-home-page">Build a &ldquo;Dynamic&rdquo; Home Page</a></li>
+        <li><a href="#list-and-single-templates">List and Single Templates</a></li>
+        <li><a href="#add-content-to-the-homepage">Add Content to the Homepage</a></li>
+        <li><a href="#add-content-to-the-posts">Add Content to the Posts</a></li>
+        <li><a href="#linking-to-content">Linking to Content</a></li>
+        <li><a href="#create-a-post-listing">Create a Post Listing</a></li>
+      </ul>
+    </li>
+    <li><a href="#creating-top-level-pages">Creating Top Level Pages</a></li>
+    <li><a href="#sharing-templates">Sharing Templates</a>
+      <ul>
+        <li><a href="#create-the-header-and-footer-partials">Create the Header and Footer Partials</a></li>
+        <li><a href="#update-the-home-page-template-to-use-the-partials">Update the Home Page Template to Use the Partials</a></li>
+        <li><a href="#update-the-default-single-template-to-use-the-partials">Update the Default Single Template to Use the Partials</a></li>
+      </ul>
+    </li>
+    <li><a href="#add-date-published-to-posts">Add “Date Published” to Posts</a>
+      <ul>
+        <li><a href="#add-date-published-to-the-template">Add “Date Published” to the Template</a></li>
+        <li><a href="#dont-repeat-yourself">Don&rsquo;t Repeat Yourself</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">Creating a New Theme</h1>
+        </header>
+        
+  <time datetime="2014-09-28T00:00:00Z" class="post-meta meta-date dt-published">
+    2014-09-28
+  </time>
 
 
-<article class="blog-post">
-  <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/creating-a-new-theme/">Creating a New Theme</a></h2>
-    <p class="blog-post-meta">
-<time datetime="2014-09-28T00:00:00Z">Sun Sep 28, 2014</time>
-</p>
-  </header>
-  <h2 id="introduction">Introduction</h2>
+
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="post-content">
+            <h2 id="introduction">Introduction</h2>
 <p>This tutorial will show you how to create a simple theme in Hugo. I assume that you are familiar with HTML, the bash command line, and that you are comfortable using Markdown to format content. I&rsquo;ll explain how Hugo uses templates and how you can organize your templates to create a theme. I won&rsquo;t cover using CSS to style your theme.</p>
 <p>We&rsquo;ll start with creating a new site with a very basic template. Then we&rsquo;ll add in a few pages and posts. With small variations on that, you will be able to create many different types of web sites.</p>
 <p>In this tutorial, commands that you enter will start with the &ldquo;$&rdquo; prompt. The output will follow. Lines that start with &ldquo;#&rdquo; are comments that I&rsquo;ve added to explain a point. When I show updates to a file, the &ldquo;:wq&rdquo; on the last line means to save the file.</p>
@@ -910,27 +1066,40 @@ $ vi themes/zafta/layouts/_default/single.html
 <h3 id="dont-repeat-yourself">Don&rsquo;t Repeat Yourself</h3>
 <p>DRY is a good design goal and Hugo does a great job supporting it. Part of the art of a good template is knowing when to add a new template and when to update an existing one. While you&rsquo;re figuring that out, accept that you&rsquo;ll be doing some refactoring. Hugo makes that easy and fast, so it&rsquo;s okay to delay splitting up a template.</p>
 
+        </div>
 
-  
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>Author: </strong><a rel="author" href="https://qingconglaixueit.github.io/">阿兵云原生</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="https://qingconglaixueit.github.io/post/creating-a-new-theme/">https://qingconglaixueit.github.io/post/creating-a-new-theme/</a></li>
+        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
+    </ul>
+</div>
+<br/>
 
-  
-  <hr>
-  <footer>
 
-  
-    <section>
-    <h4>Share</h4>
-    <nav class="nav sharing-icons">
-      <a class="nav-item" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fqingconglaixueit.github.io%2fpost%2fcreating-a-new-theme%2f" title="Share on Facebook"><span class="fab fa-facebook-f fa-2x" aria-hidden="true"></span></a>
-      <a class="nav-item" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fqingconglaixueit.github.io%2fpost%2fcreating-a-new-theme%2f" title="Share on LinkedIn"><span class="fab fa-linkedin-in fa-2x" aria-hidden="true"></span></a>
-      <a class="nav-item" href="https://twitter.com/intent/tweet?url=https%3a%2f%2fqingconglaixueit.github.io%2fpost%2fcreating-a-new-theme%2f&amp;text=Creating%20a%20New%20Theme" title="Tweet this"><span class="fab fa-twitter fa-2x"></span></a>
-    </nav>
-  </section>
 
-  
+        
 
-  
-  <div id="disqus_thread"></div>
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/post/migrate-from-jekyll/">Migrate to Hugo from Jekyll</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            No tags
+            
+        </div>
+    </article>
+    
+    <div id="disqus_thread"></div>
 <script type="application/javascript">
     var disqus_config = function () {
     
@@ -950,42 +1119,270 @@ $ vi themes/zafta/layouts/_default/single.html
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-  
-  </footer>
-  
-
-</article> 
-
-
-
-        </div> <!-- /.blog-main -->
-
-        <aside class="col-sm-3 ml-auto blog-sidebar">
-  
-
-  
-
-  
-</aside>
-
-
-      </div> <!-- /.row -->
-    </div> <!-- /.container -->
-    
 
     
-    <footer class="blog-footer">
-      <p dir="auto">
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "your github repo"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2023 <a href="https://qingconglaixueit.github.io/">阿兵云原生 By 阿兵云原生</a>
+        
+    </div>
+    <br />
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">阿兵云原生</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+<style type="text/css">
+div.highlight {
+    position: relative;
+    margin: 1em 0px;
+}
+
+.copy-code {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 5px;
+    font: inherit;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    --radius: 8px;
+}
+
+div.highlight:hover .copy-code,pre:hover .copy-code {
+    display: block;
+}
+
+</style>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+    <script src='/js/douban.js'></script>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='https://qingconglaixueit.github.io/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
       
-      Blog template created by <a href="https://twitter.com/mdo">@mdo</a>, ported to Hugo by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
-      
-      </p>
-      <p>
-      <a href="#">Back to top</a>
-      </p>
-    </footer>
-    
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://qingconglaixueit.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
 
-  </body>
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/creating-a-new-theme/" title="Creating a New Theme" target="_blank">Creating a New Theme</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/migrate-from-jekyll/" title="Migrate to Hugo from Jekyll" target="_blank">Migrate to Hugo from Jekyll</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/orm/" title="我们要不要使用 ORM？" target="_blank">我们要不要使用 ORM？</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/panic_revovery/" title="Go 语言中 panic 和 recover 搭配使用" target="_blank">Go 语言中 panic 和 recover 搭配使用</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/fanshe/" title="Go 语言中的反射" target="_blank">Go 语言中的反射</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/qiepiankuorong/" title="Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍" target="_blank">Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/tuanduibiandong/" title="团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！" target="_blank">团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/hebijuanai/" title="何必卷 AI " target="_blank">何必卷 AI </a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/wodegetrenweixin/" title="我的个人微信迅速接入了chatgpt" target="_blank">我的个人微信迅速接入了chatgpt</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/goisforlovers/" title="(Hu)go Template Primer" target="_blank">(Hu)go Template Primer</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title" style="color:red">Ads</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a href="xxxx" title="xxxxx" target="_blank" style="color:red">
+                
+                    <img src="xxxx">
+                
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://qingconglaixueit.github.io/categories/Development/">Development (2)</a></li>
+    
+    <li><a href="https://qingconglaixueit.github.io/categories/golang/">golang (2)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://qingconglaixueit.github.io/tags/development/">development</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/go/">go</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/golang/">golang</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/hugo/">hugo</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/templates/">templates</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/themes/">themes</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="xxxx" title="xxx">xx</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="https://qingconglaixueit.github.io/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
 
 </html>

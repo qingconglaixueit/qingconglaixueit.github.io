@@ -1,118 +1,236 @@
-<!DOCTYPE html>
-<html lang="en" >
+<!doctype html>
+<html lang="zh-CN">
+<head>
 
-  <head>
     <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-
-<meta property="og:title" content="(Hu)go Template Primer" />
-<meta property="og:description" content="Hugo uses the excellent go html/template library for its template engine. It is an extremely lightweight engine that provides a very small amount of logic. In our experience that it is just the right amount of logic to be able to create a good static website. If you have used other template systems from different languages or frameworks you will find a lot of similarities in go templates.
-This document is a brief primer on using go templates. The go docs provide more details.
-Introduction to Go Templates Go templates provide an extremely simple template language. It adheres to the belief that only the most basic of logic belongs in the template or view layer. One consequence of this simplicity is that go templates parse very quickly.
-A unique characteristic of go templates is they are content aware. Variables and content will be sanitized depending on the context of where they are used." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://qingconglaixueit.github.io/post/goisforlovers/" />
-<meta property="article:published_time" content="2014-04-02T00:00:00+00:00" />
-<meta property="article:modified_time" content="2014-04-02T00:00:00+00:00" />
-
-
-
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="(Hu)go Template Primer"/>
-<meta name="twitter:description" content="Hugo uses the excellent go html/template library for its template engine. It is an extremely lightweight engine that provides a very small amount of logic. In our experience that it is just the right amount of logic to be able to create a good static website. If you have used other template systems from different languages or frameworks you will find a lot of similarities in go templates.
-This document is a brief primer on using go templates. The go docs provide more details.
-Introduction to Go Templates Go templates provide an extremely simple template language. It adheres to the belief that only the most basic of logic belongs in the template or view layer. One consequence of this simplicity is that go templates parse very quickly.
-A unique characteristic of go templates is they are content aware. Variables and content will be sanitized depending on the context of where they are used."/>
-<meta name="generator" content="Hugo 0.81.0" />
-
-
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     
-<script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "BlogPosting",
-  "headline": "(Hu)go Template Primer",
-  "url": "https://qingconglaixueit.github.io/post/goisforlovers/",
-  "wordCount": "1486",
-  "datePublished": "2014-04-02T00:00:00+00:00",
-  "dateModified": "2014-04-02T00:00:00+00:00",
-  "author": {
-    "@type": "Person",
-    "name": "阿兵云原生"
-  },
-  "keywords": "Hugo, static, generator, Development, golang, go, templates, themes, development"
-}
-</script>
-
-
-
-    <link rel="canonical" href="https://qingconglaixueit.github.io/post/goisforlovers/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
 
     <title>(Hu)go Template Primer | 阿兵云原生</title>
+    <meta property="og:title" content="(Hu)go Template Primer - 阿兵云原生">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2014-04-02T00:00:00&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2014-04-02T00:00:00&#43;08:00'>
+        
+    <meta name="Keywords" content="[Hugo static generator]">
+    <meta name="description" content="(Hu)go Template Primer">
+        
+    <meta name="author" content="阿兵云原生">
+    <meta property="og:url" content="https://qingconglaixueit.github.io/post/goisforlovers/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
 
-    
-    <!-- combined, minified CSS -->
-    
-    <link href="https://qingconglaixueit.github.io/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
-    
-
-    <!-- minified Font Awesome for SVG icons -->
-    
-    <script defer src="https://qingconglaixueit.github.io/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
-
-    <!-- RSS 2.0 feed -->
-    
-
-    
-
-  </head>
-
-  <body>
-
-    
-    <div class="blog-masthead">
-      <div class="container">
-        <nav class="nav blog-nav">
-          <a class="nav-link " href="https://qingconglaixueit.github.io/">Home</a>
-        </nav>
-      </div>
-    </div>
-    
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     
     
-    <header class="blog-header">
-      <div class="container">
-        <h1 class="blog-title" dir="auto"><a href="https://qingconglaixueit.github.io/" rel="home">阿兵云原生</a></h1>
-        <p class="lead blog-description" dir="auto">专注于IT互联网，包括但不限于Go语言(golang)、抖音分析、软件架构等</p>
-      </div>
-    </header>
     
     
+    
+    
+        <link rel="stylesheet" href='/css/douban.css'>
+    
+        <link rel="stylesheet" href='/css/other.css'>
+    
+</head>
 
-    
+<body>
+    <header id="header" class="clearfix">
     <div class="container">
-      <div class="row">
-        <div class="col-sm-8 blog-main">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://qingconglaixueit.github.io/">
+                        阿兵云原生
+                    </a>
+                
+                <p class="description">专注于Go语言(golang),软件架构</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://qingconglaixueit.github.io/">Home</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/tools/" title="工具">工具</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/about/" title="关于">关于</a>
+                    
+                    <a class="current" href="https://qingconglaixueit.github.io/post/goisforlovers/" title="(Hu)go Template Primer">(Hu)go Template Primer</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/post/hugoisforlovers/" title="Getting Started with Hugo">Getting Started with Hugo</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/" title="tutorials">tutorials</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
 
-          
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">Table of Contents</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#introduction-to-go-templates">Introduction to Go Templates</a></li>
+    <li><a href="#basic-syntax">Basic Syntax</a></li>
+    <li><a href="#variables">Variables</a></li>
+    <li><a href="#functions">Functions</a></li>
+    <li><a href="#includes">Includes</a></li>
+    <li><a href="#logic">Logic</a>
+      <ul>
+        <li><a href="#iteration">Iteration</a></li>
+        <li><a href="#conditionals">Conditionals</a></li>
+      </ul>
+    </li>
+    <li><a href="#pipes">Pipes</a></li>
+    <li><a href="#context-aka-the-dot">Context (aka. the dot)</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#using-content-page-parameters">Using Content (page) Parameters</a></li>
+    <li><a href="#using-site-config-parameters">Using Site (config) Parameters</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">(Hu)go Template Primer</h1>
+        </header>
+        
+  <time datetime="2014-04-02T00:00:00Z" class="post-meta meta-date dt-published">
+    2014-04-02
+  </time>
 
 
-<article class="blog-post">
-  <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/goisforlovers/">(Hu)go Template Primer</a></h2>
-    <p class="blog-post-meta">
-<time datetime="2014-04-02T00:00:00Z">Wed Apr 2, 2014</time>
- in 
-<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/Development/" rel="category tag">Development</a>, <a href="/categories/golang/" rel="category tag">golang</a>
+<div class="post-meta meta-category">
+  <span>&nbsp;|</span>
+  
+    <a href='/categories/Development' target="_blank">Development</a>
+  
+    <a href='/categories/golang' target="_blank">golang</a>
+  
+</div>
 
 
-<span class="fas fa-tag" aria-hidden="true"></span>&nbsp;<a href="/tags/go/" rel="tag">go</a>, <a href="/tags/golang/" rel="tag">golang</a>, <a href="/tags/templates/" rel="tag">templates</a>, <a href="/tags/themes/" rel="tag">themes</a>, <a href="/tags/development/" rel="tag">development</a>
-
-</p>
-  </header>
-  <p>Hugo uses the excellent <a href="http://golang.org/">go</a> <a href="http://golang.org/pkg/html/template/">html/template</a> library for
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="post-content">
+            <p>Hugo uses the excellent <a href="http://golang.org/">go</a> <a href="http://golang.org/pkg/html/template/">html/template</a> library for
 its template engine. It is an extremely lightweight engine that provides a very
 small amount of logic. In our experience that it is just the right amount of
 logic to be able to create a good static website. If you have used other
@@ -356,27 +474,52 @@ so, such as in this example:</p>
   {{end}}&lt;/ul&gt;
 &lt;/nav&gt;
 </code></pre>
+        </div>
 
-  
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>Author: </strong><a rel="author" href="https://qingconglaixueit.github.io/">阿兵云原生</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="https://qingconglaixueit.github.io/post/goisforlovers/">https://qingconglaixueit.github.io/post/goisforlovers/</a></li>
+        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
+    </ul>
+</div>
+<br/>
 
-  
-  <hr>
-  <footer>
 
-  
-    <section>
-    <h4>Share</h4>
-    <nav class="nav sharing-icons">
-      <a class="nav-item" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fqingconglaixueit.github.io%2fpost%2fgoisforlovers%2f" title="Share on Facebook"><span class="fab fa-facebook-f fa-2x" aria-hidden="true"></span></a>
-      <a class="nav-item" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fqingconglaixueit.github.io%2fpost%2fgoisforlovers%2f" title="Share on LinkedIn"><span class="fab fa-linkedin-in fa-2x" aria-hidden="true"></span></a>
-      <a class="nav-item" href="https://twitter.com/intent/tweet?url=https%3a%2f%2fqingconglaixueit.github.io%2fpost%2fgoisforlovers%2f&amp;text=%28Hu%29go%20Template%20Primer" title="Tweet this"><span class="fab fa-twitter fa-2x"></span></a>
-    </nav>
-  </section>
 
-  
+        
 
-  
-  <div id="disqus_thread"></div>
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/post/hugoisforlovers/">Getting Started with Hugo</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/go' target="_blank">go</a></li>
+                
+                <li><a href='/tags/golang' target="_blank">golang</a></li>
+                
+                <li><a href='/tags/templates' target="_blank">templates</a></li>
+                
+                <li><a href='/tags/themes' target="_blank">themes</a></li>
+                
+                <li><a href='/tags/development' target="_blank">development</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    <div id="disqus_thread"></div>
 <script type="application/javascript">
     var disqus_config = function () {
     
@@ -396,42 +539,270 @@ so, such as in this example:</p>
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-  
-  </footer>
-  
-
-</article> 
-
-
-
-        </div> <!-- /.blog-main -->
-
-        <aside class="col-sm-3 ml-auto blog-sidebar">
-  
-
-  
-
-  
-</aside>
-
-
-      </div> <!-- /.row -->
-    </div> <!-- /.container -->
-    
 
     
-    <footer class="blog-footer">
-      <p dir="auto">
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "your github repo"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2023 <a href="https://qingconglaixueit.github.io/">阿兵云原生 By 阿兵云原生</a>
+        
+    </div>
+    <br />
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">阿兵云原生</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+<style type="text/css">
+div.highlight {
+    position: relative;
+    margin: 1em 0px;
+}
+
+.copy-code {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 5px;
+    font: inherit;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    --radius: 8px;
+}
+
+div.highlight:hover .copy-code,pre:hover .copy-code {
+    display: block;
+}
+
+</style>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+    <script src='/js/douban.js'></script>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='https://qingconglaixueit.github.io/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
       
-      Blog template created by <a href="https://twitter.com/mdo">@mdo</a>, ported to Hugo by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
-      
-      </p>
-      <p>
-      <a href="#">Back to top</a>
-      </p>
-    </footer>
-    
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://qingconglaixueit.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
 
-  </body>
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/creating-a-new-theme/" title="Creating a New Theme" target="_blank">Creating a New Theme</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/migrate-from-jekyll/" title="Migrate to Hugo from Jekyll" target="_blank">Migrate to Hugo from Jekyll</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/orm/" title="我们要不要使用 ORM？" target="_blank">我们要不要使用 ORM？</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/panic_revovery/" title="Go 语言中 panic 和 recover 搭配使用" target="_blank">Go 语言中 panic 和 recover 搭配使用</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/fanshe/" title="Go 语言中的反射" target="_blank">Go 语言中的反射</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/qiepiankuorong/" title="Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍" target="_blank">Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/tuanduibiandong/" title="团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！" target="_blank">团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/hebijuanai/" title="何必卷 AI " target="_blank">何必卷 AI </a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/wodegetrenweixin/" title="我的个人微信迅速接入了chatgpt" target="_blank">我的个人微信迅速接入了chatgpt</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/goisforlovers/" title="(Hu)go Template Primer" target="_blank">(Hu)go Template Primer</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title" style="color:red">Ads</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a href="xxxx" title="xxxxx" target="_blank" style="color:red">
+                
+                    <img src="xxxx">
+                
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://qingconglaixueit.github.io/categories/Development/">Development (2)</a></li>
+    
+    <li><a href="https://qingconglaixueit.github.io/categories/golang/">golang (2)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://qingconglaixueit.github.io/tags/development/">development</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/go/">go</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/golang/">golang</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/hugo/">hugo</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/templates/">templates</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/themes/">themes</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="xxxx" title="xxx">xx</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="https://qingconglaixueit.github.io/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
 
 </html>

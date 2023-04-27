@@ -1,105 +1,216 @@
-<!DOCTYPE html>
-<html lang="en" >
+<!doctype html>
+<html lang="zh-CN">
+<head>
 
-  <head>
     <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-
-<meta property="og:title" content="我们要不要使用 ORM？" />
-<meta property="og:description" content="本次主要来聊聊关于 ORM 的内容，欢迎评论交流，欢迎批评指正 分别从如下 4 个方面来展开 ORM 他是个啥？ 为什么要用 ORM？ ORM 给我们带来了哪些问题？ 如何去考虑是否要使用 ORM？ ORM 他是个啥？ 一提到 ORM 很多同学知道他是跟数据库相关的一个内容，但是并不清楚他到底是这个啥，自己需不需要，到底怎么玩？ 实际上" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://qingconglaixueit.github.io/post/orm/" />
-<meta property="article:published_time" content="2023-04-27T11:02:59+08:00" />
-<meta property="article:modified_time" content="2023-04-27T11:02:59+08:00" />
-
-
-
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="我们要不要使用 ORM？"/>
-<meta name="twitter:description" content="本次主要来聊聊关于 ORM 的内容，欢迎评论交流，欢迎批评指正 分别从如下 4 个方面来展开 ORM 他是个啥？ 为什么要用 ORM？ ORM 给我们带来了哪些问题？ 如何去考虑是否要使用 ORM？ ORM 他是个啥？ 一提到 ORM 很多同学知道他是跟数据库相关的一个内容，但是并不清楚他到底是这个啥，自己需不需要，到底怎么玩？ 实际上"/>
-<meta name="generator" content="Hugo 0.81.0" />
-
-
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     
-<script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "BlogPosting",
-  "headline": "我们要不要使用 ORM？",
-  "url": "https://qingconglaixueit.github.io/post/orm/",
-  "wordCount": "2422",
-  "datePublished": "2023-04-27T11:02:59+08:00",
-  "dateModified": "2023-04-27T11:02:59+08:00",
-  "author": {
-    "@type": "Person",
-    "name": "阿兵云原生"
-  }
-}
-</script>
-
-
-
-    <link rel="canonical" href="https://qingconglaixueit.github.io/post/orm/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
 
     <title>我们要不要使用 ORM？ | 阿兵云原生</title>
+    <meta property="og:title" content="我们要不要使用 ORM？ - 阿兵云原生">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2023-04-27T11:02:59&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2023-04-27T11:02:59&#43;08:00'>
+        
+    <meta name="Keywords" content="golang,go语言,go语言笔记,博客,软件架构,公众号,小程序">
+    <meta name="description" content="我们要不要使用 ORM？">
+        
+    <meta name="author" content="阿兵云原生">
+    <meta property="og:url" content="https://qingconglaixueit.github.io/post/orm/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
 
-    
-    <!-- combined, minified CSS -->
-    
-    <link href="https://qingconglaixueit.github.io/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
-    
-
-    <!-- minified Font Awesome for SVG icons -->
-    
-    <script defer src="https://qingconglaixueit.github.io/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
-
-    <!-- RSS 2.0 feed -->
-    
-
-    
-
-  </head>
-
-  <body>
-
-    
-    <div class="blog-masthead">
-      <div class="container">
-        <nav class="nav blog-nav">
-          <a class="nav-link " href="https://qingconglaixueit.github.io/">Home</a>
-        </nav>
-      </div>
-    </div>
-    
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     
     
-    <header class="blog-header">
-      <div class="container">
-        <h1 class="blog-title" dir="auto"><a href="https://qingconglaixueit.github.io/" rel="home">阿兵云原生</a></h1>
-        <p class="lead blog-description" dir="auto">专注于IT互联网，包括但不限于Go语言(golang)、抖音分析、软件架构等</p>
-      </div>
-    </header>
     
     
+    
+    
+        <link rel="stylesheet" href='/css/douban.css'>
+    
+        <link rel="stylesheet" href='/css/other.css'>
+    
+</head>
 
-    
+<body>
+    <header id="header" class="clearfix">
     <div class="container">
-      <div class="row">
-        <div class="col-sm-8 blog-main">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://qingconglaixueit.github.io/">
+                        阿兵云原生
+                    </a>
+                
+                <p class="description">专注于Go语言(golang),软件架构</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://qingconglaixueit.github.io/">Home</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/tools/" title="工具">工具</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/about/" title="关于">关于</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/post/goisforlovers/" title="(Hu)go Template Primer">(Hu)go Template Primer</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/post/hugoisforlovers/" title="Getting Started with Hugo">Getting Started with Hugo</a>
+                    
+                    <a  href="https://qingconglaixueit.github.io/" title="tutorials">tutorials</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
 
-          
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">Table of Contents</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#orm-他是个啥">ORM 他是个啥？</a></li>
+    <li><a href="#为什么要用-orm">为什么要用 ORM？</a></li>
+    <li><a href="#举一个-gorm-的例子">举一个 gorm 的例子</a></li>
+    <li><a href="#gorm-简述和提醒">gorm 简述和提醒</a></li>
+    <li><a href="#orm-给我们带来了哪些问题">ORM 给我们带来了哪些问题？</a></li>
+    <li><a href="#如何去考虑是否要使用-orm">如何去考虑是否要使用 ORM？</a></li>
+    <li><a href="#欢迎点赞关注收藏">欢迎点赞，关注，收藏</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">我们要不要使用 ORM？</h1>
+        </header>
+        
+  <time datetime="2023-04-27T03:02:59Z" class="post-meta meta-date dt-published">
+    2023-04-27
+  </time>
 
 
-<article class="blog-post">
-  <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/orm/">我们要不要使用 ORM？</a></h2>
-    <p class="blog-post-meta">
-<time datetime="2023-04-27T11:02:59+08:00">Thu Apr 27, 2023</time>
-</p>
-  </header>
-  <p><strong>本次主要来聊聊关于 ORM 的内容，欢迎评论交流，欢迎批评指正</strong></p>
+
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">&nbsp;|
+                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
+            </span>
+        </div>
+        
+        
+        <div class="post-content">
+            <p><strong>本次主要来聊聊关于 ORM 的内容，欢迎评论交流，欢迎批评指正</strong></p>
 <p>分别从如下 4 个方面来展开</p>
 <ul>
 <li>ORM 他是个啥？</li>
@@ -141,7 +252,9 @@
 </ul>
 <h2 id="举一个-gorm-的例子">举一个 gorm 的例子</h2>
 <p>在 GO 中我们访问 mysql 关系型数据库，数据库中提前先创建好了数据库，数据表，以及 3 条记录</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/865d40439f214b0ea978e6261d839310~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/865d40439f214b0ea978e6261d839310~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>GO 中有给我们提供对应的库</p>
 <pre><code>import &quot;database/sql&quot;
 import _ &quot;github.com/go-sql-driver/mysql&quot;
@@ -154,9 +267,13 @@ import _ &quot;github.com/go-sql-driver/mysql&quot;
    return db, nil
 }
 </code></pre><p>获取到 db 句柄之后，我们可以通过这样的方式，输入 sql 语句来查询数据</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/61782a99d5e5404e96ab56805ba5b7c6~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/61782a99d5e5404e96ab56805ba5b7c6~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>可以发现，本次的查询语句是 <code>select id,name,email,member_number,address from users where id = ?</code> ，我们再一条数据一条数据的读取出来（<strong>此处需要注意使用读取 rows.Next() 的时候，需要读取完毕之后，关闭句柄，否则会资源泄漏</strong>）</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7b4af3d76083484faf21c7e84c1891a3~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7b4af3d76083484faf21c7e84c1891a3~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>那么如果我们换成别的查询语句，或者其他增删改的语句呢？</p>
 <p>回顾一下以前各种疯狂写重复代码 sql 代码的情况，流程是一样的，代码结构也是类似的，写着差不多的代码，过着差不多的人生吗？</p>
 <p>甚至这一块的代码很多或许都是复制粘贴，然后改改 sql，改改响应结果</p>
@@ -171,9 +288,13 @@ import _ &quot;github.com/go-sql-driver/mysql&quot;
    return db, nil
 }
 </code></pre><p>上述的查询就会变成这样的</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1ab51474e4cd4978a61e4514e9f19302~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1ab51474e4cd4978a61e4514e9f19302~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>有没有发现，对应的地方，使用 orm 的方式，对于咱们来说，其实就是需要查询一条数据，完全都不需要去关心 sql ，只需要按照对象去应用方法就可以查询我们想要的数据</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/beeb3b4a3cc241469155de85d5e01cef~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/beeb3b4a3cc241469155de85d5e01cef~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>看到这里，有没有初步觉得 ORM 还是很香的，至少咱们写数据持久化的时候，就不需要写那么多重复代码了，使用 ORM 方便高效</p>
 <h2 id="gorm-简述和提醒">gorm 简述和提醒</h2>
 <p>看了上述例子是否会有这些疑问，</p>
@@ -191,15 +312,23 @@ import _ &quot;github.com/go-sql-driver/mysql&quot;
    sql.Register(&quot;mysql&quot;, &amp;MySQLDriver{})
 }
 </code></pre><p><strong>Register 实现如下</strong></p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0e712a537c544da5897ace77b484649c~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0e712a537c544da5897ace77b484649c~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>可以看到在<code>sql</code>包里面有一个全局<code>map</code>，里把存放了<code>mysql</code>这个名字的<code>driver</code></p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/307e18c4cef942dcaf0a94737784af51~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/307e18c4cef942dcaf0a94737784af51~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>再来查看 gorm.Open() 的实现就一目了然了</p>
 <p>gorm.Open 中调用了 sql.Open ， sql.Open 中去从全局的 map <code>driver</code>中获取 <code>mysql </code>字符串对应的引擎</p>
 <p><strong>gorm.Open</strong></p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/70a89a1b2bb147a7a8b9b3e21b35c784~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/70a89a1b2bb147a7a8b9b3e21b35c784~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p><strong>sql.Open</strong></p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/781bcb37df01431f85d734b4ff16e936~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/781bcb37df01431f85d734b4ff16e936~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>这一块就到这里，如果需要系统的学习和了解 gorm，可以从这里进入：</p>
 <ul>
 <li><a href="https://www.topgoer.cn/docs/gorm/gorm-1c54sbcda16o6">https://www.topgoer.cn/docs/gorm/gorm-1c54sbcda16o6</a></li>
@@ -228,7 +357,9 @@ import _ &quot;github.com/go-sql-driver/mysql&quot;
    DeletedAt *time.Time `sql:&quot;index&quot;`
 }
 </code></pre><p>例如我们子定义的表结构是这样的：</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3b6f3a34e8754b079dbb43e28a8d543c~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3b6f3a34e8754b079dbb43e28a8d543c~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>创建出来的表格名为 <code>users</code> ，我们可以使用如下语句禁用表名复数，或者自定义一个表名都是可以的</p>
 <pre><code>db.SingularTable(true)
 </code></pre><ul>
@@ -278,7 +409,9 @@ db.Where(&quot;id in (?)&quot;, []int{1, 2, 3}).Find(&amp;users)
 <p>总的来说，要还是不要，是个问题，如果是你，你会怎么选？</p>
 <h2 id="欢迎点赞关注收藏">欢迎点赞，关注，收藏</h2>
 <p>朋友们，你的支持和鼓励，是我坚持分享，提高质量的动力</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/880aa391dec2498d9cf29f85f38d3063~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p>
+        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/880aa391dec2498d9cf29f85f38d3063~tplv-k3u1fbpfcp-zoom-1.image" />   
+    </p>
 <p>技术是开放的，我们的心态，更应是开放的。拥抱变化，向阳而生，努力向前行。</p>
 <p>我是<strong>阿兵云原生</strong>，欢迎点赞关注收藏，下次见~</p>
 <p><strong>文中提到的技术点，感兴趣的可以查看这些文章：</strong></p>
@@ -294,27 +427,48 @@ db.Where(&quot;id in (?)&quot;, []int{1, 2, 3}).Find(&amp;users)
 <li><a href="https://juejin.cn/post/7021713790890672165">GO 语言 Web 开发实战一</a></li>
 </ul>
 
+        </div>
 
-  
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>Author: </strong><a rel="author" href="https://qingconglaixueit.github.io/">阿兵云原生</a></li>
+        <li style="word-break:break-all"><strong>Link: </strong><a href="https://qingconglaixueit.github.io/post/orm/">https://qingconglaixueit.github.io/post/orm/</a></li>
+        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
+    </ul>
+</div>
+<br/>
 
-  
-  <hr>
-  <footer>
 
-  
-    <section>
-    <h4>Share</h4>
-    <nav class="nav sharing-icons">
-      <a class="nav-item" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fqingconglaixueit.github.io%2fpost%2form%2f" title="Share on Facebook"><span class="fab fa-facebook-f fa-2x" aria-hidden="true"></span></a>
-      <a class="nav-item" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fqingconglaixueit.github.io%2fpost%2form%2f" title="Share on LinkedIn"><span class="fab fa-linkedin-in fa-2x" aria-hidden="true"></span></a>
-      <a class="nav-item" href="https://twitter.com/intent/tweet?url=https%3a%2f%2fqingconglaixueit.github.io%2fpost%2form%2f&amp;text=%e6%88%91%e4%bb%ac%e8%a6%81%e4%b8%8d%e8%a6%81%e4%bd%bf%e7%94%a8%20ORM%ef%bc%9f" title="Tweet this"><span class="fab fa-twitter fa-2x"></span></a>
-    </nav>
-  </section>
 
-  
+        
 
-  
-  <div id="disqus_thread"></div>
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/post/panic_revovery/">Go 语言中 panic 和 recover 搭配使用</a></li>
+        
+        <li><a href="/post/fanshe/">Go 语言中的反射</a></li>
+        
+        <li><a href="/post/qiepiankuorong/">Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍</a></li>
+        
+        <li><a href="/post/tuanduibiandong/">团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！</a></li>
+        
+        <li><a href="/post/hebijuanai/">何必卷 AI </a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            No tags
+            
+        </div>
+    </article>
+    
+    <div id="disqus_thread"></div>
 <script type="application/javascript">
     var disqus_config = function () {
     
@@ -334,42 +488,270 @@ db.Where(&quot;id in (?)&quot;, []int{1, 2, 3}).Find(&amp;users)
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-  
-  </footer>
-  
-
-</article> 
-
-
-
-        </div> <!-- /.blog-main -->
-
-        <aside class="col-sm-3 ml-auto blog-sidebar">
-  
-
-  
-
-  
-</aside>
-
-
-      </div> <!-- /.row -->
-    </div> <!-- /.container -->
-    
 
     
-    <footer class="blog-footer">
-      <p dir="auto">
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "your github repo"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2023 <a href="https://qingconglaixueit.github.io/">阿兵云原生 By 阿兵云原生</a>
+        
+    </div>
+    <br />
+    <div>
+        <div class="github-badge">
+            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">阿兵云原生</span></a>
+        </div>
+        <div class="github-badge">
+            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
+        </div>
+    </div>
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+<style type="text/css">
+div.highlight {
+    position: relative;
+    margin: 1em 0px;
+}
+
+.copy-code {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(78, 78, 78, 0.8);
+    border-radius: var(--radius);
+    padding: 0 5px;
+    font: inherit;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    --radius: 8px;
+}
+
+div.highlight:hover .copy-code,pre:hover .copy-code {
+    display: block;
+}
+
+</style>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+    <script src='/js/douban.js'></script>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='https://qingconglaixueit.github.io/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
       
-      Blog template created by <a href="https://twitter.com/mdo">@mdo</a>, ported to Hugo by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
-      
-      </p>
-      <p>
-      <a href="#">Back to top</a>
-      </p>
-    </footer>
-    
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://qingconglaixueit.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
 
-  </body>
+    <section class="widget">
+        <h3 class="widget-title">Latest articles</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/creating-a-new-theme/" title="Creating a New Theme" target="_blank">Creating a New Theme</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/migrate-from-jekyll/" title="Migrate to Hugo from Jekyll" target="_blank">Migrate to Hugo from Jekyll</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/orm/" title="我们要不要使用 ORM？" target="_blank">我们要不要使用 ORM？</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/panic_revovery/" title="Go 语言中 panic 和 recover 搭配使用" target="_blank">Go 语言中 panic 和 recover 搭配使用</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/fanshe/" title="Go 语言中的反射" target="_blank">Go 语言中的反射</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/qiepiankuorong/" title="Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍" target="_blank">Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/tuanduibiandong/" title="团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！" target="_blank">团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/hebijuanai/" title="何必卷 AI " target="_blank">何必卷 AI </a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/wodegetrenweixin/" title="我的个人微信迅速接入了chatgpt" target="_blank">我的个人微信迅速接入了chatgpt</a>
+    </li>
+    
+    <li>
+        <a href="https://qingconglaixueit.github.io/post/goisforlovers/" title="(Hu)go Template Primer" target="_blank">(Hu)go Template Primer</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title" style="color:red">Ads</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a href="xxxx" title="xxxxx" target="_blank" style="color:red">
+                
+                    <img src="xxxx">
+                
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://qingconglaixueit.github.io/categories/Development/">Development (2)</a></li>
+    
+    <li><a href="https://qingconglaixueit.github.io/categories/golang/">golang (2)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://qingconglaixueit.github.io/tags/development/">development</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/go/">go</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/golang/">golang</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/hugo/">hugo</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/templates/">templates</a>
+    
+    <a href="https://qingconglaixueit.github.io/tags/themes/">themes</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">Links</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="xxxx" title="xxx">xx</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">Meta</h3>
+        <ul class="widget-list">
+            <li><a href="https://qingconglaixueit.github.io/index.xml">RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
 
 </html>
