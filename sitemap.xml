@@ -2,6 +2,12 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://qingconglaixueit.github.io/post/creating-a-new-theme/</loc>
+    <lastmod>2014-09-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://qingconglaixueit.github.io/post/migrate-from-jekyll/</loc>
+    <lastmod>2014-03-10T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://qingconglaixueit.github.io/post/</loc>
     <lastmod>2023-04-27T11:02:59+08:00</lastmod>
   </url><url>
@@ -29,8 +35,40 @@
     <loc>https://qingconglaixueit.github.io/post/wodegetrenweixin/</loc>
     <lastmod>2023-04-26T15:24:34+08:00</lastmod>
   </url><url>
+    <loc>https://qingconglaixueit.github.io/post/goisforlovers/</loc>
+    <lastmod>2014-04-02T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://qingconglaixueit.github.io/categories/</loc>
+    <lastmod>2014-04-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://qingconglaixueit.github.io/categories/development/</loc>
+    <lastmod>2014-04-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://qingconglaixueit.github.io/tags/development/</loc>
+    <lastmod>2014-04-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://qingconglaixueit.github.io/post/hugoisforlovers/</loc>
+    <lastmod>2014-04-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://qingconglaixueit.github.io/tags/go/</loc>
+    <lastmod>2014-04-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://qingconglaixueit.github.io/tags/golang/</loc>
+    <lastmod>2014-04-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://qingconglaixueit.github.io/categories/golang/</loc>
+    <lastmod>2014-04-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://qingconglaixueit.github.io/tags/hugo/</loc>
+    <lastmod>2014-04-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://qingconglaixueit.github.io/tags/</loc>
+    <lastmod>2014-04-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://qingconglaixueit.github.io/tags/templates/</loc>
+    <lastmod>2014-04-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://qingconglaixueit.github.io/tags/themes/</loc>
+    <lastmod>2014-04-02T00:00:00+00:00</lastmod>
   </url>
 </urlset>

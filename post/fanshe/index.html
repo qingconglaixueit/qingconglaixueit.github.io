@@ -1,221 +1,121 @@
-<!doctype html>
-<html lang="zh-CN">
-<head>
+<!DOCTYPE html>
+<html lang="en" >
 
+  <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+<meta property="og:title" content="Go 语言中的反射" />
+<meta property="og:description" content="今天主要来聊聊 Go 语言中反射，希望对你有新的认知
+虽然很多人使用 Go 语言有一定时间了，甚至有的使用了 1 年 2 年，然后对于 Go 语言中的反射还是模棱两可，使用起来的时候，心里也不是非常有底气
+更有甚者，几乎不使用反射，当然，也不是什么错，在工作中能用最简单最高效，又可扩展，性能还好的方式来进行处理自然是最 nice ，没有必要去生搬硬套一些高级用法，毕竟工作不是我们的试炼场，可以自己下来多多实验，本次就来好好看看如何去玩反射
+文章分别从如下五个方面来聊
+ 反射是什么   反射的规则   使用案例并灵活运用   反射原理   总结  简单来看反射是什么 简单来看，反射就是在程序运行时期对程序本身进行访问和修改的能力，例如在程序运行时，可以修改程序的字段名称，字段值，还可以给程序提供接口访问的信息等等
+这是 Go 语言中提供的一种机制，我们可以在 Go 语言公共库中可以看到很多关于 reflect 的使用位置
+例如常用的 fmt 包，常用的 json 序列化和反序列化，自然前面我们说到的 gorm 库自然也是使用了反射的
+可是我们一般为什么要使用反射呢？
+根据反射的能力，自然是因为我们提供的接口并不知道传入的数据类型会是什么样的， 只有当程序运行的时候才知道具体的数据类型" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://qingconglaixueit.github.io/post/fanshe/" />
+<meta property="article:published_time" content="2023-04-27T10:48:12+08:00" />
+<meta property="article:modified_time" content="2023-04-27T10:48:12+08:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go 语言中的反射"/>
+<meta name="twitter:description" content="今天主要来聊聊 Go 语言中反射，希望对你有新的认知
+虽然很多人使用 Go 语言有一定时间了，甚至有的使用了 1 年 2 年，然后对于 Go 语言中的反射还是模棱两可，使用起来的时候，心里也不是非常有底气
+更有甚者，几乎不使用反射，当然，也不是什么错，在工作中能用最简单最高效，又可扩展，性能还好的方式来进行处理自然是最 nice ，没有必要去生搬硬套一些高级用法，毕竟工作不是我们的试炼场，可以自己下来多多实验，本次就来好好看看如何去玩反射
+文章分别从如下五个方面来聊
+ 反射是什么   反射的规则   使用案例并灵活运用   反射原理   总结  简单来看反射是什么 简单来看，反射就是在程序运行时期对程序本身进行访问和修改的能力，例如在程序运行时，可以修改程序的字段名称，字段值，还可以给程序提供接口访问的信息等等
+这是 Go 语言中提供的一种机制，我们可以在 Go 语言公共库中可以看到很多关于 reflect 的使用位置
+例如常用的 fmt 包，常用的 json 序列化和反序列化，自然前面我们说到的 gorm 库自然也是使用了反射的
+可是我们一般为什么要使用反射呢？
+根据反射的能力，自然是因为我们提供的接口并不知道传入的数据类型会是什么样的， 只有当程序运行的时候才知道具体的数据类型"/>
+<meta name="generator" content="Hugo 0.81.0" />
+
+
     
-    <meta name="referrer" content="no-referrer-when-downgrade">
-    
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Go 语言中的反射",
+  "url": "https://qingconglaixueit.github.io/post/fanshe/",
+  "wordCount": "531",
+  "datePublished": "2023-04-27T10:48:12+08:00",
+  "dateModified": "2023-04-27T10:48:12+08:00",
+  "author": {
+    "@type": "Person",
+    "name": "阿兵云原生"
+  }
+}
+</script>
+
+
+
+    <link rel="canonical" href="https://qingconglaixueit.github.io/post/fanshe/">
 
     <title>Go 语言中的反射 | 阿兵云原生</title>
-    <meta property="og:title" content="Go 语言中的反射 - 阿兵云原生">
-    <meta property="og:type" content="article">
-        
-    <meta property="article:published_time" content='2023-04-27T10:48:12&#43;08:00'>
-        
-        
-    <meta property="article:modified_time" content='2023-04-27T10:48:12&#43;08:00'>
-        
-    <meta name="Keywords" content="golang,go语言,go语言笔记,博客,软件架构,公众号,小程序">
-    <meta name="description" content="Go 语言中的反射">
-        
-    <meta name="author" content="阿兵云原生">
-    <meta property="og:url" content="https://qingconglaixueit.github.io/post/fanshe/">
-    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
-
-    <link rel="stylesheet" href='/css/normalize.css'>
-    <link rel="stylesheet" href='/css/style.css'>
-    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     
+    <!-- combined, minified CSS -->
     
+    <link href="https://qingconglaixueit.github.io/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
     
-    
-    
-    
-        <link rel="stylesheet" href='/css/douban.css'>
-    
-        <link rel="stylesheet" href='/css/other.css'>
-    
-</head>
 
-<body>
-    <header id="header" class="clearfix">
+    <!-- minified Font Awesome for SVG icons -->
+    
+    <script defer src="https://qingconglaixueit.github.io/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
+
+    <!-- RSS 2.0 feed -->
+    
+
+    
+
+  </head>
+
+  <body>
+
+    
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="nav blog-nav">
+          <a class="nav-link " href="https://qingconglaixueit.github.io/">Home</a>
+        </nav>
+      </div>
+    </div>
+    
+
+    
+    
+    <header class="blog-header">
+      <div class="container">
+        <h1 class="blog-title" dir="auto"><a href="https://qingconglaixueit.github.io/" rel="home">阿兵云原生</a></h1>
+        <p class="lead blog-description" dir="auto">A simple Hugo theme based on the Bootstrap v4 blog example.</p>
+      </div>
+    </header>
+    
+    
+
+    
     <div class="container">
-        <div class="col-group">
-            <div class="site-name ">
-                
-                    <a id="logo" href="https://qingconglaixueit.github.io/">
-                        阿兵云原生
-                    </a>
-                
-                <p class="description">专注于Go语言(golang),软件架构</p>
-            </div>
-            <div>
-                <nav id="nav-menu" class="clearfix">
-                    <a class="current" href="https://qingconglaixueit.github.io/">Home</a>
-                    
-                    <a  href="https://qingconglaixueit.github.io/tools/" title="工具">工具</a>
-                    
-                    <a  href="https://qingconglaixueit.github.io/archives/" title="归档">归档</a>
-                    
-                    <a  href="https://qingconglaixueit.github.io/about/" title="关于">关于</a>
-                    
-                </nav>
-            </div>
-        </div>
-    </div>
-</header>
+      <div class="row">
+        <div class="col-sm-8 blog-main">
 
-    <div id="body">
-        <div class="container">
-            <div class="col-group">
-
-                <div class="col-8" id="main">
-                    
-<div class="res-cons">
-    <style type="text/css">
-    .post-toc {
-        position: fixed;
-        width: 200px;
-        margin-left: -210px;
-        padding: 5px 10px;
-        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
-        font-size: 12px;
-        border: 1px solid rgba(0, 0, 0, .07);
-        border-radius: 5px;
-        background-color: rgba(255, 255, 255, 0.98);
-        background-clip: padding-box;
-        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
-        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
-        word-wrap: break-word;
-        white-space: nowrap;
-        -webkit-box-sizing: border-box;
-        box-sizing: border-box;
-        z-index: 999;
-        cursor: pointer;
-        max-height: 70%;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-
-    .post-toc .post-toc-title {
-        width: 100%;
-        margin: 0 auto;
-        font-size: 20px;
-        font-weight: 400;
-        text-transform: uppercase;
-        text-align: center;
-    }
-
-    .post-toc .post-toc-content {
-        font-size: 15px;
-    }
-
-    .post-toc .post-toc-content>nav>ul {
-        margin: 10px 0;
-    }
-
-    .post-toc .post-toc-content ul {
-        padding-left: 20px;
-        list-style: square;
-        margin: 0.5em;
-        line-height: 1.8em;
-    }
-
-    .post-toc .post-toc-content ul ul {
-        padding-left: 15px;
-        display: none;
-    }
-
-    @media print,
-    screen and (max-width:1057px) {
-        .post-toc {
-            display: none;
-        }
-    }
-</style>
-<div class="post-toc" style="position: absolute; top: 188px;">
-    <h2 class="post-toc-title">Table of Contents</h2>
-    <div class="post-toc-content">
-        <nav id="TableOfContents">
-  <ul>
-    <li><a href="#简单来看反射是什么">简单来看反射是什么</a></li>
-    <li><a href="#先关注反射的规则">先关注反射的规则</a></li>
-    <li><a href="#关注使用案例并灵活运用">关注使用案例并灵活运用</a>
-      <ul>
-        <li><a href="#对于定律一将-接口类型的变量-转换成-反射类型的对象"><strong>对于定律一，将 接口类型的变量 转换成 反射类型的对象</strong></a></li>
-        <li><a href="#对于定律二将-反射类型的对象-转换成-接口类型的变量"><strong>对于定律二，将 反射类型的对象 转换成 接口类型的变量</strong></a></li>
-        <li><a href="#对于定律三修改反射类型的对象">对于定律三，修改反射类型的对象</a></li>
-        <li><a href="#稍微复杂一点的">稍微复杂一点的</a></li>
-      </ul>
-    </li>
-    <li><a href="#反射原理">反射原理</a>
-      <ul>
-        <li><a href="#typeof">TypeOf</a></li>
-        <li><a href="#valueof">ValueOf</a></li>
-      </ul>
-    </li>
-    <li><a href="#总结">总结</a></li>
-    <li><a href="#欢迎点赞关注收藏">欢迎点赞，关注，收藏</a></li>
-  </ul>
-</nav>
-    </div>
-</div>
-<script type="text/javascript">
-    $(document).ready(function () {
-        var postToc = $(".post-toc");
-        if (postToc.length) {
-            var leftPos = $("#main").offset().left;
-            if (leftPos < 220) {
-                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
-            }
-
-            var t = postToc.offset().top - 20,
-                a = {
-                    start: {
-                        position: "absolute",
-                        top: t
-                    },
-                    process: {
-                        position: "fixed",
-                        top: 20
-                    },
-                };
-            $(window).scroll(function () {
-                var e = $(window).scrollTop();
-                e < t ? postToc.css(a.start) : postToc.css(a.process)
-            })
-        }
-
-        if ($("#TableOfContents").children().length < 1) {
-            $(".post-toc").remove();
-        }
-    })
-</script>
-    <article class="post">
-        <header>
-            <h1 class="post-title">Go 语言中的反射</h1>
-        </header>
-        
-  <time datetime="2023-04-27T02:48:12Z" class="post-meta meta-date dt-published">
-    2023-04-27
-  </time>
+          
 
 
-
-        
-        <div class="post-meta">
-            <span id="busuanzi_container_page_pv">&nbsp;|
-                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
-            </span>
-        </div>
-        
-        
-        <div class="post-content">
-            <p><strong>今天主要来聊聊 Go 语言中反射，希望对你有新的认知</strong></p>
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/fanshe/">Go 语言中的反射</a></h2>
+    <p class="blog-post-meta">
+<time datetime="2023-04-27T10:48:12+08:00">Thu Apr 27, 2023</time>
+</p>
+  </header>
+  <p><strong>今天主要来聊聊 Go 语言中反射，希望对你有新的认知</strong></p>
 <p>虽然很多人使用 Go 语言有一定时间了，甚至有的使用了 1 年 2 年，然后对于 Go 语言中的反射还是模棱两可，使用起来的时候，心里也不是非常有底气</p>
 <p>更有甚者，几乎不使用反射，当然，也不是什么错，在工作中能用最简单最高效，又可扩展，性能还好的方式来进行处理自然是最 nice ，没有必要去生搬硬套一些高级用法，毕竟工作不是我们的试炼场，可以自己下来多多实验，<strong>本次就来好好看看如何去玩反射</strong></p>
 <p>文章分别从如下五个方面来聊</p>
@@ -242,12 +142,8 @@
 <p>简单来看，<strong>反射就是在程序运行时期对程序本身进行访问和修改的能力</strong>，例如在程序运行时，可以修改程序的字段名称，字段值，还可以给程序提供接口访问的信息等等</p>
 <p>这是 Go 语言中提供的一种机制，我们可以在 Go 语言公共库中可以看到很多关于 reflect 的使用位置</p>
 <p>例如常用的 fmt 包，<strong>常用的</strong> <strong>json</strong> <strong>序列化和反序列化</strong>，自然前面我们说到的 gorm 库自然也是使用了反射的</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a388d10b9ecc499bbb7b250e0e822f46~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/51a9bf90c28b4a409ad6f3cd5aae6ced~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a388d10b9ecc499bbb7b250e0e822f46~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/51a9bf90c28b4a409ad6f3cd5aae6ced~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <p><strong>可是我们一般为什么要使用反射呢？</strong></p>
 <p>根据反射的能力，自然是因为我们提供的接口并不知道传入的数据类型会是什么样的， 只有当程序运行的时候才知道具体的数据类型</p>
 <p>但是我们编码的时候又期望去校验程序运行时传入的类型会是什么样的（例如 json 的序列化）并对其这种具体的数据进行操作，这个时候，咱们就需要用到反射的能力了</p>
@@ -302,9 +198,7 @@
 <ul>
 <li><strong>黄色</strong>的是通道 channel 类型调用的</li>
 </ul>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9709123829e44a96b58e623281d9330d~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9709123829e44a96b58e623281d9330d~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <p><code>reflect.Value </code>实际上是一个 struct，根据这个 struct 还关联了一组方法，这里面存放了数据类型和具体的数据，通过查看其数据结构就可以看出</p>
 <pre><code>type Value struct {
    typ *rtype
@@ -321,15 +215,11 @@
    fmt.Println(&quot;type:&quot;, reflect.TypeOf(demoStr))
    fmt.Println(&quot;value:&quot;, reflect.ValueOf(demoStr))
 }
-</code></pre><p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ed6f5132cbcc47088fccb294ef7c7900~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+</code></pre><p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ed6f5132cbcc47088fccb294ef7c7900~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <h3 id="对于定律二将-反射类型的对象-转换成-接口类型的变量"><strong>对于定律二，将 反射类型的对象 转换成 接口类型的变量</strong></h3>
 <p>我们可以通过将 <code>reflect.Value </code>类型转换成我们具体的数据类型，因为 <code>reflect.Value </code>中有对应的 <code>typ *rtype</code> 以及 <code>ptr unsafe.Pointer</code></p>
 <p>例如我们可以 通过 <code>reflect.Value </code>对象的 interface() 方法来处理</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bdeb27d53f324e3e9cbd54dadd0b16fc~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bdeb27d53f324e3e9cbd54dadd0b16fc~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <pre><code>func main() {
    var demoStr string = &quot;now reflect&quot;
    fmt.Println(&quot;type:&quot;, reflect.TypeOf(demoStr))
@@ -339,9 +229,7 @@
    res = reflect.ValueOf(demoStr).Interface().(string)
    fmt.Println(&quot;res == &quot;,res)
 }
-</code></pre><p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b9e45cae15744c4fbd8803f62359a5fd~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+</code></pre><p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b9e45cae15744c4fbd8803f62359a5fd~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <h3 id="对于定律三修改反射类型的对象">对于定律三，修改反射类型的对象</h3>
 <p>首先我们看上书的 demo 代码，传入 <strong>TypeOf</strong> 和 <strong>ValueOf</strong> 的变量实际上也是一个拷贝，那么如果期望在反射类型的对象中修改其值，那么就需要拿到具体变量的地址然后再进行修改，<strong>前提是这个变量是可写的</strong></p>
 <p>举个例子你就能明白</p>
@@ -351,22 +239,14 @@
    fmt.Println(&quot;is canset &quot;, v.CanSet())
    //v.SetString(&quot;hello world&quot;)   // 会panic
    }
-</code></pre><p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bd2343b806f9411e954989bd188a2461~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+</code></pre><p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bd2343b806f9411e954989bd188a2461~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <p>可以先调用 <code>reflect.Value </code>对象的 <code>CanSet</code> 查看是否可写，如果是可写的，我们再写，如果不可写就不要写了，否则会 panic</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/75680712a8934b26aabd2d261d7888e6~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/75680712a8934b26aabd2d261d7888e6~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <p>那么传入变量的地址就可以修改了？？</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/88cf7c3712c04affb1ac4335f3716ef1~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/88cf7c3712c04affb1ac4335f3716ef1~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <p>传入地址的思路没有毛病，但是我们去设置值的方式有问题，因此也会出现上述的 panic 情况</p>
 <p>此处仔细看能够明白，反射的对象 v 自然是不可修改的，我们应该找到 <code>reflect.Value </code>里面具体具体的数据指针，那么才是可以修改的，可以使用 <code>reflect.Value </code>的 <strong>Elem</strong> 方法</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/143e1d6b0df54f8592c5c72b61449888~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/143e1d6b0df54f8592c5c72b61449888~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <h3 id="稍微复杂一点的">稍微复杂一点的</h3>
 <p>看上了上述案例可能会觉得那么简单的案例，一演示就 ok，但是工作中一用就崩溃，那自然还是没有融会贯通，说明还没有消化好，再来一个工作中的例子</p>
 <ul>
@@ -407,9 +287,7 @@ func main() {
    str.SetString(&quot;helloworld&quot;)
    fmt.Println(&quot;tmp == &quot;,tmp)
 }
-</code></pre><p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/aa7bb68df5044913b61fabf9c8df1317~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+</code></pre><p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/aa7bb68df5044913b61fabf9c8df1317~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <p>可以看到上述案例运行之后有时可以运行成功，有时会出现 panic 的情况，相信细心的 xdm 就可以看出来，<strong>是因为 map 中的 key 是 无序的导致的</strong>，此处也提醒一波，使用 map 的时候要注意这一点</p>
 <p>看上述代码，是不是就能够明白咱们使用反射去找到对应的数据类型，然后按照数据类型进行处理数据的过程了呢</p>
 <p>有需要的话，可以慢慢的去熟练反射包中涉及的函数，重点是要了解<strong>其三个规则，对象转换方式，访问方式，以及数据修改方式</strong></p>
@@ -417,12 +295,8 @@ func main() {
 <p>那么通过上述案例，可以知道关于反射中数据类型和数据指针对应的值是相当重要的，不同的数据类型能够用哪些函数这个需要注意，否则用错直接就会 panic</p>
 <h3 id="typeof">TypeOf</h3>
 <p>来看 <strong>TypeOf</strong> 的接口中涉及的数据结构</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d84d83285d1b4cf798d0df85a813459f~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f41bd8093d4b47f197f30a3cb4d98b0e~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d84d83285d1b4cf798d0df85a813459f~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f41bd8093d4b47f197f30a3cb4d98b0e~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <p>在 reflect 包中 <code>rtype </code>是非常重要的，Go 中所有的类型都会包含这个结构，所以咱们反射可以应用起来，结构如下</p>
 <pre><code>// rtype must be kept in sync with ../runtime/type.go:/^type._type.
 type rtype struct {
@@ -441,15 +315,9 @@ type rtype struct {
 </code></pre><p>其中可以看到此处的 <code>rtype </code>的结构保持和 <code>runtime/type.go</code> 一致 ，都是关于数据类型的表示，以及对应的指针，关于这一块的说明和演示可以查看文末的 interface{} 处的内容</p>
 <h3 id="valueof">ValueOf</h3>
 <p>从 <strong>ValueOf 的源码中，我们可以看到，重要的是 emptyInterface 结构</strong></p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f1d8cbb3b087428e80ea98b15358be7d~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/084595638c3e4f7080970ccaeeb1ad05~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5357c87a62cb4e1b81cd4dd4782a7510~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f1d8cbb3b087428e80ea98b15358be7d~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/084595638c3e4f7080970ccaeeb1ad05~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5357c87a62cb4e1b81cd4dd4782a7510~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <pre><code>// emptyInterface is the header for an interface{} value.
 type emptyInterface struct {
    typ  *rtype
@@ -461,9 +329,7 @@ type emptyInterface struct {
 <p><strong>殊不知</strong>，此处的 <code>reflect.Value</code> 也是可以转换成 <code>reflect.Type</code> ，可以查看源码中 <code>reflect\value.go</code> 的 <code>func (v Value) Type() Type {</code></p>
 <p>其中   <code>reflect.Value</code>  ，<code>reflect.Type</code> ，和<code>任意数据类型</code> 可以相互这样来转换</p>
 <p>如下图：</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0aaf30b184a1484eacf1e5b106fa9a7e~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0aaf30b184a1484eacf1e5b106fa9a7e~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <h2 id="总结">总结</h2>
 <p>至此，关于反射就聊到这里，一些关于源码的细节并没有详细说，更多的站在一个使用者的角度去看反射需要注意的点</p>
 <p>关于反射，大多的人是建议少用，因为是会影响到性能，不过如果不太关注这一点，那么用起来还是非常方便的</p>
@@ -472,9 +338,7 @@ type emptyInterface struct {
 <p><strong>感谢阅读，欢迎交流，点个赞，关注一波 再走吧</strong></p>
 <h2 id="欢迎点赞关注收藏">欢迎点赞，关注，收藏</h2>
 <p>朋友们，你的支持和鼓励，是我坚持分享，提高质量的动力</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3889e1671e4647249b649b574b463b2e~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3889e1671e4647249b649b574b463b2e~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <p>好了，本次就到这里</p>
 <p>技术是开放的，我们的心态，更应是开放的。拥抱变化，向阳而生，努力向前行。</p>
 <p>我是<strong>阿兵云原生</strong>，欢迎点赞关注收藏，下次见~</p>
@@ -499,301 +363,96 @@ type emptyInterface struct {
 <li><a href="https://juejin.cn/post/7172358378306404366">你真的知道 GO 中 nil 代表什么吗？</a></li>
 </ul>
 
-        </div>
 
-        
-<div class="post-archive">
-    <ul class="post-copyright">
-        <li><strong>Author: </strong><a rel="author" href="https://qingconglaixueit.github.io/">阿兵云原生</a></li>
-        <li style="word-break:break-all"><strong>Link: </strong><a href="https://qingconglaixueit.github.io/post/fanshe/">https://qingconglaixueit.github.io/post/fanshe/</a></li>
-        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
-    </ul>
-</div>
-<br/>
+  
 
+  
+  <hr>
+  <footer>
 
+  
+    <section>
+    <h4>Share</h4>
+    <nav class="nav sharing-icons">
+      <a class="nav-item" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fqingconglaixueit.github.io%2fpost%2ffanshe%2f" title="Share on Facebook"><span class="fab fa-facebook-f fa-2x" aria-hidden="true"></span></a>
+      <a class="nav-item" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fqingconglaixueit.github.io%2fpost%2ffanshe%2f" title="Share on LinkedIn"><span class="fab fa-linkedin-in fa-2x" aria-hidden="true"></span></a>
+      <a class="nav-item" href="https://twitter.com/intent/tweet?url=https%3a%2f%2fqingconglaixueit.github.io%2fpost%2ffanshe%2f&amp;text=Go%20%e8%af%ad%e8%a8%80%e4%b8%ad%e7%9a%84%e5%8f%8d%e5%b0%84" title="Tweet this"><span class="fab fa-twitter fa-2x"></span></a>
+    </nav>
+  </section>
 
-        
+  
 
-<div class="post-archive">
-    <h2>See Also</h2>
-    <ul class="listing">
-        
-        <li><a href="/post/qiepiankuorong/">Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍</a></li>
-        
-        <li><a href="/post/tuanduibiandong/">团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！</a></li>
-        
-        <li><a href="/post/hebijuanai/">何必卷 AI </a></li>
-        
-        <li><a href="/post/wodegetrenweixin/">我的个人微信迅速接入了chatgpt</a></li>
-        
-    </ul>
-</div>
+  
+  </footer>
+  
 
-
-        <div class="post-meta meta-tags">
-            
-            No tags
-            
-        </div>
-    </article>
-    
-    <div id="disqus_thread"></div>
-<script type="application/javascript">
-    var disqus_config = function () {
-    
-    
-    
-    };
-    (function() {
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-            return;
-        }
-        var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "yourdiscussshortname" + '.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-
-    
-    
-    <div class="post bg-white">
-      <script src="https://utteranc.es/client.js"
-            repo= "your github repo"
-            issue-term="pathname"
-            theme="github-light"
-            crossorigin="anonymous"
-            async>
-      </script>
-    </div>
-    
-    
-    
-
-</div>
-
-                    <footer id="footer">
-    <div>
-        &copy; 2023 <a href="https://qingconglaixueit.github.io/">阿兵云原生 By 阿兵云原生</a>
-        
-    </div>
-    <br />
-    <div>
-        <div class="github-badge">
-            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
-        </div>
-        <div class="github-badge">
-            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">阿兵云原生</span></a>
-        </div>
-        <div class="github-badge">
-            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
-        </div>
-    </div>
-</footer>
-
-
-    
-    
-    <script type="text/javascript">
-        window.MathJax = {
-            tex2jax: {
-                inlineMath: [['$', '$']],
-                processEscapes: true
-                }
-            };
-    </script>
-    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
-
-<a id="rocket" href="#top"></a>
-<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
-<style type="text/css">
-div.highlight {
-    position: relative;
-    margin: 1em 0px;
-}
-
-.copy-code {
-    display: none;
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    color: rgba(255, 255, 255, 0.8);
-    background: rgba(78, 78, 78, 0.8);
-    border-radius: var(--radius);
-    padding: 0 5px;
-    font: inherit;
-    user-select: none;
-    cursor: pointer;
-    border: 0;
-    --radius: 8px;
-}
-
-div.highlight:hover .copy-code,pre:hover .copy-code {
-    display: block;
-}
-
-</style>
-<script>
-    document.querySelectorAll('pre > code').forEach((codeblock) => {
-        const container = codeblock.parentNode.parentNode;
-
-        const copybutton = document.createElement('button');
-        copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
-
-        function copyingDone() {
-            copybutton.innerHTML = 'copied!';
-            setTimeout(() => {
-                copybutton.innerHTML = 'copy';
-            }, 2000);
-        }
-
-        copybutton.addEventListener('click', (cb) => {
-            if ('clipboard' in navigator) {
-                navigator.clipboard.writeText(codeblock.textContent);
-                copyingDone();
-                return;
-            }
-
-            const range = document.createRange();
-            range.selectNodeContents(codeblock);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-            try {
-                document.execCommand('copy');
-                copyingDone();
-            } catch (e) { };
-            selection.removeRange(range);
-        });
-
-        if (container.classList.contains("highlight")) {
-            container.appendChild(copybutton);
-        } else if (container.parentNode.firstChild == container) {
-            
-        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
-            
-            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
-        } else {
-            
-            codeblock.parentNode.appendChild(copybutton);
-        }
-    });
-</script>
-
-
-    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+</article> 
 
 
 
+        </div> <!-- /.blog-main -->
 
-    <script src='/js/douban.js'></script>
+        <aside class="col-sm-3 ml-auto blog-sidebar">
+  
+  <section class="sidebar-module sidebar-module-inset">
+    <h4>About</h4>
+    <p dir="auto">A simple Hugo theme based on the <a href="http://v4-alpha.getbootstrap.com/examples/blog/">Bootstrap v4 blog example</a>.</p>
+  </section>
+  
 
-                </div>
+  
+        <section class="sidebar-module">
+    <h4>Recent Posts</h4>
+    <ol class="list-unstyled">
 
-                <div id="secondary">
-    <section class="widget">
-        <form id="search" action='https://qingconglaixueit.github.io/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+
+<li><a href="/post/creating-a-new-theme/">Creating a New Theme</a></li>
+
+<li><a href="/post/migrate-from-jekyll/">Migrate to Hugo from Jekyll</a></li>
+
+<li><a href="/post/orm/">我们要不要使用 ORM？</a></li>
+
+<li><a href="/post/panic_revovery/">Go 语言中 panic 和 recover 搭配使用</a></li>
+
+<li><a href="/post/fanshe/">Go 语言中的反射</a></li>
+
+    </ol>
+  </section>
+
+  
+
+  
+  <section class="sidebar-module">
+    <h4>Links</h4>
+    <ol class="list-unstyled">
       
-      <input type="text" name="q" maxlength="20" placeholder="Search">
-      <input type="hidden" name="sitesearch" value="https://qingconglaixueit.github.io/">
-      <button type="submit" class="submit icon-search"></button>
-</form>
-    </section>
-
-    <section class="widget">
-        <h3 class="widget-title">Latest articles</h3>
-<ul class="widget-list">
-    
-    <li>
-        <a href="https://qingconglaixueit.github.io/post/orm/" title="我们要不要使用 ORM？" target="_blank">我们要不要使用 ORM？</a>
-    </li>
-    
-    <li>
-        <a href="https://qingconglaixueit.github.io/post/panic_revovery/" title="Go 语言中 panic 和 recover 搭配使用" target="_blank">Go 语言中 panic 和 recover 搭配使用</a>
-    </li>
-    
-    <li>
-        <a href="https://qingconglaixueit.github.io/post/fanshe/" title="Go 语言中的反射" target="_blank">Go 语言中的反射</a>
-    </li>
-    
-    <li>
-        <a href="https://qingconglaixueit.github.io/post/qiepiankuorong/" title="Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍" target="_blank">Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍</a>
-    </li>
-    
-    <li>
-        <a href="https://qingconglaixueit.github.io/post/tuanduibiandong/" title="团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！" target="_blank">团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！</a>
-    </li>
-    
-    <li>
-        <a href="https://qingconglaixueit.github.io/post/hebijuanai/" title="何必卷 AI " target="_blank">何必卷 AI </a>
-    </li>
-    
-    <li>
-        <a href="https://qingconglaixueit.github.io/post/wodegetrenweixin/" title="我的个人微信迅速接入了chatgpt" target="_blank">我的个人微信迅速接入了chatgpt</a>
-    </li>
-    
-</ul>
-    </section>
-
-    
-<section class="widget">
-    <h3 class="widget-title" style="color:red">Ads</h3>
-    <ul class="widget-list">
-        
-        <li>
-            <a href="xxxx" title="xxxxx" target="_blank" style="color:red">
-                
-                    <img src="xxxx">
-                
-            </a>
-        </li>
-        
-    </ul>
-</section>
+      <li><a href="https://example.com">Link 1</a></li>
+      
+      <li><a href="https://example.org">Link 2</a></li>
+      
+    </ol>
+  </section>
+  
+</aside>
 
 
-    <section class="widget">
-        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
-<ul class="widget-list">
+      </div> <!-- /.row -->
+    </div> <!-- /.container -->
     
-</ul>
-    </section>
-
-    <section class="widget">
-        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
-<div class="tagcloud">
-    
-</div>
-    </section>
 
     
-<section class="widget">
-    <h3 class="widget-title">Links</h3>
-    <ul class="widget-list">
-        
-        <li>
-            <a target="_blank" href="xxxx" title="xxx">xx</a>
-        </li>
-        
-    </ul>
-</section>
+    <footer class="blog-footer">
+      <p dir="auto">
+      
+      Blog template created by <a href="https://twitter.com/mdo">@mdo</a>, ported to Hugo by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
+      
+      </p>
+      <p>
+      <a href="#">Back to top</a>
+      </p>
+    </footer>
+    
 
-
-    <section class="widget">
-        <h3 class="widget-title">Meta</h3>
-        <ul class="widget-list">
-            <li><a href="https://qingconglaixueit.github.io/index.xml">RSS</a></li>
-        </ul>
-    </section>
-</div>
-            </div>
-        </div>
-    </div>
-</body>
+  </body>
 
 </html>

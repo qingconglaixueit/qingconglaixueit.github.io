@@ -1,215 +1,119 @@
-<!doctype html>
-<html lang="zh-CN">
-<head>
+<!DOCTYPE html>
+<html lang="en" >
 
+  <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+<meta property="og:title" content="我的个人微信迅速接入了chatgpt" />
+<meta property="og:description" content="本文主要来聊聊如何快速使用个人微信接入 ChatGPT，欢迎 xdm 尝试起来，仅供学习参考，切莫用于做不正当的事情
+关于 ChatGPT 我们每个人都可以简单的使用上，不需要你有很强的技术背景，不需要你有公众号，甚至不需要你自己接入，只要你有一个微信号，就可以享受到 ChatGPT 带给你的惊喜，那么我们开始吧
+本文分别从如下几个方面来聊：
+ ChatGPT 是什么   个人微信如何快速接入 ChatGPT   关于 ChatGPT 的思考  ChatGPT 是什么 ChatGPT 实际上一个以对话的形式来回答各种问题的模型，他的名字叫做 ChatGPT ，简单理解，他就是一个聊天机器人
+现实中，我们印象中的机器人总是那么死板和固执，但是 ChatGPT 却是一个非常人性化的对话模型，他可以和我们聊天，回答我们的各种问题，并且上下文他是可以做到关联的
+甚至在未来你在使用各种应用软件的时候，与你对接的客服，或许就是这样的机器人，你可能完全感受不到他居然能够像人一样，甚至比人还聪明，比人还博学
+个人微信如何快速接入 ChatGPT 个人微信一样能够轻松的接入 ChatGPT ，不需要你有公众号，只需要做对接的人满足如下资源即可：
+ 经过实名认证的微信号   Openai 的账号密码   个人电脑或者一台 linux 虚拟机做服务器  与 Chatgpt 对话 首先，关于 openai 的账号如何注册此处就不过多赘述了，网络上的资料还是非常多的，xdm 实际注册的时候注意几点即可" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://qingconglaixueit.github.io/post/wodegetrenweixin/" />
+<meta property="article:published_time" content="2023-04-26T15:24:34+08:00" />
+<meta property="article:modified_time" content="2023-04-26T15:24:34+08:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="我的个人微信迅速接入了chatgpt"/>
+<meta name="twitter:description" content="本文主要来聊聊如何快速使用个人微信接入 ChatGPT，欢迎 xdm 尝试起来，仅供学习参考，切莫用于做不正当的事情
+关于 ChatGPT 我们每个人都可以简单的使用上，不需要你有很强的技术背景，不需要你有公众号，甚至不需要你自己接入，只要你有一个微信号，就可以享受到 ChatGPT 带给你的惊喜，那么我们开始吧
+本文分别从如下几个方面来聊：
+ ChatGPT 是什么   个人微信如何快速接入 ChatGPT   关于 ChatGPT 的思考  ChatGPT 是什么 ChatGPT 实际上一个以对话的形式来回答各种问题的模型，他的名字叫做 ChatGPT ，简单理解，他就是一个聊天机器人
+现实中，我们印象中的机器人总是那么死板和固执，但是 ChatGPT 却是一个非常人性化的对话模型，他可以和我们聊天，回答我们的各种问题，并且上下文他是可以做到关联的
+甚至在未来你在使用各种应用软件的时候，与你对接的客服，或许就是这样的机器人，你可能完全感受不到他居然能够像人一样，甚至比人还聪明，比人还博学
+个人微信如何快速接入 ChatGPT 个人微信一样能够轻松的接入 ChatGPT ，不需要你有公众号，只需要做对接的人满足如下资源即可：
+ 经过实名认证的微信号   Openai 的账号密码   个人电脑或者一台 linux 虚拟机做服务器  与 Chatgpt 对话 首先，关于 openai 的账号如何注册此处就不过多赘述了，网络上的资料还是非常多的，xdm 实际注册的时候注意几点即可"/>
+<meta name="generator" content="Hugo 0.81.0" />
+
+
     
-    <meta name="referrer" content="no-referrer-when-downgrade">
-    
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BlogPosting",
+  "headline": "我的个人微信迅速接入了chatgpt",
+  "url": "https://qingconglaixueit.github.io/post/wodegetrenweixin/",
+  "wordCount": "203",
+  "datePublished": "2023-04-26T15:24:34+08:00",
+  "dateModified": "2023-04-26T15:24:34+08:00",
+  "author": {
+    "@type": "Person",
+    "name": "阿兵云原生"
+  }
+}
+</script>
+
+
+
+    <link rel="canonical" href="https://qingconglaixueit.github.io/post/wodegetrenweixin/">
 
     <title>我的个人微信迅速接入了chatgpt | 阿兵云原生</title>
-    <meta property="og:title" content="我的个人微信迅速接入了chatgpt - 阿兵云原生">
-    <meta property="og:type" content="article">
-        
-    <meta property="article:published_time" content='2023-04-26T15:24:34&#43;08:00'>
-        
-        
-    <meta property="article:modified_time" content='2023-04-26T15:24:34&#43;08:00'>
-        
-    <meta name="Keywords" content="golang,go语言,go语言笔记,博客,软件架构,公众号,小程序">
-    <meta name="description" content="我的个人微信迅速接入了chatgpt">
-        
-    <meta name="author" content="阿兵云原生">
-    <meta property="og:url" content="https://qingconglaixueit.github.io/post/wodegetrenweixin/">
-    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
-
-    <link rel="stylesheet" href='/css/normalize.css'>
-    <link rel="stylesheet" href='/css/style.css'>
-    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     
+    <!-- combined, minified CSS -->
     
+    <link href="https://qingconglaixueit.github.io/css/style.c6ba80bc50669557645abe05f86b73cc5af84408ed20f1551a267bc19ece8228.css" rel="stylesheet" integrity="sha256-xrqAvFBmlVdkWr4F&#43;GtzzFr4RAjtIPFVGiZ7wZ7Ogig=" crossorigin="anonymous">
     
-    
-    
-    
-        <link rel="stylesheet" href='/css/douban.css'>
-    
-        <link rel="stylesheet" href='/css/other.css'>
-    
-</head>
 
-<body>
-    <header id="header" class="clearfix">
+    <!-- minified Font Awesome for SVG icons -->
+    
+    <script defer src="https://qingconglaixueit.github.io/js/fontawesome.min.f5072c55a0721857184db93a50561d7dc13975b4de2e19db7f81eb5f3fa57270.js" integrity="sha256-9QcsVaByGFcYTbk6UFYdfcE5dbTeLhnbf4HrXz&#43;lcnA=" crossorigin="anonymous"></script>
+
+    <!-- RSS 2.0 feed -->
+    
+
+    
+
+  </head>
+
+  <body>
+
+    
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="nav blog-nav">
+          <a class="nav-link " href="https://qingconglaixueit.github.io/">Home</a>
+        </nav>
+      </div>
+    </div>
+    
+
+    
+    
+    <header class="blog-header">
+      <div class="container">
+        <h1 class="blog-title" dir="auto"><a href="https://qingconglaixueit.github.io/" rel="home">阿兵云原生</a></h1>
+        <p class="lead blog-description" dir="auto">A simple Hugo theme based on the Bootstrap v4 blog example.</p>
+      </div>
+    </header>
+    
+    
+
+    
     <div class="container">
-        <div class="col-group">
-            <div class="site-name ">
-                
-                    <a id="logo" href="https://qingconglaixueit.github.io/">
-                        阿兵云原生
-                    </a>
-                
-                <p class="description">专注于Go语言(golang),软件架构</p>
-            </div>
-            <div>
-                <nav id="nav-menu" class="clearfix">
-                    <a class="current" href="https://qingconglaixueit.github.io/">Home</a>
-                    
-                    <a  href="https://qingconglaixueit.github.io/tools/" title="工具">工具</a>
-                    
-                    <a  href="https://qingconglaixueit.github.io/archives/" title="归档">归档</a>
-                    
-                    <a  href="https://qingconglaixueit.github.io/about/" title="关于">关于</a>
-                    
-                </nav>
-            </div>
-        </div>
-    </div>
-</header>
+      <div class="row">
+        <div class="col-sm-8 blog-main">
 
-    <div id="body">
-        <div class="container">
-            <div class="col-group">
-
-                <div class="col-8" id="main">
-                    
-<div class="res-cons">
-    <style type="text/css">
-    .post-toc {
-        position: fixed;
-        width: 200px;
-        margin-left: -210px;
-        padding: 5px 10px;
-        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
-        font-size: 12px;
-        border: 1px solid rgba(0, 0, 0, .07);
-        border-radius: 5px;
-        background-color: rgba(255, 255, 255, 0.98);
-        background-clip: padding-box;
-        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
-        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
-        word-wrap: break-word;
-        white-space: nowrap;
-        -webkit-box-sizing: border-box;
-        box-sizing: border-box;
-        z-index: 999;
-        cursor: pointer;
-        max-height: 70%;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-
-    .post-toc .post-toc-title {
-        width: 100%;
-        margin: 0 auto;
-        font-size: 20px;
-        font-weight: 400;
-        text-transform: uppercase;
-        text-align: center;
-    }
-
-    .post-toc .post-toc-content {
-        font-size: 15px;
-    }
-
-    .post-toc .post-toc-content>nav>ul {
-        margin: 10px 0;
-    }
-
-    .post-toc .post-toc-content ul {
-        padding-left: 20px;
-        list-style: square;
-        margin: 0.5em;
-        line-height: 1.8em;
-    }
-
-    .post-toc .post-toc-content ul ul {
-        padding-left: 15px;
-        display: none;
-    }
-
-    @media print,
-    screen and (max-width:1057px) {
-        .post-toc {
-            display: none;
-        }
-    }
-</style>
-<div class="post-toc" style="position: absolute; top: 188px;">
-    <h2 class="post-toc-title">Table of Contents</h2>
-    <div class="post-toc-content">
-        <nav id="TableOfContents">
-  <ul>
-    <li><a href="#chatgpt-是什么">ChatGPT 是什么</a></li>
-    <li><a href="#个人微信如何快速接入-chatgpt">个人微信如何快速接入 ChatGPT</a>
-      <ul>
-        <li><a href="#与-chatgpt-对话">与 Chatgpt 对话</a></li>
-        <li><a href="#个人微信接入chatgpt">个人微信接入ChatGPT</a></li>
-        <li><a href="#接入前提">接入前提</a></li>
-        <li><a href="#安装部署方式">安装部署方式</a></li>
-        <li><a href="#接入效果">接入效果</a></li>
-      </ul>
-    </li>
-    <li><a href="#关于-chatgpt-的思考">关于 ChatGPT 的思考</a></li>
-    <li><a href="#欢迎点赞关注收藏">欢迎点赞，关注，收藏</a></li>
-  </ul>
-</nav>
-    </div>
-</div>
-<script type="text/javascript">
-    $(document).ready(function () {
-        var postToc = $(".post-toc");
-        if (postToc.length) {
-            var leftPos = $("#main").offset().left;
-            if (leftPos < 220) {
-                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
-            }
-
-            var t = postToc.offset().top - 20,
-                a = {
-                    start: {
-                        position: "absolute",
-                        top: t
-                    },
-                    process: {
-                        position: "fixed",
-                        top: 20
-                    },
-                };
-            $(window).scroll(function () {
-                var e = $(window).scrollTop();
-                e < t ? postToc.css(a.start) : postToc.css(a.process)
-            })
-        }
-
-        if ($("#TableOfContents").children().length < 1) {
-            $(".post-toc").remove();
-        }
-    })
-</script>
-    <article class="post">
-        <header>
-            <h1 class="post-title">我的个人微信迅速接入了chatgpt</h1>
-        </header>
-        
-  <time datetime="2023-04-26T07:24:34Z" class="post-meta meta-date dt-published">
-    2023-04-26
-  </time>
+          
 
 
-
-        
-        <div class="post-meta">
-            <span id="busuanzi_container_page_pv">&nbsp;|
-                <span id="busuanzi_value_page_pv"></span> <span>reads</span>
-            </span>
-        </div>
-        
-        
-        <div class="post-content">
-            <p><strong>本文主要来聊聊如何快速使用个人微信接入 ChatGPT，欢迎 xdm 尝试起来，仅供学习参考，切莫用于做不正当的事情</strong></p>
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/wodegetrenweixin/">我的个人微信迅速接入了chatgpt</a></h2>
+    <p class="blog-post-meta">
+<time datetime="2023-04-26T15:24:34+08:00">Wed Apr 26, 2023</time>
+</p>
+  </header>
+  <p><strong>本文主要来聊聊如何快速使用个人微信接入 ChatGPT，欢迎 xdm 尝试起来，仅供学习参考，切莫用于做不正当的事情</strong></p>
 <p>关于 ChatGPT 我们每个人都可以简单的使用上，不需要你有很强的技术背景，不需要你有公众号，甚至不需要你自己接入，只要你有一个微信号，就可以享受到 ChatGPT 带给你的惊喜，那么我们开始吧</p>
 <p>本文分别从如下几个方面来聊：</p>
 <ul>
@@ -224,9 +128,7 @@
 <li>关于 ChatGPT 的思考</li>
 </ul>
 <h2 id="chatgpt-是什么">ChatGPT 是什么</h2>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c1a60e40b78e46ceabe804f3f1eb4599~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c1a60e40b78e46ceabe804f3f1eb4599~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <p>ChatGPT 实际上一个以对话的形式来回答各种问题的模型，他的名字叫做 <strong>ChatGPT</strong> ，简单理解，他就是一个聊天机器人</p>
 <p>现实中，我们印象中的机器人总是那么死板和固执，但是 ChatGPT 却是一个非常人性化的对话模型，他可以和我们聊天，回答我们的各种问题，并且上下文他是可以做到关联的</p>
 <p>甚至在未来你在使用各种应用软件的时候，与你对接的客服，或许就是这样的机器人，你可能完全感受不到他居然能够像人一样，甚至比人还聪明，比人还博学</p>
@@ -253,9 +155,7 @@
 <li>手机号接码的时候可能会有一定的延迟，实际操作并不是每一次都能迅速的接收到码的，来回操作了5 - 10 分钟左右收到了一个码，xdm 要耐心</li>
 </ul>
 <p>chatgpt：登录地址 <a href="https://chat.openai.com/">https://chat.openai.com/</a> 即可享受与 chatgpt 进行进行对话</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/87560dfa6c39451f93f2aa3cae608772~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/87560dfa6c39451f93f2aa3cae608772~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <p>实际上，ChatGPT 还可以帮我们写代码，写算法，写诗，回答最新的股票信息等等</p>
 <h3 id="个人微信接入chatgpt">个人微信接入ChatGPT</h3>
 <p>个人微信接入ChatGPT ，网上资料非常的多，实践了一遍之后，并不是每一个方式都可以正确运行的，或许是姿势不对，目前发现一个使用 Go 实现的项目比较香，可以非常简单快速的达到我们的目的</p>
@@ -263,21 +163,13 @@
 <p>先去 openai 上创建创建一个 API Keys，这个非常重要，没有这个 API Keys ，对于本案例，是没有办法接入成功的</p>
 <p>登录 openai：https://beta.openai.com/login/</p>
 <p>登录之后页面如下</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3269597a9f4543b08d1f983630288429~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3269597a9f4543b08d1f983630288429~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <p>可以看到 openai 的例子很多，至此的功能也是非常丰富的，感兴趣的话可以慢慢的研究，ChatGPT 也需要不断的优化和迭代</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/019d36ae850042c1936f6963d311b5d0~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/019d36ae850042c1936f6963d311b5d0~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <p><strong>点击页面右上角的头像，进入 View</strong> <strong>API</strong> <strong>keys</strong></p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dda7e8a47d5744ecad4b1af28ac03244~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dda7e8a47d5744ecad4b1af28ac03244~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <p><strong>创建一个新的秘钥，请自己保存好，这个秘钥相当重要，主要是用于和 openai 认证和交互的</strong></p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c4495c52a6424c73bc825ffdbdfacad6~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c4495c52a6424c73bc825ffdbdfacad6~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <h3 id="安装部署方式">安装部署方式</h3>
 <p>下载源码，修改配置，部署服务</p>
 <p>可以在我们的 linux 服务器上下载项目源码，并进入源码目录，拉取项目的依赖包</p>
@@ -289,15 +181,11 @@ go mod tidy
 <li><a href="https://juejin.cn/post/6946954600733736967">golang环境安装</a></li>
 </ul>
 <p>源码下载后，<code>wechatbot</code> 目录下我们可以看到如下文件</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ed7de8ba96df45e59a6611200889ed40~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ed7de8ba96df45e59a6611200889ed40~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <p>其中配置文件是 <code>config.dev.json</code>，实际配置文件为<code>config.json</code> ，我们需要拷贝一份</p>
 <pre><code>cp config.dev.json config.json
 </code></pre><p>里面存放了如下信息</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b29cf4085ab0468db09111214a4e3849~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b29cf4085ab0468db09111214a4e3849~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <p>其中重点关注 api_key 字段，填入我们之前在 openai 网站上获取的 <strong>API</strong> <strong>Keys</strong></p>
 <p>运行 Go 的 main.go 文件</p>
 <pre><code>go run main.go
@@ -306,9 +194,7 @@ go mod tidy
 <ul>
 <li>此处可以使用自己的微信小号来扫码，该微信号需要个人实名认证，此处注意，<strong>扫码的微信号就是</strong> <strong>聊天机器人</strong></li>
 </ul>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b1c8b529333d42db9f50aa9afe2af7df~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b1c8b529333d42db9f50aa9afe2af7df~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <p>扫码成功，正常登陆之后，可以看到有正常的日志，无报错信息</p>
 <p>此时，其他人发消息给这个扫码的微信号之后，该微信号就会智能回复了，如果是在群聊中，记得要 艾特 这个机器人</p>
 <p>另外程序运行后，会在项目路径下生成 <code>storage.json</code> 文件，是一个 Cookies ，这样我们终止程序，再次启动程序的时候，就不需要我们再扫码了</p>
@@ -325,13 +211,9 @@ go mod tidy
 </ul>
 <h3 id="接入效果">接入效果</h3>
 <p>私聊效果，直接发消息即可</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6fc9ebed03484e3db1dac12e42558ce8~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6fc9ebed03484e3db1dac12e42558ce8~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <p>群聊效果，记得要 <strong>艾特这个机器人</strong></p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/29d7891470e14efea27b1a5885ed7eca~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/29d7891470e14efea27b1a5885ed7eca~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <h2 id="关于-chatgpt-的思考">关于 ChatGPT 的思考</h2>
 <p>ChatGPT 也还在不断的优化和迭代当中，相信未来会有更多的惊喜</p>
 <p>诚然，在未来的发展，更加趋向于智能化，很多机械的，简单重复的工作，自然而然是会被逐步替代的，这些都是必须得直面的，无法逃避</p>
@@ -340,9 +222,7 @@ go mod tidy
 <p><strong>感谢阅读，欢迎交流，点个赞，关注一波 再走吧</strong></p>
 <h2 id="欢迎点赞关注收藏">欢迎点赞，关注，收藏</h2>
 <p>朋友们，你的支持和鼓励，是我坚持分享，提高质量的动力</p>
-<p>
-        <img class="mx-auto" alt="" src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a8acbafddb6644158ebd381abd67171f~tplv-k3u1fbpfcp-zoom-1.image" />   
-    </p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a8acbafddb6644158ebd381abd67171f~tplv-k3u1fbpfcp-zoom-1.image" alt=""></p>
 <p>好了，本次就到这里</p>
 <p>技术是开放的，我们的心态，更应是开放的。拥抱变化，向阳而生，努力向前行。</p>
 <p>我是<strong>阿兵云原生</strong>，欢迎点赞关注收藏，下次见~</p>
@@ -359,286 +239,96 @@ go mod tidy
 <li><a href="https://juejin.cn/post/7175707748779163703">Go 语言中 panic 和 recover 搭配使用</a></li>
 </ul>
 
-        </div>
 
-        
-<div class="post-archive">
-    <ul class="post-copyright">
-        <li><strong>Author: </strong><a rel="author" href="https://qingconglaixueit.github.io/">阿兵云原生</a></li>
-        <li style="word-break:break-all"><strong>Link: </strong><a href="https://qingconglaixueit.github.io/post/wodegetrenweixin/">https://qingconglaixueit.github.io/post/wodegetrenweixin/</a></li>
-        <li><strong>License: </strong>This work is under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. Kindly fulfill the requirements of the aforementioned License when adapting or creating a derivative of this work.</li>
-    </ul>
-</div>
-<br/>
+  
 
+  
+  <hr>
+  <footer>
 
+  
+    <section>
+    <h4>Share</h4>
+    <nav class="nav sharing-icons">
+      <a class="nav-item" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fqingconglaixueit.github.io%2fpost%2fwodegetrenweixin%2f" title="Share on Facebook"><span class="fab fa-facebook-f fa-2x" aria-hidden="true"></span></a>
+      <a class="nav-item" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fqingconglaixueit.github.io%2fpost%2fwodegetrenweixin%2f" title="Share on LinkedIn"><span class="fab fa-linkedin-in fa-2x" aria-hidden="true"></span></a>
+      <a class="nav-item" href="https://twitter.com/intent/tweet?url=https%3a%2f%2fqingconglaixueit.github.io%2fpost%2fwodegetrenweixin%2f&amp;text=%e6%88%91%e7%9a%84%e4%b8%aa%e4%ba%ba%e5%be%ae%e4%bf%a1%e8%bf%85%e9%80%9f%e6%8e%a5%e5%85%a5%e4%ba%86chatgpt" title="Tweet this"><span class="fab fa-twitter fa-2x"></span></a>
+    </nav>
+  </section>
 
-        
+  
 
+  
+  </footer>
+  
 
-        <div class="post-meta meta-tags">
-            
-            No tags
-            
-        </div>
-    </article>
-    
-    <div id="disqus_thread"></div>
-<script type="application/javascript">
-    var disqus_config = function () {
-    
-    
-    
-    };
-    (function() {
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-            return;
-        }
-        var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "yourdiscussshortname" + '.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-
-    
-    
-    <div class="post bg-white">
-      <script src="https://utteranc.es/client.js"
-            repo= "your github repo"
-            issue-term="pathname"
-            theme="github-light"
-            crossorigin="anonymous"
-            async>
-      </script>
-    </div>
-    
-    
-    
-
-</div>
-
-                    <footer id="footer">
-    <div>
-        &copy; 2023 <a href="https://qingconglaixueit.github.io/">阿兵云原生 By 阿兵云原生</a>
-        
-    </div>
-    <br />
-    <div>
-        <div class="github-badge">
-            <a href="https://gohugo.io/" target="_black" rel="nofollow"><span class="badge-subject">Powered by</span><span class="badge-value bg-blue">Hugo</span></a>
-        </div>
-        <div class="github-badge">
-            <a href="https://www.flysnow.org/" target="_black"><span class="badge-subject">Design by</span><span class="badge-value bg-brightgreen">阿兵云原生</span></a>
-        </div>
-        <div class="github-badge">
-            <a href="https://github.com/flysnow-org/maupassant-hugo" target="_black"><span class="badge-subject">Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a>
-        </div>
-    </div>
-</footer>
-
-
-    
-    
-    <script type="text/javascript">
-        window.MathJax = {
-            tex2jax: {
-                inlineMath: [['$', '$']],
-                processEscapes: true
-                }
-            };
-    </script>
-    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
-
-<a id="rocket" href="#top"></a>
-<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
-<style type="text/css">
-div.highlight {
-    position: relative;
-    margin: 1em 0px;
-}
-
-.copy-code {
-    display: none;
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    color: rgba(255, 255, 255, 0.8);
-    background: rgba(78, 78, 78, 0.8);
-    border-radius: var(--radius);
-    padding: 0 5px;
-    font: inherit;
-    user-select: none;
-    cursor: pointer;
-    border: 0;
-    --radius: 8px;
-}
-
-div.highlight:hover .copy-code,pre:hover .copy-code {
-    display: block;
-}
-
-</style>
-<script>
-    document.querySelectorAll('pre > code').forEach((codeblock) => {
-        const container = codeblock.parentNode.parentNode;
-
-        const copybutton = document.createElement('button');
-        copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
-
-        function copyingDone() {
-            copybutton.innerHTML = 'copied!';
-            setTimeout(() => {
-                copybutton.innerHTML = 'copy';
-            }, 2000);
-        }
-
-        copybutton.addEventListener('click', (cb) => {
-            if ('clipboard' in navigator) {
-                navigator.clipboard.writeText(codeblock.textContent);
-                copyingDone();
-                return;
-            }
-
-            const range = document.createRange();
-            range.selectNodeContents(codeblock);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-            try {
-                document.execCommand('copy');
-                copyingDone();
-            } catch (e) { };
-            selection.removeRange(range);
-        });
-
-        if (container.classList.contains("highlight")) {
-            container.appendChild(copybutton);
-        } else if (container.parentNode.firstChild == container) {
-            
-        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
-            
-            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
-        } else {
-            
-            codeblock.parentNode.appendChild(copybutton);
-        }
-    });
-</script>
-
-
-    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+</article> 
 
 
 
+        </div> <!-- /.blog-main -->
 
-    <script src='/js/douban.js'></script>
+        <aside class="col-sm-3 ml-auto blog-sidebar">
+  
+  <section class="sidebar-module sidebar-module-inset">
+    <h4>About</h4>
+    <p dir="auto">A simple Hugo theme based on the <a href="http://v4-alpha.getbootstrap.com/examples/blog/">Bootstrap v4 blog example</a>.</p>
+  </section>
+  
 
-                </div>
+  
+        <section class="sidebar-module">
+    <h4>Recent Posts</h4>
+    <ol class="list-unstyled">
 
-                <div id="secondary">
-    <section class="widget">
-        <form id="search" action='https://qingconglaixueit.github.io/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+
+<li><a href="/post/creating-a-new-theme/">Creating a New Theme</a></li>
+
+<li><a href="/post/migrate-from-jekyll/">Migrate to Hugo from Jekyll</a></li>
+
+<li><a href="/post/orm/">我们要不要使用 ORM？</a></li>
+
+<li><a href="/post/panic_revovery/">Go 语言中 panic 和 recover 搭配使用</a></li>
+
+<li><a href="/post/fanshe/">Go 语言中的反射</a></li>
+
+    </ol>
+  </section>
+
+  
+
+  
+  <section class="sidebar-module">
+    <h4>Links</h4>
+    <ol class="list-unstyled">
       
-      <input type="text" name="q" maxlength="20" placeholder="Search">
-      <input type="hidden" name="sitesearch" value="https://qingconglaixueit.github.io/">
-      <button type="submit" class="submit icon-search"></button>
-</form>
-    </section>
-
-    <section class="widget">
-        <h3 class="widget-title">Latest articles</h3>
-<ul class="widget-list">
-    
-    <li>
-        <a href="https://qingconglaixueit.github.io/post/orm/" title="我们要不要使用 ORM？" target="_blank">我们要不要使用 ORM？</a>
-    </li>
-    
-    <li>
-        <a href="https://qingconglaixueit.github.io/post/panic_revovery/" title="Go 语言中 panic 和 recover 搭配使用" target="_blank">Go 语言中 panic 和 recover 搭配使用</a>
-    </li>
-    
-    <li>
-        <a href="https://qingconglaixueit.github.io/post/fanshe/" title="Go 语言中的反射" target="_blank">Go 语言中的反射</a>
-    </li>
-    
-    <li>
-        <a href="https://qingconglaixueit.github.io/post/qiepiankuorong/" title="Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍" target="_blank">Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍</a>
-    </li>
-    
-    <li>
-        <a href="https://qingconglaixueit.github.io/post/tuanduibiandong/" title="团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！" target="_blank">团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！</a>
-    </li>
-    
-    <li>
-        <a href="https://qingconglaixueit.github.io/post/hebijuanai/" title="何必卷 AI " target="_blank">何必卷 AI </a>
-    </li>
-    
-    <li>
-        <a href="https://qingconglaixueit.github.io/post/wodegetrenweixin/" title="我的个人微信迅速接入了chatgpt" target="_blank">我的个人微信迅速接入了chatgpt</a>
-    </li>
-    
-</ul>
-    </section>
-
-    
-<section class="widget">
-    <h3 class="widget-title" style="color:red">Ads</h3>
-    <ul class="widget-list">
-        
-        <li>
-            <a href="xxxx" title="xxxxx" target="_blank" style="color:red">
-                
-                    <img src="xxxx">
-                
-            </a>
-        </li>
-        
-    </ul>
-</section>
+      <li><a href="https://example.com">Link 1</a></li>
+      
+      <li><a href="https://example.org">Link 2</a></li>
+      
+    </ol>
+  </section>
+  
+</aside>
 
 
-    <section class="widget">
-        <h3 class="widget-title"><a href='/categories/'>Categories</a></h3>
-<ul class="widget-list">
+      </div> <!-- /.row -->
+    </div> <!-- /.container -->
     
-</ul>
-    </section>
-
-    <section class="widget">
-        <h3 class="widget-title"><a href='/tags/'>Tags</a></h3>
-<div class="tagcloud">
-    
-</div>
-    </section>
 
     
-<section class="widget">
-    <h3 class="widget-title">Links</h3>
-    <ul class="widget-list">
-        
-        <li>
-            <a target="_blank" href="xxxx" title="xxx">xx</a>
-        </li>
-        
-    </ul>
-</section>
+    <footer class="blog-footer">
+      <p dir="auto">
+      
+      Blog template created by <a href="https://twitter.com/mdo">@mdo</a>, ported to Hugo by <a href='https://twitter.com/mralanorth'>@mralanorth</a>.
+      
+      </p>
+      <p>
+      <a href="#">Back to top</a>
+      </p>
+    </footer>
+    
 
-
-    <section class="widget">
-        <h3 class="widget-title">Meta</h3>
-        <ul class="widget-list">
-            <li><a href="https://qingconglaixueit.github.io/index.xml">RSS</a></li>
-        </ul>
-    </section>
-</div>
-            </div>
-        </div>
-    </div>
-</body>
+  </body>
 
 </html>
