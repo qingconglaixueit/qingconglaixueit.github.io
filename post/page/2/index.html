@@ -7,7 +7,7 @@
 
 
 <meta property="og:title" content="Posts" />
-<meta property="og:description" content="A simple Hugo theme based on the Bootstrap v4 blog example." />
+<meta property="og:description" content="专注于IT互联网，包括但不限于Go语言(golang)、抖音分析、软件架构等" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://qingconglaixueit.github.io/post/" />
 <meta property="og:updated_time" content="2023-04-27T11:02:59+08:00" />
@@ -16,7 +16,7 @@
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Posts"/>
-<meta name="twitter:description" content="A simple Hugo theme based on the Bootstrap v4 blog example."/>
+<meta name="twitter:description" content="专注于IT互联网，包括但不限于Go语言(golang)、抖音分析、软件架构等"/>
 <meta name="generator" content="Hugo 0.81.0" />
 
 
@@ -32,8 +32,8 @@
     "name": "阿兵云原生"
   },
   "dateModified": "2023-04-27T11:02:59+08:00",
-  "keywords": "development, golang, development, go, golang, hugo, templates, themes",
-  "description":"A simple Hugo theme based on the Bootstrap v4 blog example."
+  "keywords": "Development, golang, development, go, golang, hugo, templates, themes",
+  "description":"专注于IT互联网，包括但不限于Go语言(golang)、抖音分析、软件架构等"
 }
 </script>
 
@@ -77,7 +77,7 @@
     <header class="blog-header">
       <div class="container">
         <h1 class="blog-title" dir="auto"><a href="https://qingconglaixueit.github.io/" rel="home">阿兵云原生</a></h1>
-        <p class="lead blog-description" dir="auto">A simple Hugo theme based on the Bootstrap v4 blog example.</p>
+        <p class="lead blog-description" dir="auto">专注于IT互联网，包括但不限于Go语言(golang)、抖音分析、软件架构等</p>
       </div>
     </header>
     
@@ -98,124 +98,23 @@
 
 <article class="blog-post">
   <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/qiepiankuorong/">Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍</a></h2>
-    <p class="blog-post-meta"><time datetime="2023-04-27T10:45:02+08:00">Thu Apr 27, 2023</time> by 阿兵云原生</p>
-  </header>
-  本次主要来聊聊关于切片的扩容是如何扩的，还请大佬们不吝赐教
-切片，相信大家用了 Go 语言那么久这这种数据类型并不陌生，但是平日里聊到关于切片是如何扩容的，很多人可能会张口就来，切片扩容的时候，如果老切片的容量小于 1024 那么就再扩容 1倍，也就是新的切片容量是老切片容量的两倍，同理，如果老切片容量大于 1024，那么就扩容1.25 倍
-一个人这么说，多个人这么说，你可能就信了😂😂，可是大家都这么认为，我们就应该盲从吗？还是要自己去确认真实的扩容逻辑和实现方式，那就开始吧😁
-结论先行，切片对于扩容并不一定是 2 倍，1.25倍，这个要看实际情况
-本文分别从如下几点来聊聊切片的扩容
- 扩容是针对切片的，数组无法扩容   切片扩容到底是扩容到原来的几倍？   我们一般使用切片的时候可以如何避免频繁的扩容？  扩容是针对切片的，数组无法扩容 首先需要明确，数组是不能扩容的，数组定义的时候就已经是定长的了，无法扩容
-切片是可以扩容的，我们可以通过 append 追加的方式来向已有的切片尾部进行追加，若原有切片已满，那么就会发生扩容
-另外，我们知道数组是一段连续的内存地址，同一种数据类型的数据集合，例如这样
-func main() { log.SetFlags(log.Lshortfile) var demoArray = [5]int{1, 2, 3, 4, 5} log.Print(&quot;unsafe.sizeof(int) == &quot;,unsafe.Sizeof(demoArray[0])) for i, _ := range demoArray { log.
-  <a href='https://qingconglaixueit.github.io/post/qiepiankuorong/'>Read more →</a>
-</article> 
+    <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/hugoisforlovers/">Getting Started with Hugo</a></h2>
+    <p class="blog-post-meta"><time datetime="2014-04-02T00:00:00Z">Wed Apr 2, 2014</time> by 阿兵云原生 in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/Development/" rel="category tag">Development</a>, <a href="/categories/golang/" rel="category tag">golang</a>
 
 
-
-
-
-
-<article class="blog-post">
-  <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/tuanduibiandong/">团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！</a></h2>
-    <p class="blog-post-meta"><time datetime="2023-04-26T17:50:02+08:00">Wed Apr 26, 2023</time> by 阿兵云原生</p>
-  </header>
-  年底，又是一个总结过去和展望未来的时刻，在病痛交加的周六，捂着被子，拿着手机回顾我这时而平凡时而精彩的 2022，回望本年，又是没有财务自由的一年，团队变动，裁员，年底降薪，拿股权，健身，小刀刮喉咙，见她的父母，今年都经历个遍
-对于财务自由。这个词相信兄弟们并不陌生，但每个人对财务自由的理解不尽相同。
-一些人认为财务自由就是可以买各种奢侈品，不需要去考虑钱不够的事情。另一些人认为财务自由是有非常非常多的钱，但是没有一个清晰的定义，然而我认为的财务自由是我可以不想做什么就可以不做什么。在不影响生活水平的情况下，手上的现金流总是为正的，且被动收入能够大于我的主动收入。然而今年还是没有实现，但是一直在路上
-接下来本文分别从以下几个方面来聊一聊，关于我的 2022 年
- 工作：团队变动，裁员，年底降薪，拿股权 对于云原生技术方向的思考 生活：健身读书，小刀刮喉咙 买买买：买房买车持续进行中，见她父母 走出去：尝试搞自媒体，尝试微信接入 ChatGPT 未来展望  工作：团队变动，裁员，年底降薪，拿股权 团队变动，裁员 N+1
-今年部门内的团队各种大变样，一年下来换了5个小组，一个小组里面的人从快 20 个人到现在变得只剩下 4 个人
-一部分是自己走了，一部分直接被裁员拿 N+1。
-对拿 N+1 的真的爽歪歪，那一阵子很多人都想被裁员，可是你绩效没有拿 C，没有机会被裁，于是乎，大部分人嘴上说着躺平，喊着摆烂，实际上卷得比以前还狠了一些
-然而对于很多优秀的兄弟们，如果自己摆烂的话，自己这一关就过不去，很难办
-如上情况都是基于公司开始开源节流，裁掉职级低的，留下职级高的，并且还要更多招大佬进来。
-然而招的大佬仍然还是做以前低职级的人干的活。这真的太讽刺了。
-不过今年一年对于环境和线上部署这一块，倒是比以前方便了很多。全面容器化，往云原生方向走，真的能够做到一键升级，一键回滚，灰度发布，环境共享，流量染色，大大的提高了开发效率，测试效率和上线效率。
-以前主机环境升级最长的时间超过8个小时，现在升级只需要几分钟，这点变化带来的效果还是非常明显的。
-拿股权，年底降薪
-由于入职以来绩效一直都是比较 ok 的，今年有幸拿到了股权激励，然而本应该是一件开心的事，然而后面发生的事情却不那么妙
-今年来一直在不断的降各种福利，降人工成本，已经让大家感受到了一丝丝寒气，然而万万没想到，到了年底，开始玩起了降薪的操作，这让我们彻底感受到寒气逼人，让人心都凉了半截，直呼还不如裁掉我，我想 N+1
-另外拿了股权也并没有什么用处，我身边的朋友在某里某讯拿了股权，一些是由于各种原因并没有到行权的时刻就离职了，或者到行权的时刻，股价大跌
-自然，如果股权激励是公司百分百授予的那还好，可是如果是还需要自己出一部分钱买入，那确实就不那么 nice 了，我经历的公司中股权激励都是需要自己的出一部分钱的，下次要去一个百分百给股权的坑，这才有动力，哈哈哈
-顺便说一下，一般股权分为 3 年行权，第一年行权 40%，第二年行权 30%，第三年行权 30% ，所以如果这家公司发展势头不错，自己也喜欢公司的氛围，且自己在这里仍然可以逐步提升自己的技术和综合能力，那么留下来的几率还是非常大的，然而现实却事与愿违，看来这个股权大概率只是一张没有办法落地的电子签了
-  <a href='https://qingconglaixueit.github.io/post/tuanduibiandong/'>Read more →</a>
-</article> 
-
-
-
-
-
-
-<article class="blog-post">
-  <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/hebijuanai/">何必卷 AI</a></h2>
-    <p class="blog-post-meta"><time datetime="2023-04-26T17:45:19+08:00">Wed Apr 26, 2023</time> by 阿兵云原生</p>
-  </header>
-  一天，小明要写一篇论文，但是他遇到了一个问题：他期望有这么一个软件可以智能精准回复，能进行训练，还能帮忙处理数据。于是他开始寻找解决方案。
-可以使用最近很火很卷的 chatgpt 呀，于是简单搜索并了解了一下 什么是 chatgpt
-什么是 chatgpt Chatgpt 是一种基于自然语言处理技术的智能聊天系统。它可以自动理解用户输入的文本，并作出相应的回应，从而与用户进行实时的对话。
-Chatgpt 通常使用机器学习和深度学习算法来训练它的模型，以便更好地理解和响应用户的输入。它还具有自我学习和适应性能力，因此可以根据与用户的交互不断改进和优化其性能。
-Chatgpt 已经被广泛应用于各个领域，例如客服、营销、教育等。它可以有效地提高服务质量、节省时间成本，并提高用户满意度。
-ChatGPT 于 2022 年 11 月推出，尽管其回答事实的准确性受到批评，但因其详细和清晰的回复而受到关注。
-再继续搜索，看到网上的注册和使用教程铺天盖地，自己看的眼花缭乱，小明随机选了一个教程进行学习和尝试，然而跟着教程来发现自己需要达到教程上的效果差距还很明显
-例如需要不一样的网络，需要购买 openai 的账号，为了能够更好的服务小明，还要考虑去买更加智能的 chatgpt 4
-折腾了一圈，发现自己时间，精力消耗了不少，花了不少钱，然而并没有达到自己期望的结果，那就是期望有软件来帮助自己，解决自己的一些问题，数据处理，资料查找等。
-其实我们身边有很多这样的朋友，花了钱，花了精力，自己没有折腾出个所以然，实际上自己的需求其实很简单，就是能够方便的用上 chatgpt 的能力，自己还不用管软件的部署环境，软件的账号是否可以使用的问题
-并且我们身边的朋友还遇到了这样的问题，买了账号之后，发现自己使用不规范，自己的账号被封了，没有办法使用调用 api 的方式来享受 chatgpt 的能力
-那么是否可以有这样一个软件就像手机里面的 app，或者小程序一样呢？直接在海内的环境中就可以直接简单便捷的去寻找我们期望的答案，如同身边有一个小助手一样，帮我们处理数据，回答我们的问题
-对于程序员，可以问他关于编程方面的书籍推荐，进阶路线，实际问题解决方案，代码编写，甚至是代码纠错也是非常 nice 的
-对于白领，可以问他关于时间管理，资料整理，人际交往，个人成长 等等问题，他也能像人一样给予你很好的指导
-对于学生，你可以问他关于学科资料，解题方案，具体的论点数据等，不用上到某些搜索引擎上搜索半天还看了一堆的广告好太多了
-对于宝妈， 自然也是完全 ok 的，你可以了解关于育儿的技巧，关于如何处理好亲密关系，如何引导孩子健康成长
-只要你有向外的需求，你就可以使用这个软件，为你提升效率，提升质量，节省出来的时间，你能去做更多有价值有意义的事情
-那么他是谁呢？
-他就是 Ai 助手
-  <a href='https://qingconglaixueit.github.io/post/hebijuanai/'>Read more →</a>
-</article> 
-
-
-
-
-
-
-<article class="blog-post">
-  <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/wodegetrenweixin/">我的个人微信迅速接入了chatgpt</a></h2>
-    <p class="blog-post-meta"><time datetime="2023-04-26T15:24:34+08:00">Wed Apr 26, 2023</time> by 阿兵云原生</p>
-  </header>
-  本文主要来聊聊如何快速使用个人微信接入 ChatGPT，欢迎 xdm 尝试起来，仅供学习参考，切莫用于做不正当的事情
-关于 ChatGPT 我们每个人都可以简单的使用上，不需要你有很强的技术背景，不需要你有公众号，甚至不需要你自己接入，只要你有一个微信号，就可以享受到 ChatGPT 带给你的惊喜，那么我们开始吧
-本文分别从如下几个方面来聊：
- ChatGPT 是什么   个人微信如何快速接入 ChatGPT   关于 ChatGPT 的思考  ChatGPT 是什么 ChatGPT 实际上一个以对话的形式来回答各种问题的模型，他的名字叫做 ChatGPT ，简单理解，他就是一个聊天机器人
-现实中，我们印象中的机器人总是那么死板和固执，但是 ChatGPT 却是一个非常人性化的对话模型，他可以和我们聊天，回答我们的各种问题，并且上下文他是可以做到关联的
-甚至在未来你在使用各种应用软件的时候，与你对接的客服，或许就是这样的机器人，你可能完全感受不到他居然能够像人一样，甚至比人还聪明，比人还博学
-个人微信如何快速接入 ChatGPT 个人微信一样能够轻松的接入 ChatGPT ，不需要你有公众号，只需要做对接的人满足如下资源即可：
- 经过实名认证的微信号   Openai 的账号密码   个人电脑或者一台 linux 虚拟机做服务器  与 Chatgpt 对话 首先，关于 openai 的账号如何注册此处就不过多赘述了，网络上的资料还是非常多的，xdm 实际注册的时候注意几点即可
-  <a href='https://qingconglaixueit.github.io/post/wodegetrenweixin/'>Read more →</a>
-</article> 
-
-
-
-
-
-
-<article class="blog-post">
-  <header>
-    <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/goisforlovers/">(Hu)go Template Primer</a></h2>
-    <p class="blog-post-meta"><time datetime="2014-04-02T00:00:00Z">Wed Apr 02, 2014</time> by 阿兵云原生 in 
-<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/development/" rel="category tag">Development</a>, <a href="/categories/golang/" rel="category tag">golang</a>
-
-
-<span class="fas fa-tag" aria-hidden="true"></span>&nbsp;<a href="/tags/go/" rel="tag">go</a>, <a href="/tags/golang/" rel="tag">golang</a>, <a href="/tags/templates/" rel="tag">templates</a>, <a href="/tags/themes/" rel="tag">themes</a>, <a href="/tags/development/" rel="tag">development</a>
+<span class="fas fa-tag" aria-hidden="true"></span>&nbsp;<a href="/tags/go/" rel="tag">go</a>, <a href="/tags/golang/" rel="tag">golang</a>, <a href="/tags/hugo/" rel="tag">hugo</a>, <a href="/tags/development/" rel="tag">development</a>
 
 </p>
   </header>
-  Hugo uses the excellent go html/template library for its template engine. It is an extremely lightweight engine that provides a very small amount of logic. In our experience that it is just the right amount of logic to be able to create a good static website. If you have used other template systems from different languages or frameworks you will find a lot of similarities in go templates.
-  <a href='https://qingconglaixueit.github.io/post/goisforlovers/'>Read more →</a>
+  Step 1. Install Hugo Goto hugo releases and download the appropriate version for your os and architecture.
+Save it somewhere specific as we will be using it in the next step.
+More complete instructions are available at installing hugo
+Step 2. Build the Docs Hugo has its own example site which happens to also be the documentation site you are reading right now.
+Follow the following steps:
+ Clone the hugo repository Go into the repo Run hugo in server mode and build the docs Open your browser to http://localhost:1313  Corresponding pseudo commands:
+git clone https://github.com/spf13/hugo cd hugo /path/to/where/you/installed/hugo server --source=./docs &gt; 29 pages created &gt; 0 tags index created &gt; in 27 ms &gt; Web Server is available at http://localhost:1313 &gt; Press ctrl+c to stop  Once you&rsquo;ve gotten here, follow along the rest of this page on your local build.
+  <a href='https://qingconglaixueit.github.io/post/hugoisforlovers/'>Read more →</a>
 </article> 
 
 
@@ -224,9 +123,9 @@ ChatGPT 于 2022 年 11 月推出，尽管其回答事实的准确性受到批�
 
 <nav class="blog-pagination">
   
-  <a class="btn btn-outline-primary" href="/post/" rel="prev" role="button">Previous page</a>
-  <a class="btn btn-outline-primary" href="/post/page/3/" rel="next" role="button">Next page</a>
   
+  <a class="btn btn-outline-primary" href="/post/" rel="prev" role="button">Previous page</a>
+  <a class="btn btn-outline-primary disabled" href="#" role="button" aria-disabled="true">Next page</a>
   
   
 </nav>
@@ -239,44 +138,9 @@ ChatGPT 于 2022 年 11 月推出，尽管其回答事实的准确性受到批�
 
         <aside class="col-sm-3 ml-auto blog-sidebar">
   
-  <section class="sidebar-module sidebar-module-inset">
-    <h4>About</h4>
-    <p dir="auto">A simple Hugo theme based on the <a href="http://v4-alpha.getbootstrap.com/examples/blog/">Bootstrap v4 blog example</a>.</p>
-  </section>
-  
-
-  
-        <section class="sidebar-module">
-    <h4>Recent Posts</h4>
-    <ol class="list-unstyled">
-
-
-<li><a href="/post/creating-a-new-theme/">Creating a New Theme</a></li>
-
-<li><a href="/post/migrate-from-jekyll/">Migrate to Hugo from Jekyll</a></li>
-
-<li><a href="/post/orm/">我们要不要使用 ORM？</a></li>
-
-<li><a href="/post/panic_revovery/">Go 语言中 panic 和 recover 搭配使用</a></li>
-
-<li><a href="/post/fanshe/">Go 语言中的反射</a></li>
-
-    </ol>
-  </section>
 
   
 
-  
-  <section class="sidebar-module">
-    <h4>Links</h4>
-    <ol class="list-unstyled">
-      
-      <li><a href="https://example.com">Link 1</a></li>
-      
-      <li><a href="https://example.org">Link 2</a></li>
-      
-    </ol>
-  </section>
   
 </aside>
 

@@ -7,7 +7,7 @@
 
 
 <meta property="og:title" content="Posts" />
-<meta property="og:description" content="A simple Hugo theme based on the Bootstrap v4 blog example." />
+<meta property="og:description" content="专注于IT互联网，包括但不限于Go语言(golang)、抖音分析、软件架构等" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://qingconglaixueit.github.io/post/" />
 <meta property="og:updated_time" content="2023-04-27T11:02:59+08:00" />
@@ -16,7 +16,7 @@
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Posts"/>
-<meta name="twitter:description" content="A simple Hugo theme based on the Bootstrap v4 blog example."/>
+<meta name="twitter:description" content="专注于IT互联网，包括但不限于Go语言(golang)、抖音分析、软件架构等"/>
 <meta name="generator" content="Hugo 0.81.0" />
 
 
@@ -32,8 +32,8 @@
     "name": "阿兵云原生"
   },
   "dateModified": "2023-04-27T11:02:59+08:00",
-  "keywords": "development, golang, development, go, golang, hugo, templates, themes",
-  "description":"A simple Hugo theme based on the Bootstrap v4 blog example."
+  "keywords": "Development, golang, development, go, golang, hugo, templates, themes",
+  "description":"专注于IT互联网，包括但不限于Go语言(golang)、抖音分析、软件架构等"
 }
 </script>
 
@@ -77,7 +77,7 @@
     <header class="blog-header">
       <div class="container">
         <h1 class="blog-title" dir="auto"><a href="https://qingconglaixueit.github.io/" rel="home">阿兵云原生</a></h1>
-        <p class="lead blog-description" dir="auto">A simple Hugo theme based on the Bootstrap v4 blog example.</p>
+        <p class="lead blog-description" dir="auto">专注于IT互联网，包括但不限于Go语言(golang)、抖音分析、软件架构等</p>
       </div>
     </header>
     
@@ -101,7 +101,9 @@
     <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/creating-a-new-theme/">Creating a New Theme</a></h2>
     <p class="blog-post-meta"><time datetime="2014-09-28T00:00:00Z">Sun Sep 28, 2014</time> by Michael Henderson</p>
   </header>
-  Introduction This tutorial will show you how to create a simple theme in Hugo. I assume that you are familiar with HTML, the bash command line, and that you are comfortable using Markdown to format content. I&rsquo;ll explain how Hugo uses templates and how you can organize your templates to create a theme.
+  Introduction This tutorial will show you how to create a simple theme in Hugo. I assume that you are familiar with HTML, the bash command line, and that you are comfortable using Markdown to format content. I&rsquo;ll explain how Hugo uses templates and how you can organize your templates to create a theme. I won&rsquo;t cover using CSS to style your theme.
+We&rsquo;ll start with creating a new site with a very basic template. Then we&rsquo;ll add in a few pages and posts. With small variations on that, you will be able to create many different types of web sites.
+In this tutorial, commands that you enter will start with the &ldquo;$&rdquo; prompt. The output will follow. Lines that start with &ldquo;#&rdquo; are comments that I&rsquo;ve added to explain a point. When I show updates to a file, the &ldquo;:wq&rdquo; on the last line means to save the file.
   <a href='https://qingconglaixueit.github.io/post/creating-a-new-theme/'>Read more →</a>
 </article> 
 
@@ -117,6 +119,9 @@
   </header>
   Move static content to static Jekyll has a rule that any directory not starting with _ will be copied as-is to the _site output. Hugo keeps all static content under static. You should therefore move it all there. With Jekyll, something that looked like
 ▾ &lt;root&gt;/ ▾ images/ logo.png  should become
+▾ &lt;root&gt;/ ▾ static/ ▾ images/ logo.png  Additionally, you&rsquo;ll want any files that should reside at the root (such as CNAME) to be moved to static.
+Create your Hugo configuration file Hugo can read your configuration as JSON, YAML or TOML. Hugo supports parameters custom configuration too. Refer to the Hugo configuration documentation for details.
+Set your configuration publish folder to _site The default is for Jekyll to publish to _site and for Hugo to publish to public. If, like me, you have _site mapped to a git submodule on the gh-pages branch, you&rsquo;ll want to do one of two alternatives:
   <a href='https://qingconglaixueit.github.io/post/migrate-from-jekyll/'>Read more →</a>
 </article> 
 
@@ -130,17 +135,7 @@
     <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/orm/">我们要不要使用 ORM？</a></h2>
     <p class="blog-post-meta"><time datetime="2023-04-27T11:02:59+08:00">Thu Apr 27, 2023</time> by 阿兵云原生</p>
   </header>
-  本次主要来聊聊关于 ORM 的内容，欢迎评论交流，欢迎批评指正
-分别从如下 4 个方面来展开
- ORM 他是个啥？   为什么要用 ORM？   ORM 给我们带来了哪些问题？   如何去考虑是否要使用 ORM？  ORM 他是个啥？ 一提到 ORM 很多同学知道他是跟数据库相关的一个内容，但是并不清楚他到底是这个啥，自己需不需要，到底怎么玩？
-实际上 ORM 就那么一回事，从这三个字母就可以看到
-O：Object
-R：Relational
-M：Mapping
-对象关系映射，即关系型数据库和我们的实体业务对象来进行一个映射，对与我们使用 ORM 对象来说，就直接去使用其对应的各种方法即达到自动持久化的目的，无需关注具体的 sql 细节
-因为 ORM 已经为你隐藏了关于 sql 的部分，让不熟悉 sql 的 xdm 也可以很好的上手
-只要你知道如何使用函数，使用对象里面的方法到底你的数据操作目的即可
-为什么要用 ORM？ 为什么要使用 ORM 呢？难道出了一个新的东西，我们就一定要用吗？自然是要知道他的好，我们才会去使用
+  本次主要来聊聊关于 ORM 的内容，欢迎评论交流，欢迎批评指正 分别从如下 4 个方面来展开 ORM 他是个啥？ 为什么要用 ORM？ ORM 给我们带来了哪些问题？ 如何去考虑是否要使用 ORM？ ORM 他是个啥？ 一提到 ORM 很多同学知道他是跟数据库相关的一个内容，但是并不清楚他到底是这个啥，自己需不需要，到底怎么玩？ 实际上
   <a href='https://qingconglaixueit.github.io/post/orm/'>Read more →</a>
 </article> 
 
@@ -154,15 +149,7 @@ M：Mapping
     <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/panic_revovery/">Go 语言中 panic 和 recover 搭配使用</a></h2>
     <p class="blog-post-meta"><time datetime="2023-04-27T10:52:54+08:00">Thu Apr 27, 2023</time> by 阿兵云原生</p>
   </header>
-  本次主要聊聊 Go 语言中关于 panic 和 recover 搭配使用 ，以及 panic 的基本原理
-最近工作中审查代码的时候发现一段代码，类似于如下这样，将 recover 放到一个子协程里面，期望去捕获主协程的程序异常
-看到此处，是否会想这段代码在项目中是想当然写出来的吧，然而平日中，大多问题是出现在认知偏差上，那么本次，我们就来消除一下这个认知偏差
-关于 Go 语言中显示的使用 panic 的地方不多，一般 panic ，基本上会出现在咱们程序出现异常退出的时候
-例如访问了空指针里面的值，则会 panic 报错无效的内存地址，又例如访问量数组中不存在的数组所索引，或者切片索引，那么会报错 panic 数组越界等等
-可是碰到这些 panic 的时候，实际上我们并不期望当前的服务直接挂掉，而是期望这个异常能够被识别，且不影响程序其他部分的模块运行
-正常捕获异常 在 Go 中可以将 defer 和 recover 进行搭配使用，可以捕获和处理大部分的异常情况，例如可以这样
-这里可以看到，recover 捕获异常和发生异常的部分是在同一个协程中，实验证明是可以正常捕获并且处理异常
-并没有捕获到异常  直接不做显示的 recover，自然 panic 程序崩溃会如期而至，此处我们显示的使用 panic 函数来制造恐慌  func main() { log.
+  本次主要聊聊 Go 语言中关于 panic 和 recover 搭配使用 ，以及 panic 的基本原理 最近工作中审查代码的时候发现一段代码，类似于如下这样，将 recover 放到一个子协程里面，期望去捕获主协程的程序异常 看到此处，是否会想这段代码在项目中是想当然写出来的吧，然而平日中，大多问题是出现在认知偏差上，那么本次，我们就来消除一下
   <a href='https://qingconglaixueit.github.io/post/panic_revovery/'>Read more →</a>
 </article> 
 
@@ -176,16 +163,87 @@ M：Mapping
     <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/fanshe/">Go 语言中的反射</a></h2>
     <p class="blog-post-meta"><time datetime="2023-04-27T10:48:12+08:00">Thu Apr 27, 2023</time> by 阿兵云原生</p>
   </header>
-  今天主要来聊聊 Go 语言中反射，希望对你有新的认知
-虽然很多人使用 Go 语言有一定时间了，甚至有的使用了 1 年 2 年，然后对于 Go 语言中的反射还是模棱两可，使用起来的时候，心里也不是非常有底气
-更有甚者，几乎不使用反射，当然，也不是什么错，在工作中能用最简单最高效，又可扩展，性能还好的方式来进行处理自然是最 nice ，没有必要去生搬硬套一些高级用法，毕竟工作不是我们的试炼场，可以自己下来多多实验，本次就来好好看看如何去玩反射
-文章分别从如下五个方面来聊
- 反射是什么   反射的规则   使用案例并灵活运用   反射原理   总结  简单来看反射是什么 简单来看，反射就是在程序运行时期对程序本身进行访问和修改的能力，例如在程序运行时，可以修改程序的字段名称，字段值，还可以给程序提供接口访问的信息等等
-这是 Go 语言中提供的一种机制，我们可以在 Go 语言公共库中可以看到很多关于 reflect 的使用位置
-例如常用的 fmt 包，常用的 json 序列化和反序列化，自然前面我们说到的 gorm 库自然也是使用了反射的
-可是我们一般为什么要使用反射呢？
-根据反射的能力，自然是因为我们提供的接口并不知道传入的数据类型会是什么样的， 只有当程序运行的时候才知道具体的数据类型
+  今天主要来聊聊 Go 语言中反射，希望对你有新的认知 虽然很多人使用 Go 语言有一定时间了，甚至有的使用了 1 年 2 年，然后对于 Go 语言中的反射还是模棱两可，使用起来的时候，心里也不是非常有底气 更有甚者，几乎不使用反射，当然，也不是什么错，在工作中能用最简单最高效，又可扩展，性能还好的方式来进行处
   <a href='https://qingconglaixueit.github.io/post/fanshe/'>Read more →</a>
+</article> 
+
+
+
+
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/qiepiankuorong/">Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍</a></h2>
+    <p class="blog-post-meta"><time datetime="2023-04-27T10:45:02+08:00">Thu Apr 27, 2023</time> by 阿兵云原生</p>
+  </header>
+  本次主要来聊聊关于切片的扩容是如何扩的，还请大佬们不吝赐教 切片，相信大家用了 Go 语言那么久这这种数据类型并不陌生，但是平日里聊到关于切片是如何扩容的，很多人可能会张口就来，切片扩容的时候，如果老切片的容量小于 1024 那么就再扩容 1倍，也就是新的切片容量是老切片容量的两倍，同理，如果老切片
+  <a href='https://qingconglaixueit.github.io/post/qiepiankuorong/'>Read more →</a>
+</article> 
+
+
+
+
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/tuanduibiandong/">团队变动，裁员 ，拿股权，年底降薪，微信接入 ChatGPT 我都经历了，仍然要往云原生方向进发！！</a></h2>
+    <p class="blog-post-meta"><time datetime="2023-04-26T17:50:02+08:00">Wed Apr 26, 2023</time> by 阿兵云原生</p>
+  </header>
+  年底，又是一个总结过去和展望未来的时刻，在病痛交加的周六，捂着被子，拿着手机回顾我这时而平凡时而精彩的 2022，回望本年，又是没有财务自由的一年，团队变动，裁员，年底降薪，拿股权，健身，小刀刮喉咙，见她的父母，今年都经历个遍 对于财务自由。这个词相信兄弟们并不陌生，但每个人对财务自
+  <a href='https://qingconglaixueit.github.io/post/tuanduibiandong/'>Read more →</a>
+</article> 
+
+
+
+
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/hebijuanai/">何必卷 AI</a></h2>
+    <p class="blog-post-meta"><time datetime="2023-04-26T17:45:19+08:00">Wed Apr 26, 2023</time> by 阿兵云原生</p>
+  </header>
+  一天，小明要写一篇论文，但是他遇到了一个问题：他期望有这么一个软件可以智能精准回复，能进行训练，还能帮忙处理数据。于是他开始寻找解决方案。 可以使用最近很火很卷的 chatgpt 呀，于是简单搜索并了解了一下 什么是 chatgpt 什么是 chatgpt Chatgpt 是一种基于自然语言处理技术的智能聊天系统。它可以自动理解用户输入的文本，
+  <a href='https://qingconglaixueit.github.io/post/hebijuanai/'>Read more →</a>
+</article> 
+
+
+
+
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/wodegetrenweixin/">我的个人微信迅速接入了chatgpt</a></h2>
+    <p class="blog-post-meta"><time datetime="2023-04-26T15:24:34+08:00">Wed Apr 26, 2023</time> by 阿兵云原生</p>
+  </header>
+  本文主要来聊聊如何快速使用个人微信接入 ChatGPT，欢迎 xdm 尝试起来，仅供学习参考，切莫用于做不正当的事情 关于 ChatGPT 我们每个人都可以简单的使用上，不需要你有很强的技术背景，不需要你有公众号，甚至不需要你自己接入，只要你有一个微信号，就可以享受到 ChatGPT 带给你的惊喜，那么我们开始吧 本文分别从
+  <a href='https://qingconglaixueit.github.io/post/wodegetrenweixin/'>Read more →</a>
+</article> 
+
+
+
+
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/goisforlovers/">(Hu)go Template Primer</a></h2>
+    <p class="blog-post-meta"><time datetime="2014-04-02T00:00:00Z">Wed Apr 2, 2014</time> by 阿兵云原生 in 
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/Development/" rel="category tag">Development</a>, <a href="/categories/golang/" rel="category tag">golang</a>
+
+
+<span class="fas fa-tag" aria-hidden="true"></span>&nbsp;<a href="/tags/go/" rel="tag">go</a>, <a href="/tags/golang/" rel="tag">golang</a>, <a href="/tags/templates/" rel="tag">templates</a>, <a href="/tags/themes/" rel="tag">themes</a>, <a href="/tags/development/" rel="tag">development</a>
+
+</p>
+  </header>
+  Hugo uses the excellent go html/template library for its template engine. It is an extremely lightweight engine that provides a very small amount of logic. In our experience that it is just the right amount of logic to be able to create a good static website. If you have used other template systems from different languages or frameworks you will find a lot of similarities in go templates.
+This document is a brief primer on using go templates. The go docs provide more details.
+Introduction to Go Templates Go templates provide an extremely simple template language. It adheres to the belief that only the most basic of logic belongs in the template or view layer. One consequence of this simplicity is that go templates parse very quickly.
+A unique characteristic of go templates is they are content aware. Variables and content will be sanitized depending on the context of where they are used.
+  <a href='https://qingconglaixueit.github.io/post/goisforlovers/'>Read more →</a>
 </article> 
 
 
@@ -209,44 +267,9 @@ M：Mapping
 
         <aside class="col-sm-3 ml-auto blog-sidebar">
   
-  <section class="sidebar-module sidebar-module-inset">
-    <h4>About</h4>
-    <p dir="auto">A simple Hugo theme based on the <a href="http://v4-alpha.getbootstrap.com/examples/blog/">Bootstrap v4 blog example</a>.</p>
-  </section>
-  
-
-  
-        <section class="sidebar-module">
-    <h4>Recent Posts</h4>
-    <ol class="list-unstyled">
-
-
-<li><a href="/post/creating-a-new-theme/">Creating a New Theme</a></li>
-
-<li><a href="/post/migrate-from-jekyll/">Migrate to Hugo from Jekyll</a></li>
-
-<li><a href="/post/orm/">我们要不要使用 ORM？</a></li>
-
-<li><a href="/post/panic_revovery/">Go 语言中 panic 和 recover 搭配使用</a></li>
-
-<li><a href="/post/fanshe/">Go 语言中的反射</a></li>
-
-    </ol>
-  </section>
 
   
 
-  
-  <section class="sidebar-module">
-    <h4>Links</h4>
-    <ol class="list-unstyled">
-      
-      <li><a href="https://example.com">Link 1</a></li>
-      
-      <li><a href="https://example.org">Link 2</a></li>
-      
-    </ol>
-  </section>
   
 </aside>
 

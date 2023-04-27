@@ -7,15 +7,7 @@
 
 
 <meta property="og:title" content="Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍" />
-<meta property="og:description" content="本次主要来聊聊关于切片的扩容是如何扩的，还请大佬们不吝赐教
-切片，相信大家用了 Go 语言那么久这这种数据类型并不陌生，但是平日里聊到关于切片是如何扩容的，很多人可能会张口就来，切片扩容的时候，如果老切片的容量小于 1024 那么就再扩容 1倍，也就是新的切片容量是老切片容量的两倍，同理，如果老切片容量大于 1024，那么就扩容1.25 倍
-一个人这么说，多个人这么说，你可能就信了😂😂，可是大家都这么认为，我们就应该盲从吗？还是要自己去确认真实的扩容逻辑和实现方式，那就开始吧😁
-结论先行，切片对于扩容并不一定是 2 倍，1.25倍，这个要看实际情况
-本文分别从如下几点来聊聊切片的扩容
- 扩容是针对切片的，数组无法扩容   切片扩容到底是扩容到原来的几倍？   我们一般使用切片的时候可以如何避免频繁的扩容？  扩容是针对切片的，数组无法扩容 首先需要明确，数组是不能扩容的，数组定义的时候就已经是定长的了，无法扩容
-切片是可以扩容的，我们可以通过 append 追加的方式来向已有的切片尾部进行追加，若原有切片已满，那么就会发生扩容
-另外，我们知道数组是一段连续的内存地址，同一种数据类型的数据集合，例如这样
-func main() { log.SetFlags(log.Lshortfile) var demoArray = [5]int{1, 2, 3, 4, 5} log.Print(&quot;unsafe.sizeof(int) == &quot;,unsafe.Sizeof(demoArray[0])) for i, _ := range demoArray { log." />
+<meta property="og:description" content="本次主要来聊聊关于切片的扩容是如何扩的，还请大佬们不吝赐教 切片，相信大家用了 Go 语言那么久这这种数据类型并不陌生，但是平日里聊到关于切片是如何扩容的，很多人可能会张口就来，切片扩容的时候，如果老切片的容量小于 1024 那么就再扩容 1倍，也就是新的切片容量是老切片容量的两倍，同理，如果老切片" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://qingconglaixueit.github.io/post/qiepiankuorong/" />
 <meta property="article:published_time" content="2023-04-27T10:45:02+08:00" />
@@ -25,15 +17,7 @@ func main() { log.SetFlags(log.Lshortfile) var demoArray = [5]int{1, 2, 3, 4, 5}
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍"/>
-<meta name="twitter:description" content="本次主要来聊聊关于切片的扩容是如何扩的，还请大佬们不吝赐教
-切片，相信大家用了 Go 语言那么久这这种数据类型并不陌生，但是平日里聊到关于切片是如何扩容的，很多人可能会张口就来，切片扩容的时候，如果老切片的容量小于 1024 那么就再扩容 1倍，也就是新的切片容量是老切片容量的两倍，同理，如果老切片容量大于 1024，那么就扩容1.25 倍
-一个人这么说，多个人这么说，你可能就信了😂😂，可是大家都这么认为，我们就应该盲从吗？还是要自己去确认真实的扩容逻辑和实现方式，那就开始吧😁
-结论先行，切片对于扩容并不一定是 2 倍，1.25倍，这个要看实际情况
-本文分别从如下几点来聊聊切片的扩容
- 扩容是针对切片的，数组无法扩容   切片扩容到底是扩容到原来的几倍？   我们一般使用切片的时候可以如何避免频繁的扩容？  扩容是针对切片的，数组无法扩容 首先需要明确，数组是不能扩容的，数组定义的时候就已经是定长的了，无法扩容
-切片是可以扩容的，我们可以通过 append 追加的方式来向已有的切片尾部进行追加，若原有切片已满，那么就会发生扩容
-另外，我们知道数组是一段连续的内存地址，同一种数据类型的数据集合，例如这样
-func main() { log.SetFlags(log.Lshortfile) var demoArray = [5]int{1, 2, 3, 4, 5} log.Print(&quot;unsafe.sizeof(int) == &quot;,unsafe.Sizeof(demoArray[0])) for i, _ := range demoArray { log."/>
+<meta name="twitter:description" content="本次主要来聊聊关于切片的扩容是如何扩的，还请大佬们不吝赐教 切片，相信大家用了 Go 语言那么久这这种数据类型并不陌生，但是平日里聊到关于切片是如何扩容的，很多人可能会张口就来，切片扩容的时候，如果老切片的容量小于 1024 那么就再扩容 1倍，也就是新的切片容量是老切片容量的两倍，同理，如果老切片"/>
 <meta name="generator" content="Hugo 0.81.0" />
 
 
@@ -44,7 +28,7 @@ func main() { log.SetFlags(log.Lshortfile) var demoArray = [5]int{1, 2, 3, 4, 5}
   "@type": "BlogPosting",
   "headline": "Go 语言切片扩容规则是扩容2倍？1.25倍？到底几倍",
   "url": "https://qingconglaixueit.github.io/post/qiepiankuorong/",
-  "wordCount": "597",
+  "wordCount": "2521",
   "datePublished": "2023-04-27T10:45:02+08:00",
   "dateModified": "2023-04-27T10:45:02+08:00",
   "author": {
@@ -94,7 +78,7 @@ func main() { log.SetFlags(log.Lshortfile) var demoArray = [5]int{1, 2, 3, 4, 5}
     <header class="blog-header">
       <div class="container">
         <h1 class="blog-title" dir="auto"><a href="https://qingconglaixueit.github.io/" rel="home">阿兵云原生</a></h1>
-        <p class="lead blog-description" dir="auto">A simple Hugo theme based on the Bootstrap v4 blog example.</p>
+        <p class="lead blog-description" dir="auto">专注于IT互联网，包括但不限于Go语言(golang)、抖音分析、软件架构等</p>
       </div>
     </header>
     
@@ -360,6 +344,27 @@ var size_to_class8 = [smallSizeMax/smallSizeDiv + 1]uint8{0, 1, 2, 3, 4, 5, 5, 6
   
 
   
+  <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "yourdiscussshortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+  
   </footer>
   
 
@@ -371,44 +376,9 @@ var size_to_class8 = [smallSizeMax/smallSizeDiv + 1]uint8{0, 1, 2, 3, 4, 5, 5, 6
 
         <aside class="col-sm-3 ml-auto blog-sidebar">
   
-  <section class="sidebar-module sidebar-module-inset">
-    <h4>About</h4>
-    <p dir="auto">A simple Hugo theme based on the <a href="http://v4-alpha.getbootstrap.com/examples/blog/">Bootstrap v4 blog example</a>.</p>
-  </section>
-  
-
-  
-        <section class="sidebar-module">
-    <h4>Recent Posts</h4>
-    <ol class="list-unstyled">
-
-
-<li><a href="/post/creating-a-new-theme/">Creating a New Theme</a></li>
-
-<li><a href="/post/migrate-from-jekyll/">Migrate to Hugo from Jekyll</a></li>
-
-<li><a href="/post/orm/">我们要不要使用 ORM？</a></li>
-
-<li><a href="/post/panic_revovery/">Go 语言中 panic 和 recover 搭配使用</a></li>
-
-<li><a href="/post/fanshe/">Go 语言中的反射</a></li>
-
-    </ol>
-  </section>
 
   
 
-  
-  <section class="sidebar-module">
-    <h4>Links</h4>
-    <ol class="list-unstyled">
-      
-      <li><a href="https://example.com">Link 1</a></li>
-      
-      <li><a href="https://example.org">Link 2</a></li>
-      
-    </ol>
-  </section>
   
 </aside>
 

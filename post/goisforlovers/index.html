@@ -7,7 +7,10 @@
 
 
 <meta property="og:title" content="(Hu)go Template Primer" />
-<meta property="og:description" content="Hugo uses the excellent go html/template library for its template engine. It is an extremely lightweight engine that provides a very small amount of logic. In our experience that it is just the right amount of logic to be able to create a good static website. If you have used other template systems from different languages or frameworks you will find a lot of similarities in go templates." />
+<meta property="og:description" content="Hugo uses the excellent go html/template library for its template engine. It is an extremely lightweight engine that provides a very small amount of logic. In our experience that it is just the right amount of logic to be able to create a good static website. If you have used other template systems from different languages or frameworks you will find a lot of similarities in go templates.
+This document is a brief primer on using go templates. The go docs provide more details.
+Introduction to Go Templates Go templates provide an extremely simple template language. It adheres to the belief that only the most basic of logic belongs in the template or view layer. One consequence of this simplicity is that go templates parse very quickly.
+A unique characteristic of go templates is they are content aware. Variables and content will be sanitized depending on the context of where they are used." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://qingconglaixueit.github.io/post/goisforlovers/" />
 <meta property="article:published_time" content="2014-04-02T00:00:00+00:00" />
@@ -17,7 +20,10 @@
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="(Hu)go Template Primer"/>
-<meta name="twitter:description" content="Hugo uses the excellent go html/template library for its template engine. It is an extremely lightweight engine that provides a very small amount of logic. In our experience that it is just the right amount of logic to be able to create a good static website. If you have used other template systems from different languages or frameworks you will find a lot of similarities in go templates."/>
+<meta name="twitter:description" content="Hugo uses the excellent go html/template library for its template engine. It is an extremely lightweight engine that provides a very small amount of logic. In our experience that it is just the right amount of logic to be able to create a good static website. If you have used other template systems from different languages or frameworks you will find a lot of similarities in go templates.
+This document is a brief primer on using go templates. The go docs provide more details.
+Introduction to Go Templates Go templates provide an extremely simple template language. It adheres to the belief that only the most basic of logic belongs in the template or view layer. One consequence of this simplicity is that go templates parse very quickly.
+A unique characteristic of go templates is they are content aware. Variables and content will be sanitized depending on the context of where they are used."/>
 <meta name="generator" content="Hugo 0.81.0" />
 
 
@@ -28,7 +34,7 @@
   "@type": "BlogPosting",
   "headline": "(Hu)go Template Primer",
   "url": "https://qingconglaixueit.github.io/post/goisforlovers/",
-  "wordCount": "1488",
+  "wordCount": "1486",
   "datePublished": "2014-04-02T00:00:00+00:00",
   "dateModified": "2014-04-02T00:00:00+00:00",
   "author": {
@@ -79,7 +85,7 @@
     <header class="blog-header">
       <div class="container">
         <h1 class="blog-title" dir="auto"><a href="https://qingconglaixueit.github.io/" rel="home">阿兵云原生</a></h1>
-        <p class="lead blog-description" dir="auto">A simple Hugo theme based on the Bootstrap v4 blog example.</p>
+        <p class="lead blog-description" dir="auto">专注于IT互联网，包括但不限于Go语言(golang)、抖音分析、软件架构等</p>
       </div>
     </header>
     
@@ -97,9 +103,9 @@
   <header>
     <h2 class="blog-post-title" dir="auto"><a href="https://qingconglaixueit.github.io/post/goisforlovers/">(Hu)go Template Primer</a></h2>
     <p class="blog-post-meta">
-<time datetime="2014-04-02T00:00:00Z">Wed Apr 02, 2014</time>
+<time datetime="2014-04-02T00:00:00Z">Wed Apr 2, 2014</time>
  in 
-<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/development/" rel="category tag">Development</a>, <a href="/categories/golang/" rel="category tag">golang</a>
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="/categories/Development/" rel="category tag">Development</a>, <a href="/categories/golang/" rel="category tag">golang</a>
 
 
 <span class="fas fa-tag" aria-hidden="true"></span>&nbsp;<a href="/tags/go/" rel="tag">go</a>, <a href="/tags/golang/" rel="tag">golang</a>, <a href="/tags/templates/" rel="tag">templates</a>, <a href="/tags/themes/" rel="tag">themes</a>, <a href="/tags/development/" rel="tag">development</a>
@@ -311,11 +317,21 @@ notoc: true
 <p>In your top-level configuration file (eg, <code>config.yaml</code>) you can define site
 parameters, which are values which will be available to you in chrome.</p>
 <p>For instance, you might declare:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">params</span>:
-  <span style="color:#f92672">CopyrightHTML</span>: <span style="color:#e6db74">&#34;Copyright &amp;#xA9; 2013 John Doe. All Rights Reserved.&#34;</span>
-  <span style="color:#f92672">TwitterUser</span>: <span style="color:#e6db74">&#34;spf13&#34;</span>
-  <span style="color:#f92672">SidebarRecentLimit</span>: <span style="color:#ae81ff">5</span>
-</code></pre></div><p>Within a footer layout, you might then declare a <code>&lt;footer&gt;</code> which is only
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000080">params</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#000080">CopyrightHTML</span>:<span style="color:#bbb"> </span><span style="color:#d14">&#34;Copyright &amp;#xA9; 2013 John Doe. All Rights Reserved.&#34;</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#000080">TwitterUser</span>:<span style="color:#bbb"> </span><span style="color:#d14">&#34;spf13&#34;</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#000080">SidebarRecentLimit</span>:<span style="color:#bbb"> </span><span style="color:#099">5</span><span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Within a footer layout, you might then declare a <code>&lt;footer&gt;</code> which is only
 provided if the <code>CopyrightHTML</code> parameter is provided, and if it is given,
 you would declare it to be HTML-safe, so that the HTML entity is not escaped
 again.  This would let you easily update just your top-level config file each
@@ -360,6 +376,27 @@ so, such as in this example:</p>
   
 
   
+  <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "yourdiscussshortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+  
   </footer>
   
 
@@ -371,44 +408,9 @@ so, such as in this example:</p>
 
         <aside class="col-sm-3 ml-auto blog-sidebar">
   
-  <section class="sidebar-module sidebar-module-inset">
-    <h4>About</h4>
-    <p dir="auto">A simple Hugo theme based on the <a href="http://v4-alpha.getbootstrap.com/examples/blog/">Bootstrap v4 blog example</a>.</p>
-  </section>
-  
-
-  
-        <section class="sidebar-module">
-    <h4>Recent Posts</h4>
-    <ol class="list-unstyled">
-
-
-<li><a href="/post/creating-a-new-theme/">Creating a New Theme</a></li>
-
-<li><a href="/post/migrate-from-jekyll/">Migrate to Hugo from Jekyll</a></li>
-
-<li><a href="/post/orm/">我们要不要使用 ORM？</a></li>
-
-<li><a href="/post/panic_revovery/">Go 语言中 panic 和 recover 搭配使用</a></li>
-
-<li><a href="/post/fanshe/">Go 语言中的反射</a></li>
-
-    </ol>
-  </section>
 
   
 
-  
-  <section class="sidebar-module">
-    <h4>Links</h4>
-    <ol class="list-unstyled">
-      
-      <li><a href="https://example.com">Link 1</a></li>
-      
-      <li><a href="https://example.org">Link 2</a></li>
-      
-    </ol>
-  </section>
   
 </aside>
 
