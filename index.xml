@@ -6,7 +6,7 @@
     <description>Recent content on 阿兵云原生</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Thu, 27 Apr 2023 11:02:59 +0800</lastBuildDate><atom:link href="https://qingconglaixueit.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 28 Apr 2023 14:39:47 +0800</lastBuildDate><atom:link href="https://qingconglaixueit.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Creating a New Theme</title>
       <link>https://qingconglaixueit.github.io/post/creating-a-new-theme/</link>
@@ -29,6 +29,15 @@ In this tutorial, commands that you enter will start with the &amp;ldquo;$&amp;r
 ▾ &amp;lt;root&amp;gt;/ ▾ static/ ▾ images/ logo.png  Additionally, you&amp;rsquo;ll want any files that should reside at the root (such as CNAME) to be moved to static.
 Create your Hugo configuration file Hugo can read your configuration as JSON, YAML or TOML. Hugo supports parameters custom configuration too. Refer to the Hugo configuration documentation for details.
 Set your configuration publish folder to _site The default is for Jekyll to publish to _site and for Hugo to publish to public. If, like me, you have _site mapped to a git submodule on the gh-pages branch, you&amp;rsquo;ll want to do one of two alternatives:</description>
+    </item>
+    
+    <item>
+      <title>必知必会的22种设计模式（GO语言）</title>
+      <link>https://qingconglaixueit.github.io/post/shejimoshi/</link>
+      <pubDate>Fri, 28 Apr 2023 14:39:47 +0800</pubDate>
+      
+      <guid>https://qingconglaixueit.github.io/post/shejimoshi/</guid>
+      <description>日常工作中免不了使用设计模式，那么你使用了哪些设计模式呢？ 设计模式是什么？ 设计模式是一种在软件设计中对常见问题的通用解决方案。 它们是经过验证的、可重用的设计思想，可以帮助解决开发过程中遇到的各种问题。 设计模式提供了一种共同的词汇表和方法论，让不同团队的开发人员能够更有效地沟通和协</description>
     </item>
     
     <item>
