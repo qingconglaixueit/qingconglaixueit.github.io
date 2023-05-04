@@ -293,6 +293,22 @@
 </div>
 
 
+<div id="git-comments"></div>
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+    var gitment = new Gitment({
+        id: 'hugo-integrated-gitment-plugin',  
+        owner: 'qingconglaixueit',
+        repo: 'gitmentdata',
+        oauth: {
+            client_id: '15714bff7f080b72adcb',
+            client_secret: '36cbf309c6d2296c9153bdf4dd67971cd56f7340',
+        }
+    })
+    gitment.render('git-comments')
+</script>
+
 
 
                     <footer id="footer">
