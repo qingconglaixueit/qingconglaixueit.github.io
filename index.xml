@@ -104,6 +104,15 @@ Set your configuration publish folder to _site The default is for Jekyll to publ
     </item>
     
     <item>
+      <title>Hugo 集成 Gitment 评论插件</title>
+      <link>https://qingconglaixueit.github.io/post/hugo-integrated-gitment-plugin/</link>
+      <pubDate>Mon, 05 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://qingconglaixueit.github.io/post/hugo-integrated-gitment-plugin/</guid>
+      <description>hello world test hugo</description>
+    </item>
+    
+    <item>
       <title>(Hu)go Template Primer</title>
       <link>https://qingconglaixueit.github.io/post/goisforlovers/</link>
       <pubDate>Wed, 02 Apr 2014 00:00:00 +0000</pubDate>
